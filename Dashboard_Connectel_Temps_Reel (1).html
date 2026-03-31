@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Connectel - Temps Réel</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            color: #2E75B6;
+            font-size: 28px;
+        }
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #70AD47;
+            padding: 10px 20px;
+            border-radius: 25px;
+            color: white;
+            font-weight: bold;
+        }
+        .pulse {
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .card-title {
+            font-size: 16px;
+            color: #666;
+            font-weight: 600;
+        }
+        .card-icon {
+            font-size: 32px;
+        }
+        .card-value {
+            font-size: 42px;
+            font-weight: bold;
+            color: #2E75B6;
+            margin-bottom: 10px;
+        }
+        .card-subtitle {
+            font-size: 14px;
+            color: #999;
+        }
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #70AD47, #9CCC65);
+            transition: width 0.5s;
+        }
+        .agents-table {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #2E75B6;
+            font-weight: bold;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #2E75B6;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 14px;
+        }
+        tr:hover {
+            background: #f5f5f5;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-present { background: #C8E6C9; color: #2E7D32; }
+        .status-calling { background: #FFF9C4; color: #F57F17; }
+        .status-absent { background: #FFCDD2; color: #C62828; }
+        .conformity-yes { color: #70AD47; font-weight: bold; }
+        .conformity-no { color: #C5504A; font-weight: bold; }
+        .recent-calls {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .call-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            transition: background 0.3s;
+        }
+        .call-item:hover {
+            background: #f5f5f5;
+        }
+        .call-info {
+            flex: 1;
+        }
+        .call-agent {
+            font-weight: bold;
+            color: #2E75B6;
+            margin-bottom: 5px;
+        }
+        .call-details {
+            font-size: 13px;
+            color: #666;
+        }
+        .call-time {
+            font-size: 12px;
+            color: #999;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>📊 DASHBOARD CONNECTEL - CALL CENTER</h1>
+            <p style="color: #666; margin-top: 5px;">Supervision en temps réel - Projet ID30</p>
+        </div>
+        <div class="live-indicator">
+            <div class="pulse"></div>
+            <span>LIVE</span>
+        </div>
+    </div>
+    
+    <!-- MÉTRIQUES PRINCIPALES -->
+    <div class="dashboard">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">APPELS AUJOURD'HUI</div>
+                <div class="card-icon">📞</div>
+            </div>
+            <div class="card-value">1,247</div>
+            <div class="card-subtitle">Objectif : 1,700 (73%)</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 73%;"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">AGENTS ACTIFS</div>
+                <div class="card-icon">👥</div>
+            </div>
+            <div class="card-value">15/17</div>
+            <div class="card-subtitle">2 absents (Maladie)</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">TAUX CONFORMITÉ</div>
+                <div class="card-icon">✅</div>
+            </div>
+            <div class="card-value">87%</div>
+            <div class="card-subtitle">Scripts respectés</div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 87%;"></div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">RDV CONFIRMÉS</div>
+                <div class="card-icon">📅</div>
+            </div>
+            <div class="card-value">892</div>
+            <div class="card-subtitle">Taux : 72% (Objectif ≥85%)</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">SATISFACTION</div>
+                <div class="card-icon">⭐</div>
+            </div>
+            <div class="card-value">4.3/5</div>
+            <div class="card-subtitle">Post-visite (Objectif ≥4.2)</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">DURÉE MOYENNE</div>
+                <div class="card-icon">⏱️</div>
+            </div>
+            <div class="card-value">3:24</div>
+            <div class="card-subtitle">minutes par appel</div>
+        </div>
+    </div>
+    
+    <!-- RÉPARTITION PRÉ/POST -->
+    <div class="metrics-grid">
+        <div class="card">
+            <div class="card-title">📞 PRÉ-VISITE</div>
+            <div class="card-value" style="font-size: 32px;">843</div>
+            <div class="card-subtitle">67% du total</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">📞 POST-VISITE</div>
+            <div class="card-value" style="font-size: 32px;">404</div>
+            <div class="card-subtitle">33% du total</div>
+        </div>
+        
+        <div class="card">
+            <div class="card-title">🚨 ÉCARTS IA</div>
+            <div class="card-value" style="font-size: 32px; color: #C5504A;">162</div>
+            <div class="card-subtitle">13% des appels</div>
+        </div>
+    </div>
+    
+    <!-- TABLEAU DES AGENTS -->
+    <div class="agents-table">
+        <div class="section-title">
+            <span>👥</span>
+            <span>PERFORMANCE PAR AGENT (TEMPS RÉEL)</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Agent</th>
+                    <th>Statut</th>
+                    <th>Connexion</th>
+                    <th>Attribué</th>
+                    <th>Traité</th>
+                    <th>Restant</th>
+                    <th>Niveau 1<br><small>(Pointage)</small></th>
+                    <th>Niveau 2<br><small>(Enregistré)</small></th>
+                    <th>Niveau 3<br><small>(Conforme)</small></th>
+                    <th>Taux</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Koné Yves</strong></td>
+                    <td><span class="status-badge status-calling">EN APPEL</span></td>
+                    <td>08:45</td>
+                    <td>100</td>
+                    <td>78</td>
+                    <td>22</td>
+                    <td>✅ 78</td>
+                    <td>✅ 78</td>
+                    <td><span class="conformity-yes">74 (95%)</span></td>
+                    <td>78%</td>
+                </tr>
+                <tr>
+                    <td><strong>Diallo Fatoumata</strong></td>
+                    <td><span class="status-badge status-present">ACTIF</span></td>
+                    <td>08:52</td>
+                    <td>100</td>
+                    <td>85</td>
+                    <td>15</td>
+                    <td>✅ 85</td>
+                    <td>✅ 85</td>
+                    <td><span class="conformity-yes">82 (96%)</span></td>
+                    <td>85%</td>
+                </tr>
+                <tr>
+                    <td><strong>Touré Marie</strong></td>
+                    <td><span class="status-badge status-calling">EN APPEL</span></td>
+                    <td>09:25</td>
+                    <td>100</td>
+                    <td>71</td>
+                    <td>29</td>
+                    <td>✅ 71</td>
+                    <td>✅ 71</td>
+                    <td><span class="conformity-no">45 (63%)</span></td>
+                    <td>71%</td>
+                </tr>
+                <tr>
+                    <td><strong>Bamba Jean</strong></td>
+                    <td><span class="status-badge status-absent">ABSENT</span></td>
+                    <td>-</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>0%</td>
+                </tr>
+                <tr>
+                    <td><strong>Coulibaly Ahmed</strong></td>
+                    <td><span class="status-badge status-present">ACTIF</span></td>
+                    <td>08:38</td>
+                    <td>100</td>
+                    <td>92</td>
+                    <td>8</td>
+                    <td>✅ 92</td>
+                    <td>✅ 92</td>
+                    <td><span class="conformity-yes">89 (97%)</span></td>
+                    <td>92%</td>
+                </tr>
+                <tr>
+                    <td><strong>Traoré Awa</strong></td>
+                    <td><span class="status-badge status-calling">EN APPEL</span></td>
+                    <td>08:47</td>
+                    <td>100</td>
+                    <td>68</td>
+                    <td>32</td>
+                    <td>✅ 68</td>
+                    <td>✅ 68</td>
+                    <td><span class="conformity-yes">61 (90%)</span></td>
+                    <td>68%</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- APPELS RÉCENTS -->
+    <div class="recent-calls">
+        <div class="section-title">
+            <span>📞</span>
+            <span>DERNIERS APPELS (FLUX EN TEMPS RÉEL)</span>
+        </div>
+        
+        <div class="call-item">
+            <div class="call-info">
+                <div class="call-agent">Koné Yves → Marchand #ID3456</div>
+                <div class="call-details">
+                    📞 PRÉ-VISITE | Durée: 3:45 | 
+                    Niveau 1: ✅ RDV confirmé | 
+                    Niveau 2: ✅ Enregistré | 
+                    Niveau 3: <span class="conformity-yes">✅ CONFORME</span>
+                </div>
+            </div>
+            <div class="call-time">Il y a 12 secondes</div>
+        </div>
+        
+        <div class="call-item">
+            <div class="call-info">
+                <div class="call-agent">Diallo Fatoumata → Marchand #ID2789</div>
+                <div class="call-details">
+                    📞 POST-VISITE | Durée: 4:12 | 
+                    Niveau 1: ✅ Satisfaction 5/5 | 
+                    Niveau 2: ✅ Enregistré | 
+                    Niveau 3: <span class="conformity-yes">✅ CONFORME</span>
+                </div>
+            </div>
+            <div class="call-time">Il y a 28 secondes</div>
+        </div>
+        
+        <div class="call-item">
+            <div class="call-info">
+                <div class="call-agent">Touré Marie → Marchand #ID5012</div>
+                <div class="call-details">
+                    📞 PRÉ-VISITE | Durée: 2:18 | 
+                    Niveau 1: ✅ RDV confirmé | 
+                    Niveau 2: ✅ Enregistré | 
+                    Niveau 3: <span class="conformity-no">❌ NON CONFORME</span> (Question manquée)
+                </div>
+            </div>
+            <div class="call-time">Il y a 45 secondes</div>
+        </div>
+        
+        <div class="call-item">
+            <div class="call-info">
+                <div class="call-agent">Coulibaly Ahmed → Marchand #ID8934</div>
+                <div class="call-details">
+                    📞 POST-VISITE | Durée: 3:56 | 
+                    Niveau 1: ✅ Nouvel entrepreneur | 
+                    Niveau 2: ✅ Enregistré | 
+                    Niveau 3: <span class="conformity-yes">✅ CONFORME</span>
+                </div>
+            </div>
+            <div class="call-time">Il y a 1 minute</div>
+        </div>
+        
+        <div class="call-item">
+            <div class="call-info">
+                <div class="call-agent">Traoré Awa → Marchand #ID6721</div>
+                <div class="call-details">
+                    📞 PRÉ-VISITE | Durée: 5:23 | 
+                    Niveau 1: ❌ Injoignable | 
+                    Niveau 2: ✅ Enregistré | 
+                    Niveau 3: <span class="conformity-yes">✅ CONFORME</span>
+                </div>
+            </div>
+            <div class="call-time">Il y a 2 minutes</div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulation du temps réel
+        setInterval(() => {
+            document.querySelectorAll('.call-time').forEach((el, idx) => {
+                const times = ['Il y a quelques secondes', 'Il y a 1 minute', 'Il y a 2 minutes', 'Il y a 3 minutes', 'Il y a 4 minutes'];
+                el.textContent = times[idx] || 'Il y a quelques secondes';
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

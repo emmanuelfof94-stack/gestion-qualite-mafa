@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 3 — Back Office | Formation Connectel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#8D0C23;--blue-light:#B5112C;--blue-pale:#F9E8EC;--orange:#CF9E41;--orange-light:#DDB55A;--orange-pale:#FAF3E0;--teal:#584B26;--teal-pale:#F3EDD8;--red:#6A091A;--red-pale:#F2D6DC;--grey:#455A64;--grey-light:#ECEFF1;--bg:#FCFBF8;--white:#FFFFFF;--shadow:0 4px 24px rgba(141,12,35,0.12);--radius:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:#1a2332;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:280px;min-height:100vh;background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo .badge{display:inline-block;background:var(--orange-light);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.sidebar-logo h1{color:white;font-size:17px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px;}
+.nav-section{padding:12px 10px 4px;}
+.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;padding:0 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,.18);color:white;font-weight:700;}
+.nav-item .icon{font-size:14px;min-width:18px;}
+.nav-progress{padding:14px 20px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.12);}
+.nav-progress p{color:rgba(255,255,255,.5);font-size:11px;margin-bottom:6px;}
+.progress-bar-wrap{background:rgba(255,255,255,.15);border-radius:10px;height:5px;}
+.progress-bar-fill{height:100%;border-radius:10px;background:var(--orange-light);transition:width .4s;}
+.progress-pct{color:white;font-size:11px;font-weight:700;margin-top:5px;}
+.candidate-field{padding:10px 16px;border-top:1px solid rgba(255,255,255,.15);}
+.candidate-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.candidate-field input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;color:white;font-size:12px;font-family:inherit;outline:none;}
+.candidate-field input::placeholder{color:rgba(255,255,255,.35);}
+.main{margin-left:280px;flex:1;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:17px;font-weight:700;color:var(--blue);}
+.topbar-subtitle{font-size:11px;color:var(--grey);margin-top:2px;}
+.topbar-badge{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.content{padding:28px 32px;max-width:980px;}
+.page{display:none;}.page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.module-header{border-radius:var(--radius);overflow:hidden;margin-bottom:28px;}
+.module-header-bg{padding:32px 36px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);}
+.module-num{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.module-title{font-size:26px;font-weight:800;color:white;line-height:1.2;margin-bottom:6px;}
+.module-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.module-chip{background:rgba(255,255,255,.18);color:white;font-size:12px;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+.module-objectives{background:rgba(255,255,255,.10);padding:18px 36px 22px;border-top:1px solid rgba(255,255,255,.1);}
+.module-objectives p{color:rgba(255,255,255,.6);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;}
+.obj-list{list-style:none;}
+.obj-list li{color:white;font-size:13px;padding:4px 0;display:flex;align-items:flex-start;gap:10px;}
+.obj-list li::before{content:"→";color:rgba(255,255,255,.5);font-weight:700;flex-shrink:0;}
+.card{background:white;border-radius:var(--radius);padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.card-title{font-size:15px;font-weight:700;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--blue-pale);}
+.info-box{border-radius:10px;padding:16px 18px;margin-bottom:14px;border-left:4px solid;}
+.info-box.blue{background:var(--blue-pale);border-color:var(--blue);}
+.info-box.orange{background:var(--orange-pale);border-color:var(--orange);}
+.info-box.teal{background:var(--teal-pale);border-color:var(--teal);}
+.info-box.red{background:var(--red-pale);border-color:var(--red);}
+.info-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.info-box.blue .info-box-title{color:var(--blue);}
+.info-box.orange .info-box-title{color:var(--orange);}
+.info-box.teal .info-box-title{color:var(--teal);}
+.info-box.red .info-box-title{color:var(--red);}
+.info-box ul{list-style:none;}
+.info-box ul li{font-size:13px;padding:3px 0;color:#2d3748;display:flex;gap:8px;align-items:flex-start;}
+.info-box ul li::before{content:"•";font-weight:700;flex-shrink:0;}
+.info-box.blue ul li::before{color:var(--blue);}
+.info-box.orange ul li::before{color:var(--orange);}
+.info-box.teal ul li::before{color:var(--teal);}
+.info-box.red ul li::before{color:var(--red);}
+.tbl-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--blue);color:white;}
+thead th{padding:10px 13px;text-align:left;font-weight:600;font-size:12px;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody td{padding:9px 13px;border-bottom:1px solid #e2e8f0;vertical-align:top;line-height:1.5;}
+.tbl-orange thead tr{background:var(--orange);}
+.tbl-teal thead tr{background:var(--teal);}
+.step-item{display:flex;gap:16px;margin-bottom:16px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.step-content{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.step-desc{font-size:13px;color:#4a5568;line-height:1.6;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.mini-card{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px;}
+.mini-card .mc-icon{font-size:22px;margin-bottom:8px;}
+.mini-card .mc-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.mini-card .mc-desc{font-size:12px;color:var(--grey);line-height:1.5;}
+.highlight-box{background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:12px;padding:20px 24px;margin-bottom:16px;color:white;}
+.highlight-box h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+.highlight-box p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;}
+.checklist-item{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid #f0f4f8;}
+.checklist-item:last-child{border-bottom:none;}
+.check-icon{width:22px;height:22px;border-radius:50%;background:var(--teal-pale);border:2px solid var(--teal);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:var(--teal);}
+.check-text{font-size:13px;color:#2d3748;line-height:1.5;}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">Back Office</span>
+    <h1>Formation Connectel</h1>
+    <p>Module 3 — Back Office</p>
+  </div>
+  <div class="candidate-field">
+    <label>Nom du candidat</label>
+    <input type="text" id="candidateName" placeholder="Votre nom complet...">
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Sections</div>
+    <button class="nav-item active" onclick="showSection('s1',this)"><span class="icon">🎯</span>Rôle &amp; Missions</button>
+    <button class="nav-item" onclick="showSection('s2',this)"><span class="icon">📂</span>Données Terrain</button>
+    <button class="nav-item" onclick="showSection('s3',this)"><span class="icon">✅</span>Validation Comptes OM</button>
+    <button class="nav-item" onclick="showSection('s4',this)"><span class="icon">🔍</span>Contrôle Qualité</button>
+    <button class="nav-item" onclick="showSection('s5',this)"><span class="icon">🔐</span>Accès &amp; Outils</button>
+    <button class="nav-item" onclick="showSection('s6',this)"><span class="icon">📊</span>Tableau de Bord</button>
+    <button class="nav-item" onclick="showSection('s7',this)"><span class="icon">🔌</span>Intégrations Connectel</button>
+    <button class="nav-item" onclick="showSection('s8',this)"><span class="icon">📅</span>Rapports &amp; Analyse</button>
+  </nav>
+  <div class="nav-progress">
+    <p>Progression du module</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:12%"></div></div>
+    <div class="progress-pct" id="progressPct">Section 1 / 8</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Module 3 — Back Office</div>
+      <div class="topbar-subtitle">Agents Back Office · Projet ID30</div>
+    </div>
+    <span class="topbar-badge">M3 · Back Office</span>
+  </div>
+  <div class="content">
+
+    <!-- S1 -->
+    <div id="s1" class="page active">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 03 · SECTION 01</div>
+          <div class="module-title">Rôle &amp; Missions du Back Office</div>
+          <div class="module-meta">
+            <span class="module-chip">🎯 4 Missions</span>
+            <span class="module-chip">🔄 Interface centrale</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le positionnement central du Back Office</li>
+            <li>Identifier les 4 missions principales et leurs responsabilités</li>
+            <li>Maîtriser l'organisation de la journée type</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>🎯 La Mission du Back Office</h3>
+        <p>Le Back Office est le <strong>pivot central</strong> du projet ID30. Il assure la qualité des données entre le terrain, le call center et la plateforme Connectel. Sans un Back Office rigoureux, l'ensemble de la chaîne opérationnelle est compromise.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Les 4 Missions Principales</div>
+        <div class="grid-2">
+          <div class="mini-card"><div class="mc-icon">📂</div><div class="mc-title">1. Données Terrain</div><div class="mc-desc">Réception, validation et chargement du fichier Excel des entrepreneurs collectés par les agents</div></div>
+          <div class="mini-card"><div class="mc-icon">✅</div><div class="mc-title">2. Validation KYC</div><div class="mc-desc">Vérification des documents et validation des comptes OM Business sous 24h</div></div>
+          <div class="mini-card"><div class="mc-icon">🔍</div><div class="mc-title">3. Contrôle Qualité</div><div class="mc-desc">Contre-enquêtes, vérification des données, exploitation des rapports IA Connectel</div></div>
+          <div class="mini-card"><div class="mc-icon">💻</div><div class="mc-title">4. Administration Plateforme</div><div class="mc-desc">Gestion des accès utilisateurs, rapports, tableaux de bord, intégrations</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Organisation de la Journée Type</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Heure</th><th>Tâche principale</th><th>Priorité</th></tr></thead>
+            <tbody>
+              <tr><td><strong>8h00 – 9h00</strong></td><td>Réception fichier Excel terrain + vérification qualité</td><td>🔴 Critique</td></tr>
+              <tr><td><strong>Avant 9h00</strong></td><td>Chargement du fichier dans Connectel + confirmation distribution</td><td>🔴 Critique</td></tr>
+              <tr><td><strong>9h00 – 12h00</strong></td><td>Traitement des demandes de validation KYC</td><td>🟠 Haute</td></tr>
+              <tr><td><strong>12h00 – 17h00</strong></td><td>Contrôle qualité + gestion anomalies + corrections</td><td>🟠 Haute</td></tr>
+              <tr><td><strong>Après 17h30</strong></td><td>Contrôle rapport journalier + archivage données</td><td>🟡 Normale</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤝 Relations avec les Autres Entités</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Entité</th><th>Ce que le Back Office reçoit</th><th>Ce que le Back Office fournit</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Agents terrain</strong></td><td>Données collectées (via RV et chefs d'équipe)</td><td>Validation, retours sur anomalies</td></tr>
+              <tr><td><strong>Call Center</strong></td><td>Demandes de corrections signalées</td><td>Données validées, fichiers chargés</td></tr>
+              <tr><td><strong>Direction</strong></td><td>Objectifs, priorités du jour</td><td>Rapports KPIs journaliers et mensuels</td></tr>
+              <tr><td><strong>Marchands OM</strong></td><td>Demandes de création/déplafonnement de compte</td><td>Validation du compte + notification sous 24h</td></tr>
+              <tr><td><strong>IA Connectel</strong></td><td>Rapports automatiques, alertes anomalies</td><td>Cas à traiter chargés dans le système</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 -->
+    <div id="s2" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 03 · SECTION 02</div>
+          <div class="module-title">Gestion des Données Terrain</div>
+          <div class="module-meta">
+            <span class="module-chip">📂 Fichier Excel</span>
+            <span class="module-chip">✅ Checklist validation</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser la procédure complète de traitement du fichier Excel</li>
+            <li>Identifier les 6 types d'anomalies et les actions correctives</li>
+            <li>Respecter le délai critique de chargement avant 9h00</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box red">
+        <div class="info-box-title">⏰ Délai Critique</div>
+        <ul><li>Le fichier Excel <strong>doit être chargé avant 9h00</strong> pour que la distribution automatique des cas Call Center soit possible. Tout retard impacte directement le Call Center.</li></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔢 Procédure de Traitement du Fichier Excel</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Réception du fichier</div><div class="step-desc">Source : agents terrain → chefs d'équipe → Responsables Villes → Back Office. Format : Excel (.xlsx) standardisé avec colonnes obligatoires.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Vérification de cohérence</div><div class="step-desc">Contrôle de chaque colonne obligatoire selon la checklist (voir ci-dessous). Toute anomalie doit être traitée avant le chargement.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Chargement dans Connectel</div><div class="step-desc">Importer le fichier validé. Vérifier que le nombre de cas chargés = nombre d'enregistrements dans le fichier. Confirmer la distribution à 9h00.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Notification du superviseur Call Center</div><div class="step-desc">Informer que les cas sont chargés et que la distribution à 9h00 est confirmée.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Traitement des anomalies détectées</div><div class="step-desc">Retourner les fiches incomplètes au RV concerné avec délai de 2h pour correction. Documenter chaque anomalie.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">☑️ Checklist de Validation du Fichier</div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Champs obligatoires renseignés :</strong> Nom, Téléphone, Adresse, Secteur d'activité, GPS (lat/long), Photo signalétique</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Format téléphone correct :</strong> 10 chiffres, préfixe pays si international</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Coordonnées GPS valides :</strong> dans la zone géographique attendue (Côte d'Ivoire)</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Secteur d'activité valide :</strong> correspond aux catégories autorisées dans le système</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Photo signalétique présente et lisible :</strong> visible, nette, représentative du commerce</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Absence de doublons :</strong> même téléphone ou même nom + adresse dans le fichier ou dans le système</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Agent collecteur identifié :</strong> nom de l'agent qui a collecté la fiche</div></div>
+        <div class="checklist-item"><div class="check-icon">☐</div><div class="check-text"><strong>Date de collecte renseignée :</strong> date récente (pas de fiches datant de plus de 7 jours sans justification)</div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚠️ Types d'Anomalies et Actions Correctives</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Type d'anomalie</th><th>Action Back Office</th><th>Délai</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Champ obligatoire manquant</strong></td><td>Retourner à l'agent via RV. Ne pas charger la fiche.</td><td>Retour sous 2h</td></tr>
+              <tr><td><strong>Doublon détecté</strong></td><td>Vérifier si mise à jour ou erreur. Fusionner si nécessaire. Valider avec superviseur.</td><td>Même journée</td></tr>
+              <tr><td><strong>GPS hors zone</strong></td><td>Alerter le chef d'équipe pour vérification terrain. Suspendre la fiche.</td><td>Vérification sous 24h</td></tr>
+              <tr><td><strong>Photo manquante ou illisible</strong></td><td>Demander retour terrain urgent. La fiche ne peut pas être chargée.</td><td>Urgent — même journée</td></tr>
+              <tr><td><strong>Téléphone incorrect</strong></td><td>Marquer "INVALIDE" dans le système. Notifier le RV pour correction.</td><td>Correction sous 24h</td></tr>
+              <tr><td><strong>Secteur d'activité non-reconnu</strong></td><td>Sélectionner la catégorie la plus proche OU retourner pour clarification.</td><td>Selon urgence</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 -->
+    <div id="s3" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 03 · SECTION 03</div>
+          <div class="module-title">Validation des Comptes OM Business</div>
+          <div class="module-meta">
+            <span class="module-chip">📄 KYC</span>
+            <span class="module-chip">⏱ 24h max</span>
+            <span class="module-chip">🔒 3 Profils</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser le processus KYC pour chaque profil</li>
+            <li>Savoir valider ou rejeter une demande avec motif</li>
+            <li>Respecter le délai de 24h obligatoire</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box red">
+        <div class="info-box-title">⏰ Délai Obligatoire</div>
+        <ul>
+          <li>Toute validation (Essentiel→Classique ou Classique→Premium) doit être traitée sous <strong>24 heures maximum</strong></li>
+          <li>En cas de documents incomplets : notification immédiate au marchand + délai 48h pour compléter</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Processus de Validation KYC</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Réception de la demande</div><div class="step-desc">La demande de création ou déplafonnement est reçue dans Connectel avec les documents joints.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Vérification de chaque document</div><div class="step-desc">Contrôler : authenticité (pas de falsification), validité (non-expiré), lisibilité (lisible et net).</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Vérification de cohérence</div><div class="step-desc">Le nom sur la pièce d'identité = le nom sur le RCCM. L'adresse sur le relevé bancaire correspond au commerce déclaré.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Décision : VALIDER ou REJETER</div><div class="step-desc">VALIDER si tous les critères sont remplis. REJETER avec motif précis si un document manque ou est non-conforme.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Notification automatique au marchand</div><div class="step-desc">Le système Connectel envoie automatiquement la notification de validation ou de rejet avec les instructions de correction.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📄 Documents Requis — Profil Classique</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Documents obligatoires (Essentiel → Classique)</div>
+          <ul>
+            <li>Pièce d'identité valide du dirigeant (CNI, passeport ou titre de séjour)</li>
+            <li>Procuration notariée si représentant (non-dirigeant)</li>
+            <li>Document commercial : extrait RCCM <strong>OU</strong> carte de commerçant <strong>OU</strong> autorisation d'exercice</li>
+            <li>Coordonnées GPS de l'établissement</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📄 Documents Requis — Profil Premium</div>
+        <div class="info-box red">
+          <div class="info-box-title">Entreprise Individuelle</div>
+          <ul>
+            <li>Pièce d'identité + extrait RCCM + DFE (Déclaration Fiscale d'Existence)</li>
+            <li>Référence bancaire + Relevé bancaire des 3 derniers mois</li>
+          </ul>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">Société Commerciale (SARL, SA...)</div>
+          <ul>
+            <li>Tous les documents entreprise individuelle +</li>
+            <li>Déclaration notariée de souscription et de versement</li>
+            <li>Statuts de la société notariés</li>
+          </ul>
+        </div>
+        <div class="info-box blue">
+          <div class="info-box-title">Association Civile</div>
+          <ul>
+            <li>Documents d'autorisation officiels de l'association</li>
+            <li>Identification des responsables (président, trésorier)</li>
+          </ul>
+        </div>
+        <div class="info-box blue">
+          <div class="info-box-title">Opérateurs de Transport Public</div>
+          <ul>
+            <li>Pièce d'identité + Extrait de permis de conduire + Référence bancaire</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚖️ Table de Décision KYC</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Critère</th><th>✅ VALIDER</th><th>❌ REJETER</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Pièce d'identité</strong></td><td>Valide, lisible, non-expirée</td><td>Expirée, illisible, falsifiée</td></tr>
+              <tr><td><strong>RCCM</strong></td><td>Correspond au commerce déclaré, à jour</td><td>Nom différent, périmé, illisible</td></tr>
+              <tr><td><strong>DFE (Premium)</strong></td><td>Présent et cohérent avec l'activité</td><td>Absent (Premium obligatoire)</td></tr>
+              <tr><td><strong>Relevé bancaire</strong></td><td>Moins de 3 mois, au nom du demandeur</td><td>Plus de 3 mois ou au nom d'un tiers</td></tr>
+              <tr><td><strong>Cohérence entre docs</strong></td><td>Même nom sur tous les documents</td><td>Nom différent entre pièce et RCCM</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4 -->
+    <div id="s4" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">MODULE 03 · SECTION 04</div>
+          <div class="module-title">Contrôle Qualité des Opérations</div>
+          <div class="module-meta">
+            <span class="module-chip">🔍 Contre-enquêtes</span>
+            <span class="module-chip">📊 KPIs</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser les 4 méthodes de contrôle qualité</li>
+            <li>Savoir interpréter les KPIs et agir sur les dépassements</li>
+            <li>Utiliser les rapports IA pour identifier les problèmes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔍 Méthode 1 — Contre-Enquêtes Aléatoires</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Procédure des contre-enquêtes</div>
+          <ul>
+            <li>Sélection aléatoire de <strong>10% des fiches terrain</strong> par semaine</li>
+            <li>Vérification par téléphone ou sur terrain : existence du commerce, exactitude adresse, cohérence activité</li>
+            <li>Comparaison avec les données saisies par l'agent</li>
+            <li>Signalement immédiat si fraude ou erreur grave détectée</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤖 Méthode 2 — Exploitation des Rapports IA</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Actions quotidiennes sur les rapports IA</div>
+          <ul>
+            <li>Revue des appels marqués <strong>"Script Conforme : NON"</strong></li>
+            <li>Identification des agents avec taux de non-conformité &gt; 20%</li>
+            <li>Actions correctives : rappel individuel, formation, avertissement selon gravité</li>
+            <li>Suivi de l'évolution du taux semaine après semaine</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗺️ Méthode 3 — Vérification Complétude des Zones</div>
+        <div class="info-box teal">
+          <div class="info-box-title">Suivi de couverture terrain</div>
+          <ul>
+            <li>Chaque zone doit être couverte à <strong>100%</strong> par les agents terrain</li>
+            <li>Suivi via carte de couverture dans Connectel</li>
+            <li>Zones incomplètes → alerte au RV concerné avec délai de résolution</li>
+            <li>Vérification quotidienne en fin de journée</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 KPIs de Contrôle Qualité</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>KPI</th><th>Seuil acceptable</th><th>Action si dépassé</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Taux de complétion des données</strong></td><td>&gt; 95%</td><td>Retour terrain urgent + audit agent</td></tr>
+              <tr><td><strong>Taux de doublons</strong></td><td>&lt; 2%</td><td>Audit de zone + vérification méthodologie agent</td></tr>
+              <tr><td><strong>Taux conformité scripts IA</strong></td><td>&gt; 80%</td><td>Formation obligatoire agents Call Center</td></tr>
+              <tr><td><strong>Délai validation comptes KYC</strong></td><td>&lt; 24h</td><td>Alerte superviseur Back Office</td></tr>
+              <tr><td><strong>Taux satisfaction post-visite</strong></td><td>&gt; 4/5</td><td>Analyse agents terrain + coaching ciblé</td></tr>
+              <tr><td><strong>Couverture zone</strong></td><td>100%</td><td>Relance RV + redistribution si nécessaire</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S5 -->
+    <div id="s5" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 03 · SECTION 05</div>
+          <div class="module-title">Gestion des Accès &amp; Outils</div>
+          <div class="module-meta">
+            <span class="module-chip">🔐 Niveaux d'accès</span>
+            <span class="module-chip">👤 Création comptes</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Connaître les niveaux d'accès par rôle</li>
+            <li>Maîtriser la procédure de création et révocation de comptes</li>
+            <li>Appliquer les bonnes pratiques de sécurité</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔐 Niveaux d'Accès par Rôle</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Rôle</th><th>Accès Connectel</th><th>Périmètre données</th><th>Droits</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Admin Back Office</strong></td><td>Accès total</td><td>Toutes villes</td><td>Création/suppression comptes, chargement fichiers, validation KYC</td></tr>
+              <tr><td><strong>Superviseur Call Center</strong></td><td>Module Call Center</td><td>Sa ville</td><td>Lecture + modification des statuts d'appel</td></tr>
+              <tr><td><strong>Agent Call Center</strong></td><td>Ses cas uniquement</td><td>Données qui lui sont assignées</td><td>Saisie formulaires, consultation fiche marchand</td></tr>
+              <tr><td><strong>Responsable Ville (RV)</strong></td><td>Vue rapport ville</td><td>Sa ville</td><td>Lecture rapports + téléchargement</td></tr>
+              <tr><td><strong>Inspecteur</strong></td><td>Vue rapport équipe</td><td>Son équipe</td><td>Lecture uniquement</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👤 Procédure de Création de Compte Utilisateur</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Réception de la demande</div><div class="step-desc">Par email ou formulaire officiel. La demande doit mentionner : nom, rôle, ville, responsable hiérarchique.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Vérification de l'identité</div><div class="step-desc">Confirmer avec le manager direct que la demande est légitime avant toute création.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Attribution du niveau d'accès</div><div class="step-desc">Sélectionner le rôle correspondant dans Connectel. Respecter le principe du moindre privilège.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Création et envoi des identifiants</div><div class="step-desc">Créer le compte dans Connectel. Envoyer les identifiants par canal sécurisé (jamais en clair par SMS).</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Formation obligatoire de 30 min</div><div class="step-desc">Tout nouvel utilisateur doit suivre une formation de prise en main avant son premier accès effectif.</div></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Enregistrement dans le registre des accès</div><div class="step-desc">Documenter : nom, rôle, date de création, responsable ayant validé la demande.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔒 Bonnes Pratiques de Sécurité</div>
+        <div class="info-box red">
+          <div class="info-box-title">Règles de sécurité absolues</div>
+          <ul>
+            <li>Mot de passe : minimum 12 caractères, renouvellement <strong>mensuel obligatoire</strong></li>
+            <li><strong>Jamais partager</strong> ses identifiants, même avec un collègue</li>
+            <li>Déconnexion systématique en fin de session (ne pas laisser une session ouverte)</li>
+            <li>Signalement immédiat de tout comportement suspect à l'admin</li>
+            <li>Accès révoqué <strong>immédiatement</strong> en cas de départ de l'employé (même si temporaire)</li>
+            <li>Aucun accès partagé entre plusieurs personnes — 1 compte = 1 personne</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6 -->
+    <div id="s6" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 03 · SECTION 06</div>
+          <div class="module-title">Tableau de Bord Temps Réel</div>
+          <div class="module-meta">
+            <span class="module-chip">📊 KPIs temps réel</span>
+            <span class="module-chip">🚨 Alertes</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir lire et interpréter le tableau de bord</li>
+            <li>Identifier rapidement les alertes et y répondre</li>
+            <li>Maîtriser les filtres et l'export de données</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <a href="Dashboard_Connectel_Temps_Reel (1).html" target="_blank" style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--blue);color:white;border-radius:10px;text-decoration:none;font-weight:700;font-size:13px;">📊 Ouvrir le Tableau de Bord Temps Réel →</a>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Indicateurs Opérationnels</div>
+        <div class="grid-2">
+          <div class="mini-card"><div class="mc-icon">👥</div><div class="mc-title">Présence agents</div><div class="mc-desc">Agents connectés vs total attendu. Alertes sur les absences non-signalées.</div></div>
+          <div class="mini-card"><div class="mc-icon">📋</div><div class="mc-title">Traitement des cas</div><div class="mc-desc">Distribués / Traités / En cours / En attente. Vue en temps réel.</div></div>
+          <div class="mini-card"><div class="mc-icon">📞</div><div class="mc-title">Appels pré-visite</div><div class="mc-desc">Taux de joignabilité, RDV confirmés, cas non-traités.</div></div>
+          <div class="mini-card"><div class="mc-icon">⭐</div><div class="mc-title">Satisfaction post-visite</div><div class="mc-desc">Note moyenne du jour, nombre de corrections demandées.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🚨 Indicateurs Qualité et Alertes</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Alerte dans le tableau</th><th>Action immédiate requise</th></tr></thead>
+            <tbody>
+              <tr><td>Agent déconnecté sans signalement</td><td>Contacter l'agent + redistribution des cas si nécessaire</td></tr>
+              <tr><td>Taux conformité script &lt; 60% sur un agent</td><td>Bloquer l'agent de nouveaux cas + revue obligatoire superviseur</td></tr>
+              <tr><td>0 cas traités &gt; 2h sur un agent connecté</td><td>Vérifier la connexion + alerter le RV</td></tr>
+              <tr><td>Satisfaction moyenne &lt; 3/5</td><td>Revue des enregistrements + coaching agent terrain ciblé</td></tr>
+              <tr><td>Fiches en attente validation KYC &gt; 10</td><td>Mobiliser l'équipe Back Office pour traitement prioritaire</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎨 Code Couleur du Tableau de Bord</div>
+        <div class="info-box teal">
+          <div class="info-box-title">Interprétation des couleurs</div>
+          <ul>
+            <li>🟢 <strong>Vert</strong> : indicateur au-dessus de l'objectif — aucune action requise</li>
+            <li>🟡 <strong>Jaune/Orange</strong> : proche du seuil — surveiller et anticiper</li>
+            <li>🔴 <strong>Rouge</strong> : en dessous du seuil — action corrective immédiate</li>
+          </ul>
+        </div>
+        <div class="info-box blue">
+          <div class="info-box-title">Filtres disponibles</div>
+          <ul>
+            <li>Par ville</li>
+            <li>Par agent (Call Center ou terrain)</li>
+            <li>Par période (jour / semaine / mois)</li>
+            <li>Par type d'appel (pré ou post-visite)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S7 -->
+    <div id="s7" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">MODULE 03 · SECTION 07</div>
+          <div class="module-title">Intégrations Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">🔌 5 Types d'intégration</span>
+            <span class="module-chip">💻 Niveau opérationnel</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre les 5 types d'intégrations disponibles</li>
+            <li>Savoir configurer les intégrations de niveau admin</li>
+            <li>Identifier quand utiliser chaque type d'intégration</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖼️ iFrame — Intégration Systèmes Externes</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Comment ça fonctionne</div>
+          <ul>
+            <li>Affiche un système externe (CRM, ERP) directement dans l'interface Connectel</li>
+            <li>Les agents n'ont plus besoin de changer d'application</li>
+          </ul>
+        </div>
+        <div class="info-box teal">
+          <div class="info-box-title">Configuration (Admin)</div>
+          <ul>
+            <li>Étape 1 : Ajouter l'URL du système externe dans les paramètres</li>
+            <li>Étape 2 : Créer le widget dans le menu intégrations</li>
+            <li>Étape 3 : Partager le widget aux agents concernés</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🌐 Open Browser Tab — Actions URL Automatiques</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Cas d'usage</div>
+          <ul>
+            <li>Ouvrir automatiquement la fiche CRM du marchand dès le démarrage d'un appel</li>
+            <li>Déclencher une URL selon une condition (ex: statut appel = "Correction demandée")</li>
+          </ul>
+        </div>
+        <div class="info-box teal">
+          <div class="info-box-title">Configuration</div>
+          <ul>
+            <li>Via le <strong>Workflow &amp; Automation Builder</strong> de Connectel</li>
+            <li>Définir l'URL cible et les données à envoyer (ex: ID marchand)</li>
+            <li>Définir le déclencheur (condition)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 REST Request — Échange Bidirectionnel de Données</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Capacités</div>
+          <ul>
+            <li>Envoyer des données vers un système externe ET recevoir une réponse</li>
+            <li>Exemple : vérifier en temps réel si un marchand existe dans la base CRM</li>
+            <li>Enchaîner des actions pour des workflows automatisés</li>
+          </ul>
+        </div>
+        <div class="info-box teal">
+          <div class="info-box-title">Configuration</div>
+          <ul>
+            <li>Utiliser le bloc REST dans le Workflow Builder</li>
+            <li>Configurer l'endpoint, les headers et le corps de la requête</li>
+            <li>Requiert des compétences techniques (API REST)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔗 API Connectel — Accès Développeur Complet</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Cas d'usage</div>
+          <ul>
+            <li>Initier des appels depuis un CRM externe</li>
+            <li>Synchroniser les fiches marchands automatiquement</li>
+            <li>Automatiser la création de tickets</li>
+            <li>Récupérer des données en temps réel depuis d'autres systèmes</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ Cloud Functions — Logique Avancée</div>
+        <div class="info-box red">
+          <div class="info-box-title">Option la plus puissante</div>
+          <ul>
+            <li>Code personnalisé qui s'exécute directement dans Connectel</li>
+            <li>Transformations de données complexes</li>
+            <li>Routage intelligent basé sur des règles métier avancées</li>
+            <li>Logique déclenchée par des événements en temps réel</li>
+            <li><strong>Requiert des compétences développeur expert</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S8 -->
+    <div id="s8" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 03 · SECTION 08</div>
+          <div class="module-title">Rapports &amp; Analyse de Données</div>
+          <div class="module-meta">
+            <span class="module-chip">📊 Rapport journalier</span>
+            <span class="module-chip">📅 Rapport mensuel</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le contenu et la structure des rapports Back Office</li>
+            <li>Savoir extraire et analyser les données stratégiques</li>
+            <li>Prendre des décisions correctives basées sur les données</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Rapport Journalier (17h30)</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Contenu du rapport journalier automatique</div>
+          <ul>
+            <li>Volume total : cas distribués / traités / non-traités avec %</li>
+            <li>Performance par agent : appels passés, taux de conformité, satisfaction moyenne</li>
+            <li>Lacunes détectées par l'IA : liste nominative des appels non-conformes</li>
+            <li>Taux de conformité global de la journée</li>
+            <li>Notes de satisfaction marchands (moyenne + distribution 1-5)</li>
+            <li>Nombre et types de corrections demandées</li>
+            <li>Fiches terrain : chargées / rejetées / anomalies détectées</li>
+            <li>Comptes KYC : demandes reçues / validées / rejetées / en attente</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Rapport Mensuel (Contenu Additionnel)</div>
+        <div class="info-box orange">
+          <div class="info-box-title">En plus des données journalières agrégées</div>
+          <ul>
+            <li>Motifs d'absence et retard : analyse détaillée par agent</li>
+            <li>Totaux globaux par type de motif (maladie, transport, etc.)</li>
+            <li>Taux d'assiduité global Call Center (%)</li>
+            <li>Tendances de performance : évolution hebdomadaire</li>
+            <li>Comparatif agents / équipes / villes</li>
+            <li>Évolution satisfaction marchand sur le mois</li>
+            <li>Taux de validation KYC : délais respectés / dépassés</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📥 Procédure d'Extraction de Données</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Accéder à la section Rapports</div><div class="step-desc">Menu Connectel → Rapports → Sélectionner le type de rapport souhaité.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Définir la période</div><div class="step-desc">Sélectionner : jour spécifique, semaine, mois ou plage de dates personnalisée.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Appliquer les filtres</div><div class="step-desc">Filtrer par ville, agent, type d'appel, statut de conformité selon le besoin.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Exporter les données</div><div class="step-desc">CSV pour analyse Excel approfondie. PDF pour présentation direction ou réunions.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Archiver</div><div class="step-desc">Enregistrer dans le dossier partagé de l'équipe selon la convention de nommage établie.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤔 Questions d'Analyse pour Chaque Rapport</div>
+        <div class="info-box teal">
+          <div class="info-box-title">Checklist d'analyse quotidienne</div>
+          <ul>
+            <li>Les objectifs de volume ont-ils été atteints ? Si non, pourquoi ?</li>
+            <li>Y a-t-il des agents avec un taux de conformité &lt; 80% ? Quelle action ?</li>
+            <li>Le délai de validation KYC de 24h a-t-il été respecté ?</li>
+            <li>Les corrections demandées révèlent-elles un problème systémique ?</li>
+            <li>Y a-t-il des zones incomplètes à relancer ?</li>
+            <li>La satisfaction marchands est-elle au-dessus de 4/5 ?</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box teal">
+        <div class="info-box-title">✅ Fin du Module 3 — Back Office</div>
+        <ul>
+          <li>Vous avez couvert les 8 sections du module Back Office</li>
+          <li>Pratiquez les procédures de validation KYC et de chargement de fichier</li>
+          <li>Passez au <strong>Module 4</strong> pour les exercices pratiques d'évaluation</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+<script>
+const sections=['s1','s2','s3','s4','s5','s6','s7','s8'];
+let visited=new Set(['s1']);
+function showSection(id,btn){
+  sections.forEach(s=>document.getElementById(s).classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  visited.add(id);
+  const pct=Math.round((visited.size/sections.length)*100);
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressPct').textContent='Section '+visited.size+' / '+sections.length;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

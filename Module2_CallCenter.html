@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 2 — Call Center | Formation Connectel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#8D0C23;--blue-light:#B5112C;--blue-pale:#F9E8EC;--orange:#CF9E41;--orange-light:#DDB55A;--orange-pale:#FAF3E0;--teal:#584B26;--teal-pale:#F3EDD8;--red:#6A091A;--red-pale:#F2D6DC;--grey:#455A64;--grey-light:#ECEFF1;--bg:#FCFBF8;--white:#FFFFFF;--shadow:0 4px 24px rgba(141,12,35,0.12);--radius:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:#1a2332;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:280px;min-height:100vh;background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo .badge{display:inline-block;background:var(--orange-light);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.sidebar-logo h1{color:white;font-size:17px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px;}
+.nav-section{padding:12px 10px 4px;}
+.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;padding:0 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,.18);color:white;font-weight:700;}
+.nav-item .icon{font-size:14px;min-width:18px;}
+.nav-progress{padding:14px 20px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.12);}
+.nav-progress p{color:rgba(255,255,255,.5);font-size:11px;margin-bottom:6px;}
+.progress-bar-wrap{background:rgba(255,255,255,.15);border-radius:10px;height:5px;}
+.progress-bar-fill{height:100%;border-radius:10px;background:var(--orange-light);transition:width .4s;}
+.progress-pct{color:white;font-size:11px;font-weight:700;margin-top:5px;}
+.candidate-field{padding:10px 16px;border-top:1px solid rgba(255,255,255,.15);}
+.candidate-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.candidate-field input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;color:white;font-size:12px;font-family:inherit;outline:none;}
+.candidate-field input::placeholder{color:rgba(255,255,255,.35);}
+.main{margin-left:280px;flex:1;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:17px;font-weight:700;color:var(--blue);}
+.topbar-subtitle{font-size:11px;color:var(--grey);margin-top:2px;}
+.topbar-badge{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.content{padding:28px 32px;max-width:980px;}
+.page{display:none;}.page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.module-header{border-radius:var(--radius);overflow:hidden;margin-bottom:28px;}
+.module-header-bg{padding:32px 36px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);}
+.module-num{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.module-title{font-size:26px;font-weight:800;color:white;line-height:1.2;margin-bottom:6px;}
+.module-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.module-chip{background:rgba(255,255,255,.18);color:white;font-size:12px;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+.module-objectives{background:rgba(255,255,255,.10);padding:18px 36px 22px;border-top:1px solid rgba(255,255,255,.1);}
+.module-objectives p{color:rgba(255,255,255,.6);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;}
+.obj-list{list-style:none;}
+.obj-list li{color:white;font-size:13px;padding:4px 0;display:flex;align-items:flex-start;gap:10px;}
+.obj-list li::before{content:"→";color:rgba(255,255,255,.5);font-weight:700;flex-shrink:0;}
+.card{background:white;border-radius:var(--radius);padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.card-title{font-size:15px;font-weight:700;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--blue-pale);}
+.info-box{border-radius:10px;padding:16px 18px;margin-bottom:14px;border-left:4px solid;}
+.info-box.blue{background:var(--blue-pale);border-color:var(--blue);}
+.info-box.orange{background:var(--orange-pale);border-color:var(--orange);}
+.info-box.teal{background:var(--teal-pale);border-color:var(--teal);}
+.info-box.red{background:var(--red-pale);border-color:var(--red);}
+.info-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.info-box.blue .info-box-title{color:var(--blue);}
+.info-box.orange .info-box-title{color:var(--orange);}
+.info-box.teal .info-box-title{color:var(--teal);}
+.info-box.red .info-box-title{color:var(--red);}
+.info-box ul{list-style:none;}
+.info-box ul li{font-size:13px;padding:3px 0;color:#2d3748;display:flex;gap:8px;align-items:flex-start;}
+.info-box ul li::before{content:"•";font-weight:700;flex-shrink:0;}
+.info-box.blue ul li::before{color:var(--blue);}
+.info-box.orange ul li::before{color:var(--orange);}
+.info-box.teal ul li::before{color:var(--teal);}
+.info-box.red ul li::before{color:var(--red);}
+.script-box{background:#1a2332;border-radius:10px;padding:22px 24px;margin-bottom:16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.8;color:#e2e8f0;position:relative;}
+.script-box::before{content:'🎙️ SCRIPT';position:absolute;top:-11px;left:16px;background:var(--blue);color:white;font-size:10px;font-weight:700;padding:2px 10px;border-radius:20px;font-family:'Sora',sans-serif;letter-spacing:.08em;}
+.script-step-label{color:var(--orange-light);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.script-arrow{color:var(--orange-light);font-weight:700;}
+.tbl-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--blue);color:white;}
+thead th{padding:10px 13px;text-align:left;font-weight:600;font-size:12px;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody td{padding:9px 13px;border-bottom:1px solid #e2e8f0;vertical-align:top;line-height:1.5;}
+.tbl-orange thead tr{background:var(--orange);}
+.tbl-teal thead tr{background:var(--teal);}
+.step-item{display:flex;gap:16px;margin-bottom:16px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.step-content{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.step-desc{font-size:13px;color:#4a5568;line-height:1.6;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.mini-card{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px;}
+.mini-card .mc-icon{font-size:22px;margin-bottom:8px;}
+.mini-card .mc-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.mini-card .mc-desc{font-size:12px;color:var(--grey);line-height:1.5;}
+.highlight-box{background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:12px;padding:20px 24px;margin-bottom:16px;color:white;}
+.highlight-box h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+.highlight-box p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;}
+.objection-card{border-radius:12px;margin-bottom:16px;overflow:hidden;border:1px solid #e2e8f0;}
+.objection-header{background:var(--red-pale);padding:12px 18px;border-bottom:1px solid #e2e8f0;}
+.objection-title{font-size:13px;font-weight:700;color:var(--red);}
+.objection-body{padding:16px 18px;background:white;}
+.objection-response{background:var(--teal-pale);border-radius:8px;padding:14px 16px;border-left:3px solid var(--teal);}
+.objection-response p{font-size:13px;color:#2d3748;line-height:1.6;font-style:italic;}
+.level-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:12px;}
+.level-1{background:#e8f4fd;color:#1565C0;}
+.level-2{background:var(--orange-pale);color:var(--orange);}
+.level-3{background:var(--red-pale);color:var(--red);}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">Call Center</span>
+    <h1>Formation Connectel</h1>
+    <p>Module 2 — Call Center</p>
+  </div>
+  <div class="candidate-field">
+    <label>Nom du candidat</label>
+    <input type="text" id="candidateName" placeholder="Votre nom complet...">
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Sections</div>
+    <button class="nav-item active" onclick="showSection('s1',this)"><span class="icon">🎯</span>Rôle &amp; Missions</button>
+    <button class="nav-item" onclick="showSection('s2',this)"><span class="icon">📅</span>Planning Quotidien</button>
+    <button class="nav-item" onclick="showSection('s3',this)"><span class="icon">📞</span>Script Pré-Visite</button>
+    <button class="nav-item" onclick="showSection('s4',this)"><span class="icon">💬</span>Gestion des Objections</button>
+    <button class="nav-item" onclick="showSection('s5',this)"><span class="icon">✅</span>Script Post-Visite</button>
+    <button class="nav-item" onclick="showSection('s6',this)"><span class="icon">✏️</span>Corrections</button>
+    <button class="nav-item" onclick="showSection('s7',this)"><span class="icon">🤖</span>IA Connectel</button>
+    <button class="nav-item" onclick="showSection('s8',this)"><span class="icon">📊</span>Rapports &amp; Consolidation</button>
+  </nav>
+  <div class="nav-progress">
+    <p>Progression du module</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:12%"></div></div>
+    <div class="progress-pct" id="progressPct">Section 1 / 8</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Module 2 — Call Center</div>
+      <div class="topbar-subtitle">Agents Call Center · Projet ID30</div>
+    </div>
+    <span class="topbar-badge">M2 · Call Center</span>
+  </div>
+  <div class="content">
+
+    <!-- SECTION 1 -->
+    <div id="s1" class="page active">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 02 · SECTION 01</div>
+          <div class="module-title">Rôle &amp; Missions du Call Center</div>
+          <div class="module-meta">
+            <span class="module-chip">🎯 Positionnement</span>
+            <span class="module-chip">📞 2 Types d'appels</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le positionnement du Call Center dans la chaîne opérationnelle</li>
+            <li>Identifier les 2 missions principales et leurs objectifs</li>
+            <li>Connaître les KPIs de performance attendus</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>🎯 La Mission du Call Center</h3>
+        <p>Le Call Center est l'interface humaine entre le <strong>Back Office</strong> (qui gère les données) et les <strong>marchands</strong> (qui reçoivent les visites). Votre rôle est d'assurer la qualité de chaque interaction avant ET après les visites terrain.</p>
+      </div>
+
+      <img src="Flowchart_Connectel_CallCenter (1).png" style="width:100%;border-radius:var(--radius);margin-bottom:18px;box-shadow:var(--shadow);" alt="Flowchart Connectel Call Center">
+
+      <div class="card">
+        <div class="card-title">📞 Les 2 Types d'Appels</div>
+        <div class="grid-2">
+          <div class="info-box blue" style="margin-bottom:0">
+            <div class="info-box-title">📞 Appel Pré-Visite</div>
+            <ul>
+              <li>Confirmer le RDV avec le marchand</li>
+              <li>Vérifier l'adresse et le secteur d'activité</li>
+              <li>S'assurer de la disponibilité</li>
+              <li>Signaler les changements depuis l'enrôlement</li>
+              <li><strong>Timing</strong> : jour J avant la visite</li>
+            </ul>
+          </div>
+          <div class="info-box orange" style="margin-bottom:0">
+            <div class="info-box-title">✅ Appel Post-Visite</div>
+            <ul>
+              <li>Mesurer la satisfaction du marchand</li>
+              <li>Collecter le feedback sur l'agent terrain</li>
+              <li>Identifier les problèmes éventuels</li>
+              <li>Enregistrer les corrections demandées</li>
+              <li><strong>Timing</strong> : 2 à 4 heures après la visite</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 KPIs de Performance</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicateur</th><th>Description</th><th>Seuil acceptable</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Taux de joignabilité</strong></td><td>% de marchands contactés avec succès</td><td>&gt; 70%</td></tr>
+              <tr><td><strong>Taux de conformité script</strong></td><td>% d'appels validés "Conforme" par l'IA</td><td>&gt; 80%</td></tr>
+              <tr><td><strong>Taux de satisfaction</strong></td><td>Note moyenne post-visite (sur 5)</td><td>&gt; 4/5</td></tr>
+              <tr><td><strong>Volume traité / jour</strong></td><td>Nombre de cas traités dans la journée</td><td>~100 cas/agent</td></tr>
+              <tr><td><strong>Taux de correction</strong></td><td>% de cas avec correction demandée</td><td>Référence : &lt; 10%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⏰ Organisation de la Journée</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Heure</th><th>Action</th><th>Responsable</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Avant 9h00</strong></td><td>Connexion obligatoire à Connectel</td><td>Agent Call Center</td></tr>
+              <tr><td><strong>9h00</strong></td><td>Distribution automatique des cas par le système</td><td>Système Connectel</td></tr>
+              <tr><td><strong>9h00 – 17h00</strong></td><td>Traitement des appels pré et post-visite</td><td>Agent Call Center</td></tr>
+              <tr><td><strong>17h30</strong></td><td>Clôture automatique et génération des rapports</td><td>Système Connectel + IA</td></tr>
+              <tr><td><strong>Après 17h30</strong></td><td>Revue superviseur des cas non-conformes</td><td>Superviseur</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div id="s2" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 02 · SECTION 02</div>
+          <div class="module-title">Gestion du Planning Quotidien</div>
+          <div class="module-meta">
+            <span class="module-chip">📅 Distribution à 9h</span>
+            <span class="module-chip">👥 Gestion agents</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le système de distribution automatique des cas</li>
+            <li>Maîtriser la procédure de gestion des présences</li>
+            <li>Connaître les règles pour les retards et absences</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ Distribution Automatique à 9h00</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Chargement du fichier Excel (Back Office)</div><div class="step-desc">L'admin Back Office charge le fichier des entrepreneurs collectés par les agents terrain dans Connectel.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Distribution automatique à 9h00</div><div class="step-desc">Le système distribue automatiquement les cas aux agents connectés. Volume : environ <strong>100 cas par agent</strong> (varie selon le volume total et le nombre d'agents actifs).</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Génération de la liste de présence</div><div class="step-desc">Créée automatiquement à 9h00 avec : heure de connexion, volume assigné, statut (présent/absent/retard).</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Mise à jour à 17h30</div><div class="step-desc">La liste de présence est mise à jour avec le nombre de cas traités par chaque agent.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 Gestion Dynamique des Agents</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Situation</th><th>Procédure</th><th>Impact sur distribution</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Agent connecté avant 9h</strong></td><td>Marqué présent automatiquement. Reçoit ses cas à 9h00.</td><td>Inclus dans le calcul normal</td></tr>
+              <tr><td><strong>Agent connecté après 9h</strong></td><td>Reçoit ses cas à la connexion. Motif de retard enregistré obligatoirement.</td><td>Redistribution recalculée</td></tr>
+              <tr><td><strong>Ajout d'un agent</strong></td><td>Admin ajoute avant 9h → recalcul de la distribution. (Nouveau recrutement, retour de congé)</td><td>Réduction du volume par agent</td></tr>
+              <tr><td><strong>Suppression d'un agent</strong></td><td>Admin supprime + motif obligatoire saisi. Redistribution automatique aux autres agents.</td><td>Augmentation du volume par agent</td></tr>
+              <tr><td><strong>Absence imprévue</strong></td><td>Signalement immédiat → motif obligatoire → redistribution automatique.</td><td>Redistribution vers agents présents</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">⚠ Règle importante</div>
+          <ul><li>Tout retard ou absence <strong>doit avoir un motif documenté</strong> dans le système. Un champ vide n'est pas accepté.</li></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Contenu de la Liste de Présence</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Champ</th><th>Contenu</th><th>Mis à jour</th></tr></thead>
+            <tbody>
+              <tr><td>Nom agent</td><td>Identifiant complet de l'agent</td><td>À la connexion</td></tr>
+              <tr><td>Heure de connexion</td><td>Timestamp exact de la connexion</td><td>À la connexion</td></tr>
+              <tr><td>Statut</td><td>Présent / Absent / Retard</td><td>À 9h00 et à la connexion</td></tr>
+              <tr><td>Volume assigné</td><td>Nombre de cas distribués</td><td>À 9h00</td></tr>
+              <tr><td>Cases traitées</td><td>Nombre de cas effectivement traités</td><td>À 17h30</td></tr>
+              <tr><td>Motif (si retard/absence)</td><td>Justification obligatoire</td><td>Par l'admin</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div id="s3" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 02 · SECTION 03</div>
+          <div class="module-title">Script Appel Pré-Visite</div>
+          <div class="module-meta">
+            <span class="module-chip">📞 5 Étapes obligatoires</span>
+            <span class="module-chip">🤖 Vérifié par IA</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser les 5 étapes du script dans l'ordre exact</li>
+            <li>Savoir adapter le script selon les réponses du marchand</li>
+            <li>Comprendre les questions obligatoires de l'étape 4</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box orange">
+        <div class="info-box-title">🎯 Objectifs de l'Appel Pré-Visite</div>
+        <ul>
+          <li>Confirmer le RDV avec le marchand pour la visite de l'agent terrain</li>
+          <li>Vérifier et mettre à jour les informations de contact et d'adresse</li>
+          <li>Confirmer que le secteur d'activité est toujours correct</li>
+          <li>Informer le marchand de l'objet de la visite (gratuit, 15 minutes)</li>
+        </ul>
+      </div>
+
+      <div class="info-box red">
+        <div class="info-box-title">⚠ Important — Vérification IA</div>
+        <ul><li>L'IA Connectel vérifie que <strong>les 5 étapes ont été respectées</strong> dans l'ordre. Un script incomplet = "Script Conforme : NON". <strong>Chaque étape est obligatoire.</strong></li></ul>
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 1 — Salutation &amp; Identification</div>
+        <br>
+        "Bonjour, je m'appelle <span class="script-arrow">[Votre Prénom]</span> du projet <span class="script-arrow">ID30</span> de <span class="script-arrow">MAFA HOLDING</span>.<br>
+        Est-ce que je parle bien avec <span class="script-arrow">[Prénom/Nom du marchand]</span> ?"<br><br>
+        <span class="script-arrow">→ Si OUI :</span> Passer à l'étape 2<br>
+        <span class="script-arrow">→ Si NON :</span> "Pourriez-vous me passer [Nom du marchand] s'il vous plaît ?"<br>
+        <span class="script-arrow">→ Si indisponible :</span> "Je rappellerai. À quelle heure puis-je vous rappeler ?"
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 2 — Objet de l'Appel</div>
+        <br>
+        "Je vous appelle pour vous informer qu'un de nos agents passera vous rendre visite<br>
+        <span class="script-arrow">[demain / le (date)]</span> aux alentours de <span class="script-arrow">[heure prévue]</span><br>
+        afin de <strong>mettre à jour vos informations</strong> dans notre base de données du projet ID30."
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 3 — Confirmation de Disponibilité</div>
+        <br>
+        "Est-ce que vous serez disponible à ce moment-là ?"<br><br>
+        <span class="script-arrow">→ Si OUI :</span> Passer à l'étape 4<br>
+        <span class="script-arrow">→ Si NON :</span> "À quel moment seriez-vous disponible ? Nous allons essayer d'adapter le planning."<br>
+        <span class="script-arrow">→ Enregistrer</span> le nouveau créneau dans le système
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 4 — Vérification Adresse &amp; Activité (QUESTIONS OBLIGATOIRES)</div>
+        <br>
+        "Parfait ! Pour confirmer vos informations, pourriez-vous me confirmer<br>
+        votre <strong>adresse exacte</strong> et votre <strong>secteur d'activité</strong> ?"<br><br>
+        <span class="script-arrow">Questions complémentaires OBLIGATOIRES :</span><br>
+        "Votre business <strong>existe-t-il toujours</strong> ?"<br>
+        "Avez-vous connu des <strong>changements depuis votre enrôlement</strong> ?"<br><br>
+        <span class="script-arrow">Changements à documenter si signalés :</span><br>
+        — Déménagement (nouvelle adresse)<br>
+        — Sinistre (incendie, inondation)<br>
+        — Recrutement ou réduction du personnel<br>
+        — Changement de secteur d'activité
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 5 — Clôture</div>
+        <br>
+        "Très bien, notre agent passera <span class="script-arrow">[demain / le (date)]</span>.<br>
+        La visite prendra environ <strong>15 minutes</strong>.<br>
+        Merci pour votre disponibilité et <strong>bonne journée !</strong>"
+      </div>
+
+      <div class="info-box teal">
+        <div class="info-box-title">✅ Récapitulatif des 5 Étapes</div>
+        <ul>
+          <li><strong>Étape 1</strong> : Salutation + identification projet ID30</li>
+          <li><strong>Étape 2</strong> : Annonce de la visite (date + heure)</li>
+          <li><strong>Étape 3</strong> : Confirmation de disponibilité</li>
+          <li><strong>Étape 4</strong> : Vérification adresse + activité + questions changements</li>
+          <li><strong>Étape 5</strong> : Clôture avec durée de visite (15 min)</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div id="s4" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">MODULE 02 · SECTION 04</div>
+          <div class="module-title">Gestion des Objections</div>
+          <div class="module-meta">
+            <span class="module-chip">💬 4 Objections types</span>
+            <span class="module-chip">🎯 Réponses calibrées</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Anticiper et gérer les 4 objections les plus fréquentes</li>
+            <li>Utiliser les réponses calibrées avec confiance</li>
+            <li>Maintenir le professionnalisme en toute circonstance</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box blue">
+        <div class="info-box-title">🧠 Règles de Gestion des Objections</div>
+        <ul>
+          <li>Ne jamais interrompre le marchand</li>
+          <li>Valider l'émotion avant de répondre ("Je comprends...")</li>
+          <li>Rester calme et professionnel en toutes circonstances</li>
+          <li>Proposer une alternative concrète, ne pas insister</li>
+          <li>En cas d'échec : noter le motif et clore poliment</li>
+        </ul>
+      </div>
+
+      <div class="objection-card">
+        <div class="objection-header"><div class="objection-title">❌ Objection 1 : "Je n'ai pas le temps"</div></div>
+        <div class="objection-body">
+          <div class="objection-response">
+            <p>"Je comprends tout à fait, c'est une contrainte que je respecte. Notre visite est <strong>très rapide : seulement 15 minutes</strong>. Pouvons-nous proposer un autre créneau qui vous conviendrait mieux — peut-être en fin de matinée ou en début d'après-midi ?"</p>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="info-box teal" style="margin-bottom:0">
+              <div class="info-box-title">Si le marchand accepte un report</div>
+              <ul><li>Proposer 2 créneaux alternatifs (ne pas imposer)</li><li>Enregistrer le nouveau créneau dans le système immédiatement</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card">
+        <div class="objection-header"><div class="objection-title">❌ Objection 2 : "Vous allez me demander de l'argent ?"</div></div>
+        <div class="objection-body">
+          <div class="objection-response">
+            <p>"Non, <strong>absolument pas !</strong> C'est totalement <strong>gratuit</strong>. Notre visite s'inscrit dans le cadre du projet gouvernemental ID30 et il s'agit uniquement de collecter et mettre à jour vos informations dans notre base de données. <strong>Aucun frais n'est demandé</strong>, aujourd'hui ou après."</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card">
+        <div class="objection-header"><div class="objection-title">❌ Objection 3 : "Je ne veux pas recevoir de visite"</div></div>
+        <div class="objection-body">
+          <div class="objection-response">
+            <p>"Je comprends votre réticence et je la respecte. Puis-je vous expliquer brièvement l'objet de la visite ? Il s'agit d'un projet gouvernemental officiel visant à <strong>reconnaître et soutenir les entrepreneurs</strong> comme vous. La mise à jour de vos informations est entièrement <strong>gratuite</strong> et prend seulement <strong>15 minutes</strong>."</p>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="info-box red" style="margin-bottom:0">
+              <div class="info-box-title">Si le refus persiste</div>
+              <ul><li>Ne pas insister davantage</li><li>Noter "REFUS DE VISITE" dans le système avec la raison évoquée</li><li>Clore l'appel poliment</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="objection-card">
+        <div class="objection-header"><div class="objection-title">❌ Objection 4 : "J'ai déjà reçu une visite récemment"</div></div>
+        <div class="objection-body">
+          <div class="objection-response">
+            <p>"Merci de me le signaler. Pourriez-vous me préciser à quelle date approximativement cette visite a eu lieu ?" <br><em>(Si récente : )</em> "Dans ce cas, nous allons vérifier dans notre système. Si une visite a effectivement eu lieu récemment, nous annulerons la prochaine. Je vous recontacterai si nécessaire."</p>
+          </div>
+          <div style="margin-top:12px;">
+            <div class="info-box orange" style="margin-bottom:0">
+              <div class="info-box-title">Action à effectuer</div>
+              <ul><li>Signaler au superviseur pour vérification dans le système</li><li>Ne pas forcer une visite si la précédente date de moins de 30 jours</li></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div id="s5" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 02 · SECTION 05</div>
+          <div class="module-title">Script Appel Post-Visite</div>
+          <div class="module-meta">
+            <span class="module-chip">✅ 6 Étapes</span>
+            <span class="module-chip">⏰ 2-4h après visite</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser les 6 étapes du script post-visite</li>
+            <li>Savoir différencier le parcours "Nouveau" vs "Mise à jour"</li>
+            <li>Collecter les notes de satisfaction correctement</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box orange">
+        <div class="info-box-title">🎯 Objectifs de l'Appel Post-Visite</div>
+        <ul>
+          <li>Mesurer la satisfaction globale du marchand sur la visite</li>
+          <li>Collecter un feedback détaillé sur l'agent terrain</li>
+          <li>Identifier et documenter les corrections éventuelles</li>
+          <li>Confirmer que la collecte de données s'est bien déroulée</li>
+        </ul>
+      </div>
+
+      <div class="info-box blue">
+        <div class="info-box-title">⏰ Timing Obligatoire</div>
+        <ul><li>L'appel doit être passé <strong>2 à 4 heures après la visite</strong> (pas avant, pas après 6h)</li><li>Ce délai permet au marchand de recul pour évaluer la visite sereinement</li></ul>
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 1 — Salutation de Rappel</div>
+        <br>
+        "Bonjour, c'est <span class="script-arrow">[Votre Prénom]</span> du projet <span class="script-arrow">ID30</span>.<br>
+        Je vous rappelle suite au <strong>passage de notre agent aujourd'hui</strong> chez vous.<br>
+        Avez-vous quelques minutes pour répondre à quelques questions rapides ?"
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 2 — Satisfaction Globale</div>
+        <br>
+        "Globalement, <strong>est-ce que tout s'est bien passé</strong> ? Êtes-vous satisfait(e) de la visite ?"<br><br>
+        <span class="script-arrow">→ Si OUI :</span> Passer à l'étape 3<br>
+        <span class="script-arrow">→ Si NON :</span> "Je suis vraiment désolé(e) d'apprendre cela. Pouvez-vous me dire ce qui ne s'est pas bien passé ?" → Écouter, documenter, escalader si nécessaire
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 3 — Identification du Type de Visite</div>
+        <br>
+        <span class="script-arrow">BRANCHE A — Nouvel Entrepreneur (première inscription) :</span><br>
+        "Pour confirmer vos informations, pourriez-vous me préciser :<br>
+        votre <strong>secteur d'activité</strong>, votre <strong>adresse exacte</strong>,<br>
+        depuis <strong>combien de temps</strong> vous exercez cette activité,<br>
+        et <strong>combien d'employés</strong> vous avez ?"<br><br>
+        <span class="script-arrow">BRANCHE B — Entrepreneur existant (mise à jour) :</span><br>
+        "Y a-t-il des <strong>informations incorrectes</strong> dans ce que notre agent a collecté<br>
+        que nous devrions corriger ?"<br>
+        <span class="script-arrow">→ Si OUI :</span> Aller à la Section Corrections (Section 6)
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 4 — Feedback Détaillé sur l'Agent</div>
+        <br>
+        "J'ai quelques questions rapides sur la visite de notre agent :"<br><br>
+        "L'agent était-il <strong>ponctuel</strong> à l'heure convenue ?"<br>
+        "Comment évaluez-vous son <strong>professionnalisme</strong> sur une échelle de 1 à 5 ?"<br>
+        "Ses explications étaient-elles <strong>claires et compréhensibles</strong> ?"<br>
+        "La visite a-t-elle duré <strong>environ 15 minutes</strong> comme prévu ?"
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 5 — Collecte des Notes (Formulaire)</div>
+        <br>
+        Enregistrer dans le système :<br>
+        <span class="script-arrow">Ponctualité</span> : À l'heure / En retard / En avance<br>
+        <span class="script-arrow">Professionnalisme</span> : Note de 1 (mauvais) à 5 (excellent)<br>
+        <span class="script-arrow">Clarté des explications</span> : Oui / Non / Moyen<br>
+        <span class="script-arrow">Durée de visite</span> : Acceptable / Trop longue / Trop courte<br>
+        <span class="script-arrow">Satisfaction globale</span> : Note de 1 à 5
+      </div>
+
+      <div class="script-box">
+        <div class="script-step-label">Étape 6 — Clôture</div>
+        <br>
+        "Merci beaucoup pour votre temps et votre collaboration.<br>
+        Vos retours sont <strong>très précieux</strong> pour améliorer notre service.<br>
+        Passez une excellente journée !"
+      </div>
+    </div>
+
+    <!-- SECTION 6 -->
+    <div id="s6" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 02 · SECTION 06</div>
+          <div class="module-title">Gestion des Corrections</div>
+          <div class="module-meta">
+            <span class="module-chip">✏️ Procédure obligatoire</span>
+            <span class="module-chip">📋 Saisie système</span>
+            <span class="module-chip">⏱ 15 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser la procédure de traitement des corrections</li>
+            <li>Savoir documenter correctement chaque correction dans le système</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✏️ Procédure de Traitement des Corrections</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Écouter attentivement</div><div class="step-desc">Ne pas interrompre le marchand. Laisser le marchand expliquer l'erreur dans ses propres mots.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Répéter pour confirmer</div><div class="step-desc">"Donc vous souhaitez corriger <em>[information actuelle]</em> par <em>[nouvelle information]</em>, c'est bien cela ?"</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Saisir dans le système</div><div class="step-desc">Renseigner obligatoirement le champ <strong>"CORRECTION DEMANDÉE"</strong>. Ce champ doit être rempli pour que la correction soit traitée.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Documenter les informations</div><div class="step-desc">Renseigner : type de correction, information incorrecte (ancienne valeur), information correcte (nouvelle valeur).</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Rassurer le marchand</div><div class="step-desc">"Votre correction est bien enregistrée. Notre équipe va vérifier et vous recontacter si nécessaire."</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Champs à Renseigner dans le Système</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Champ</th><th>Valeur à saisir</th><th>Obligatoire</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Statut de correction</strong></td><td>"CORRECTION DEMANDÉE" (texte exact)</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Type de correction</strong></td><td>Adresse / Secteur d'activité / Nom / Téléphone / Autre</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Information incorrecte</strong></td><td>La valeur erronée actuellement dans le système</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Information correcte</strong></td><td>La nouvelle valeur confirmée par le marchand</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Observations</strong></td><td>Contexte additionnel si nécessaire</td><td>Non (recommandé)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">⚠ Attention</div>
+          <ul><li>Un cas sans le champ <strong>"CORRECTION DEMANDÉE"</strong> renseigné ne sera pas traité par le Back Office. Cette saisie est <strong>obligatoire</strong> et non-négociable.</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 7 -->
+    <div id="s7" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">MODULE 02 · SECTION 07</div>
+          <div class="module-title">IA Connectel — Contrôle Qualité</div>
+          <div class="module-meta">
+            <span class="module-chip">🤖 3 Niveaux</span>
+            <span class="module-chip">🎙️ Enregistrement auto</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre les 3 niveaux de vérification de l'IA</li>
+            <li>Savoir ce que l'IA analyse et comment elle le détecte</li>
+            <li>Anticiper les conséquences d'un "Script Conforme : NON"</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box red">
+        <div class="info-box-title">⚠ Rappel Fondamental</div>
+        <ul><li>L'IA Connectel enregistre et analyse <strong>100% des appels</strong> automatiquement. Il n'y a aucun moyen de désactiver cet enregistrement. <strong>Chaque mot que vous dites est analysé.</strong></li></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔍 Les 3 Niveaux de Vérification</div>
+
+        <div class="level-badge level-1">NIVEAU 1 — Manuel</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Rapport Agent (Manuel)</div>
+          <ul>
+            <li>L'agent remplit le formulaire <strong>pendant ou après l'appel</strong></li>
+            <li>Champs : statut appel, confirmation RDV, date/heure RDV, observations</li>
+            <li>Ce rapport est comparé automatiquement au rapport IA</li>
+          </ul>
+        </div>
+
+        <div class="level-badge level-2">NIVEAU 2 — Automatique</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Enregistrement Automatique (IA)</div>
+          <ul>
+            <li>Connectel enregistre <strong>automatiquement TOUS les appels</strong></li>
+            <li>Capture : horodatage complet, durée exacte, transcription intégrale</li>
+            <li>Aucune action requise de l'agent — tout est automatique</li>
+          </ul>
+        </div>
+
+        <div class="level-badge level-3">NIVEAU 3 — Analyse IA</div>
+        <div class="info-box red">
+          <div class="info-box-title">Vérification de Conformité (IA)</div>
+          <ul>
+            <li>L'IA analyse l'enregistrement et vérifie les <strong>5 étapes obligatoires</strong></li>
+            <li>Détecte les questions obligatoires manquantes</li>
+            <li>Affiche le résultat : <strong>"Script Conforme : OUI / NON"</strong></li>
+            <li>Si NON : identifie précisément l'étape ou la question manquante</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔎 Détection des Écarts Agent vs IA</div>
+        <div class="info-box red">
+          <div class="info-box-title">Comment l'IA détecte les incohérences</div>
+          <ul>
+            <li>L'IA compare ce que l'agent a <strong>déclaré dans son rapport</strong> vs ce qui a été <strong>réellement dit</strong> dans l'enregistrement</li>
+            <li>Exemple : Agent déclare "RDV confirmé" mais l'enregistrement montre que le marchand était absent → <strong>ÉCART DÉTECTÉ</strong></li>
+            <li>Tout écart est signalé au <strong>superviseur</strong> pour revue immédiate</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗣️ Analyse de Tonalité</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Élément analysé</th><th>Attendu</th><th>Signalé si...</th></tr></thead>
+            <tbody>
+              <tr><td>Ton général</td><td>Professionnel et neutre</td><td>Ton agressif, impatient ou désinvolte</td></tr>
+              <tr><td>Vouvoiement</td><td>Utilisation du "vous" systématique</td><td>Tutoiement non-autorisé</td></tr>
+              <tr><td>Langage</td><td>Vocabulaire professionnel</td><td>Termes inappropriés ou argotiques</td></tr>
+              <tr><td>Identification</td><td>Nom + projet ID30 mentionnés</td><td>Identification incomplète ou absente</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚠ Conséquences d'un "Script Conforme : NON"</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Fréquence de non-conformité</th><th>Action superviseur</th></tr></thead>
+            <tbody>
+              <tr><td>Cas isolé (1er incident)</td><td>Feedback individuel + coaching</td></tr>
+              <tr><td>Taux &gt; 20% sur 1 semaine</td><td>Entretien obligatoire + plan d'amélioration</td></tr>
+              <tr><td>Taux &gt; 40% sur 2 semaines</td><td>Formation de remise à niveau obligatoire</td></tr>
+              <tr><td>Écart délibéré entre rapport et enregistrement</td><td>Avertissement formel</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 8 -->
+    <div id="s8" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 02 · SECTION 08</div>
+          <div class="module-title">Rapports &amp; Consolidation</div>
+          <div class="module-meta">
+            <span class="module-chip">📊 Rapport journalier 17h30</span>
+            <span class="module-chip">📅 Rapport mensuel</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le contenu et la structure des rapports</li>
+            <li>Savoir lire et interpréter les indicateurs</li>
+            <li>Connaître la procédure de consolidation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Rapport Journalier (17h30)</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Généré automatiquement — Contenu</div>
+          <ul>
+            <li>Volume total d'appels : distribués / traités / non-traités</li>
+            <li>Performance par agent : appels passés, taux de conformité, satisfaction moyenne</li>
+            <li>Lacunes détectées par l'IA : liste des appels "Script Conforme : NON"</li>
+            <li>Taux de conformité global (%) de la journée</li>
+            <li>Notes de satisfaction marchands (moyenne + distribution par score)</li>
+            <li>Nombre et types de corrections demandées</li>
+            <li>Liste de présence finale avec volume traité par agent</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Rapport Mensuel (Contenu Additionnel)</div>
+        <div class="info-box orange">
+          <div class="info-box-title">En plus du rapport journalier</div>
+          <ul>
+            <li>Motifs d'absence et de retard : analyse détaillée par agent</li>
+            <li>Totaux globaux par type de motif (maladie, transport, autre...)</li>
+            <li>Taux d'assiduité global (%)</li>
+            <li>Tendances de performance : évolution semaine par semaine</li>
+            <li>Comparatif agents / équipes / villes</li>
+            <li>Évolution du taux de satisfaction marchand sur le mois</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Procédure de Consolidation Journalière</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Heure</th><th>Action automatique</th><th>Acteur</th></tr></thead>
+            <tbody>
+              <tr><td><strong>9h00</strong></td><td>Création liste de présence + assignation des volumes</td><td>Système</td></tr>
+              <tr><td><strong>17h30</strong></td><td>Clôture journée + rapport automatique généré</td><td>Système + IA</td></tr>
+              <tr><td><strong>Après 17h30</strong></td><td>Revue des cas "Script Conforme : NON"</td><td>Superviseur</td></tr>
+              <tr><td><strong>Soir</strong></td><td>Envoi du rapport aux managers</td><td>Système</td></tr>
+              <tr><td><strong>Dernier jour du mois</strong></td><td>Génération rapport mensuel consolidé</td><td>Système</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box teal">
+        <div class="info-box-title">✅ Fin du Module 2 — Call Center</div>
+        <ul>
+          <li>Vous avez couvert les 8 sections du module Call Center</li>
+          <li>Pratiquez les scripts à voix haute jusqu'à les maîtriser parfaitement</li>
+          <li>Passez au <strong>Module 4</strong> pour l'évaluation pratique (30 questions)</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+<script>
+const sections=['s1','s2','s3','s4','s5','s6','s7','s8'];
+let visited=new Set(['s1']);
+function showSection(id,btn){
+  sections.forEach(s=>document.getElementById(s).classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  visited.add(id);
+  const pct=Math.round((visited.size/sections.length)*100);
+  document.getElementById('progressBar').style.width=pct+'%';
+  document.getElementById('progressPct').textContent='Section '+visited.size+' / '+sections.length;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

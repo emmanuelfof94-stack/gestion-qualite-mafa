@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schéma Procédure Connectel - Call Center</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #2E75B6;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 18px;
+        }
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .step {
+            background: white;
+            border: 3px solid #2E75B6;
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        .step-number {
+            position: absolute;
+            top: -15px;
+            left: 30px;
+            background: #2E75B6;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .step-title {
+            color: #2E75B6;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-left: 50px;
+        }
+        .step-content {
+            color: #333;
+            line-height: 1.8;
+            font-size: 15px;
+        }
+        .step-details {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #FFC000;
+        }
+        .step-details ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        .step-details li {
+            margin: 8px 0;
+            color: #555;
+        }
+        .arrow {
+            text-align: center;
+            color: #2E75B6;
+            font-size: 40px;
+            margin: -10px 0;
+            font-weight: bold;
+        }
+        .highlight-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .highlight-box h3 {
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+        .highlight-box ul {
+            margin-left: 25px;
+        }
+        .highlight-box li {
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        .decision-box {
+            background: #FFF3CD;
+            border: 3px solid #FFC000;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .decision-title {
+            color: #856404;
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .ia-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .ia-box h4 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        .parallel-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .parallel-item {
+            background: #E8F4F8;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #2E75B6;
+        }
+        .parallel-item h5 {
+            color: #2E75B6;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .final-box {
+            background: #28a745;
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 30px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+        .script-box {
+            background: #E8F4F8;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 15px 0;
+            border-left: 5px solid #2E75B6;
+        }
+        .script-item {
+            margin: 12px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+        }
+        .script-label {
+            font-weight: bold;
+            color: #2E75B6;
+            margin-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        th, td {
+            border: 2px solid #2E75B6;
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background: #2E75B6;
+            color: white;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 PROCÉDURE CONNECTEL - CALL CENTER</h1>
+        <p class="subtitle">Workflow complet avec appels pré-visite et post-visite</p>
+        
+        <div class="flowchart">
+            
+            <!-- ÉTAPE 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">📊 CHARGEMENT DES DONNÉES</div>
+                <div class="step-content">
+                    <p><strong>Action :</strong> L'administrateur charge le fichier Excel contenant les informations des entrepreneurs collectées par les agents terrain.</p>
+                    <div class="step-details">
+                        <strong>📝 Formulaires pré-intégrés dans l'application :</strong>
+                        <ul>
+                            <li><strong>Formulaire pré-visite :</strong> Confirmation RDV, vérification infos, nature activité</li>
+                            <li><strong>Formulaire post-visite :</strong> Satisfaction, feedback, problèmes, modifications business</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ÉTAPE 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">⏰ DISPATCHING AUTOMATIQUE 9H00</div>
+                <div class="step-content">
+                    <p><strong>Action :</strong> Chaque matin à <strong>9h00 précises</strong>, le système lance automatiquement le dispatching des fiches.</p>
+                    
+                    <div style="background: #FFF3CD; padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 5px solid #FFC000;">
+                        <h4 style="color: #856404; margin-bottom: 15px;">👤 GESTION DYNAMIQUE DES AGENTS PAR L'ADMIN</h4>
+                        <p><strong>L'administrateur peut modifier la liste des agents actifs AVANT le dispatching de 9h :</strong></p>
+                        
+                        <div style="margin-top: 15px;">
+                            <p style="font-weight: bold; color: #2E75B6; margin-bottom: 10px;">➕ AJOUTER UN AGENT :</p>
+                            <ul style="margin-left: 20px;">
+                                <li>Nouvel agent recruté</li>
+                                <li>Agent de retour (fin congé, fin arrêt maladie)</li>
+                                <li>Agent réaffecté au call center</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <p style="font-weight: bold; color: #C5504A; margin-bottom: 10px;">➖ RETIRER UN AGENT (avec motif obligatoire) :</p>
+                            <ul style="margin-left: 20px;">
+                                <li>🚫 <strong>Arrêt d'activité</strong> (démission, licenciement, fin contrat)</li>
+                                <li>🏖️ <strong>Congé</strong> (congé annuel, congé sans solde)</li>
+                                <li>📋 <strong>Permission</strong> (autorisation absence courte durée)</li>
+                                <li>🤒 <strong>Arrêt maladie prolongé</strong></li>
+                                <li>📚 <strong>Formation</strong></li>
+                                <li>🔄 <strong>Réaffectation</strong> (mutation vers autre poste/projet)</li>
+                                <li>⏸️ <strong>Suspension temporaire</strong></li>
+                                <li>📝 <strong>Autre</strong> (à préciser)</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <p style="font-weight: bold; margin-bottom: 10px;">📊 TRAÇABILITÉ DES MODIFICATIONS :</p>
+                            <p>Chaque ajout/retrait est enregistré avec :</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>Date et heure de la modification</li>
+                                <li>Nom de l'agent concerné</li>
+                                <li>Type d'action (Ajout / Retrait)</li>
+                                <li>Motif (obligatoire pour retrait)</li>
+                                <li>Admin ayant effectué la modification</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="decision-box">
+                        <div class="decision-title">⚙️ RÉPARTITION DYNAMIQUE :</div>
+                        <p><strong>Environ 100 fiches par agent</strong> - Le nombre exact dépend du volume total disponible ET du nombre d'agents actifs</p>
+                        <p style="margin-top: 10px;"><strong>Exemple :</strong></p>
+                        <ul style="margin-left: 20px;">
+                            <li>1700 fiches ÷ 17 agents actifs = 100 fiches/agent</li>
+                            <li>1700 fiches ÷ 15 agents actifs (2 retirés) = 113 fiches/agent</li>
+                            <li>1800 fiches ÷ 18 agents actifs (1 ajouté) = 100 fiches/agent</li>
+                        </ul>
+                    </div>
+                    <div class="step-details">
+                        <strong>✅ LISTE DE PRÉSENCE AUTOMATIQUE :</strong>
+                        <p><strong>Génération à 9h00 :</strong> Le système crée automatiquement la liste avec :</p>
+                        <ul>
+                            <li>Nom de l'agent</li>
+                            <li>Heure de connexion</li>
+                            <li>Volumétrie attribuée (fiches reçues)</li>
+                            <li>Statut (Présent / Absent + motif / Retiré + motif)</li>
+                        </ul>
+                        <p style="margin-top: 10px; background: #FFF3CD; padding: 10px; border-radius: 8px;"><strong>⚙️ Mise à jour automatique à 17h30 :</strong> La même liste est actualisée directement dans le système avec l'ajout de la colonne "Nombre total traité" pour chaque agent.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- CONNEXION AGENTS -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">👤 CONNEXION DES AGENTS</div>
+                <div class="step-content">
+                    <p><strong>Action :</strong> Les agents se connectent à leur compte Connectel.</p>
+                    
+                    <div class="decision-box">
+                        <div class="decision-title">🔀 DEUX SCÉNARIOS :</div>
+                        
+                        <div class="parallel-box">
+                            <div class="parallel-item">
+                                <h5>✅ CONNECTÉ AVANT 9H</h5>
+                                <p>→ Reçoit fiches automatiquement à 9h00</p>
+                                <p>→ Inclus dans la liste de présence</p>
+                                <p>→ Statut : <strong>PRÉSENT</strong></p>
+                            </div>
+                            
+                            <div class="parallel-item">
+                                <h5>⏰ CONNECTÉ APRÈS 9H</h5>
+                                <p>→ <strong>Reçoit fiches dès connexion</strong></p>
+                                <p>→ Répartition recalculée automatiquement</p>
+                                <p>→ Heure de connexion enregistrée</p>
+                                <p>→ <strong style="color: #C5504A;">Admin renseigne motif du retard</strong></p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step-details">
+                        <strong>📋 Gestion des absences par l'administrateur :</strong>
+                        <p style="margin-top: 10px;"><strong style="color: #C5504A;">⚠️ IMPORTANT : C'est l'administrateur qui renseigne les motifs d'absence/retard des agents dans le système.</strong></p>
+                        <p style="margin-top: 10px;"><strong>Motifs disponibles :</strong></p>
+                        <ul>
+                            <li>🤒 <strong>Maladie</strong></li>
+                            <li>🏖️ <strong>Congé</strong></li>
+                            <li>🚨 <strong>Urgence personnelle</strong></li>
+                            <li>⏰ <strong>Retard</strong></li>
+                            <li>☕ <strong>Pause</strong></li>
+                            <li>📝 <strong>Autre</strong> (à préciser)</li>
+                        </ul>
+                        <p style="margin-top: 10px;"><strong>Note :</strong> Ces motifs sont renseignés par l'admin en début de journée ET en cours de journée si nécessaire.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ÉTAPE 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">📞 PHONING PRÉ-VISITE</div>
+                <div class="step-content">
+                    <p><strong>Objectifs :</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✅ CONFIRMER le rendez-vous</li>
+                        <li>✅ VÉRIFIER les informations de base</li>
+                        <li>✅ CONFIRMER la nature de l'activité</li>
+                        <li>✅ EXPLIQUER l'objet de la visite</li>
+                        <li>✅ OPTIMISER le planning terrain</li>
+                    </ul>
+                    
+                    <div style="background: #E8F4F8; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #2E75B6;">
+                        <h4 style="color: #2E75B6; margin-bottom: 15px;">📊 LES 3 NIVEAUX DU PHONING</h4>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #FFC000;">
+                            <p style="font-weight: bold; color: #2E75B6; margin-bottom: 10px;">NIVEAU 1️⃣ - POINTAGE PAR L'AGENT</p>
+                            <p><strong>Action :</strong> L'agent remplit le formulaire pendant/après l'appel</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>Statut de l'appel (Joignable/Injoignable/Occupé/Refus)</li>
+                                <li>Confirmation RDV (Oui/Non)</li>
+                                <li>Date et heure RDV</li>
+                                <li>Observations</li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Ce que l'agent déclare avoir fait</em></p>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #70AD47;">
+                            <p style="font-weight: bold; color: #70AD47; margin-bottom: 10px;">NIVEAU 2️⃣ - ENREGISTREMENT AUTOMATIQUE</p>
+                            <p><strong>Action :</strong> L'IA Connectel enregistre automatiquement l'appel</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>📼 Enregistrement vocal complet de la conversation</li>
+                                <li>Stockage automatique dans le système</li>
+                                <li>Horodatage précis (début + fin)</li>
+                                <li>Durée de l'appel</li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Preuve objective de ce qui s'est réellement passé</em></p>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #C5504A;">
+                            <p style="font-weight: bold; color: #C5504A; margin-bottom: 10px;">NIVEAU 3️⃣ - VÉRIFICATION CONFORMITÉ</p>
+                            <p><strong>Action :</strong> L'IA Connectel analyse l'enregistrement et compare avec le script</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>✅ Analyse automatique de l'enregistrement</li>
+                                <li>✅ Vérification des 5 étapes du script</li>
+                                <li>✅ Détection des questions obligatoires</li>
+                                <li>✅ <strong style="color: #2E75B6;">Champ "Script conforme" : OUI / NON</strong></li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Validation automatique de la qualité de l'appel</em></p>
+                        </div>
+                        
+                        <div style="background: #FFF3CD; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <p style="font-weight: bold; color: #856404; margin-bottom: 10px;">🔍 COMPARAISON NIVEAU 1 vs NIVEAU 2 :</p>
+                            <p>L'IA compare automatiquement ce que l'agent a déclaré (Niveau 1) avec ce qui s'est réellement passé dans l'enregistrement (Niveau 2) pour détecter les écarts.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="script-box">
+                        <h4 style="color: #2E75B6; margin-bottom: 15px;">📝 SCRIPT PRÉ-VISITE :</h4>
+                        
+                        <div class="script-item">
+                            <div class="script-label">1. SALUTATION</div>
+                            <p>"Bonjour, je m'appelle [Nom] du projet ID30 de MAFA HOLDING. Est-ce que je parle bien avec [Nom marchand] ?"</p>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">2. OBJET</div>
+                            <p>"Je vous appelle pour confirmer le passage de notre agent demain vers [heure] pour mettre à jour vos informations."</p>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">3. CONFIRMATION</div>
+                            <p>"Est-ce que vous serez disponible à ce moment-là ?"</p>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">4. VÉRIFICATION ACTIVITÉ</div>
+                            <p>"Je vérifie : votre commerce est bien à [adresse], dans le secteur [activité] ?"</p>
+                            <p style="margin-top: 8px;"><strong>Questions complémentaires :</strong></p>
+                            <ul style="margin-left: 20px; margin-top: 5px;">
+                                <li><strong>"Votre business existe-t-il toujours ?"</strong></li>
+                                <li><strong>"Avez-vous connu des changements depuis l'enrôlement ?"</strong> (Déménagement, incendie, recrutement, changement d'activité)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">5. CLÔTURE</div>
+                            <p>"Très bien, notre agent passera demain. La visite prendra environ 15 minutes. Bonne journée !"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="decision-box">
+                        <div class="decision-title">💬 GESTION DES OBJECTIONS :</div>
+                        <p><strong>Objection :</strong> "Je n'ai pas le temps"</p>
+                        <p><strong>→</strong> "Je comprends, c'est très rapide : seulement 15 minutes. On peut proposer un autre créneau ?"</p>
+                        <p style="margin-top: 10px;"><strong>Objection :</strong> "Vous allez me demander de l'argent ?"</p>
+                        <p><strong>→</strong> "Non, absolument pas ! C'est totalement gratuit. Il s'agit uniquement de collecter vos informations."</p>
+                    </div>
+                    
+                    <div class="ia-box">
+                        <h4>🤖 CONTRÔLE IA CONNECTEL - CONFORMITÉ SCRIPT PRÉ-VISITE</h4>
+                        <p><strong>L'IA Connectel vérifie automatiquement :</strong></p>
+                        <ul style="margin-top: 10px;">
+                            <li>✅ Les 5 étapes du script ont été respectées</li>
+                            <li>✅ Les questions obligatoires ont été posées</li>
+                            <li>✅ Le ton est professionnel et courtois</li>
+                            <li>✅ Les objections ont été correctement gérées</li>
+                            <li>✅ La durée de l'appel est appropriée (2-4 minutes)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ÉTAPE 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-title">📞 PHONING POST-VISITE</div>
+                <div class="step-content">
+                    <p><strong>Délai optimal :</strong> 2 à 4 heures après la visite</p>
+                    <p><strong>Objectifs :</strong></p>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>✅ MESURER la satisfaction du marchand</li>
+                        <li>✅ COLLECTER des informations complémentaires</li>
+                        <li>✅ IDENTIFIER les problèmes survenus</li>
+                        <li>✅ CONFIRMER que toutes les données ont été collectées</li>
+                    </ul>
+                    
+                    <div style="background: #E8F4F8; padding: 20px; border-radius: 12px; margin: 20px 0; border-left: 5px solid #70AD47;">
+                        <h4 style="color: #70AD47; margin-bottom: 15px;">📊 LES 3 NIVEAUX DU PHONING</h4>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #FFC000;">
+                            <p style="font-weight: bold; color: #2E75B6; margin-bottom: 10px;">NIVEAU 1️⃣ - POINTAGE PAR L'AGENT</p>
+                            <p><strong>Action :</strong> L'agent remplit le formulaire pendant/après l'appel</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>Satisfaction entrepreneur (Note 1-5)</li>
+                                <li>Ponctualité agent terrain</li>
+                                <li>Professionnalisme (Note 1-5)</li>
+                                <li>Type visite (Nouvel/Mise à jour)</li>
+                                <li>Corrections demandées (Oui/Non)</li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Ce que l'agent déclare avoir collecté</em></p>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #70AD47;">
+                            <p style="font-weight: bold; color: #70AD47; margin-bottom: 10px;">NIVEAU 2️⃣ - ENREGISTREMENT AUTOMATIQUE</p>
+                            <p><strong>Action :</strong> L'IA Connectel enregistre automatiquement l'appel</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>📼 Enregistrement vocal complet de la conversation</li>
+                                <li>Stockage automatique dans le système</li>
+                                <li>Horodatage précis (début + fin)</li>
+                                <li>Durée de l'appel</li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Preuve objective de ce qui s'est réellement passé</em></p>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #C5504A;">
+                            <p style="font-weight: bold; color: #C5504A; margin-bottom: 10px;">NIVEAU 3️⃣ - VÉRIFICATION CONFORMITÉ</p>
+                            <p><strong>Action :</strong> L'IA Connectel analyse l'enregistrement et compare avec le script</p>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>✅ Analyse automatique de l'enregistrement</li>
+                                <li>✅ Vérification questions satisfaction posées</li>
+                                <li>✅ Validation type visite identifié</li>
+                                <li>✅ <strong style="color: #2E75B6;">Champ "Script conforme" : OUI / NON</strong></li>
+                            </ul>
+                            <p style="margin-top: 10px; color: #666;"><em>→ Validation automatique de la qualité de l'appel</em></p>
+                        </div>
+                        
+                        <div style="background: #FFF3CD; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                            <p style="font-weight: bold; color: #856404; margin-bottom: 10px;">🔍 COMPARAISON NIVEAU 1 vs NIVEAU 2 :</p>
+                            <p>L'IA compare automatiquement ce que l'agent a déclaré (Niveau 1) avec ce qui s'est réellement passé dans l'enregistrement (Niveau 2) pour détecter les écarts.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="script-box">
+                        <h4 style="color: #2E75B6; margin-bottom: 15px;">📝 SCRIPT POST-VISITE :</h4>
+                        
+                        <div class="script-item">
+                            <div class="script-label">1. SALUTATION</div>
+                            <p>"Bonjour, c'est [Nom] du projet ID30. Je vous rappelle suite au passage de notre agent aujourd'hui."</p>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">2. SATISFACTION</div>
+                            <p>"Est-ce que tout s'est bien passé ? Êtes-vous satisfait de la visite ?"</p>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">3. VÉRIFICATION DONNÉES COLLECTÉES</div>
+                            <p>"L'agent a bien pris toutes vos informations ?"</p>
+                            <p style="margin-top: 8px;"><strong>⚠️ ATTENTION - Deux cas de figure :</strong></p>
+                            
+                            <div style="background: #E8F4F8; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                <p style="color: #2E75B6; font-weight: bold; margin-bottom: 10px;">📌 CAS 1 : NOUVEL ENTREPRENEUR (première visite)</p>
+                                <p style="margin-bottom: 8px;">"Je vois que c'est votre premier enrôlement dans notre base. Permettez-moi de confirmer quelques informations :"</p>
+                                <ul style="margin-left: 20px;">
+                                    <li><strong>"Vous exercez bien dans le secteur [activité] ?"</strong></li>
+                                    <li><strong>"Votre commerce est situé à [adresse complète] ?"</strong></li>
+                                    <li><strong>"Depuis combien de temps exercez-vous cette activité ?"</strong></li>
+                                    <li><strong>"Avez-vous des employés ?"</strong> (Si oui, combien ?)</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="background: #FFF3CD; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                                <p style="color: #856404; font-weight: bold; margin-bottom: 10px;">📌 CAS 2 : ENTREPRENEUR EXISTANT (mise à jour)</p>
+                                <p style="margin-bottom: 8px;">"Parfait. Juste pour vérifier, il n'y a pas d'informations incorrectes que nous devrions corriger ?"</p>
+                                <p style="margin-top: 8px;"><strong>Si l'entrepreneur mentionne une erreur :</strong></p>
+                                <ul style="margin-left: 20px; margin-top: 5px;">
+                                    <li>"Quelle information est incorrecte exactement ?"</li>
+                                    <li>"Quelle est la bonne information ?"</li>
+                                    <li><strong style="color: #C5504A;">→ NOTER la correction dans le formulaire avec mention "CORRECTION DEMANDÉE"</strong></li>
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">4. QUESTIONS SATISFACTION DÉTAILLÉES</div>
+                            <ul style="margin-left: 20px; margin-top: 8px;">
+                                <li>"La durée de la visite était acceptable ?"</li>
+                                <li>"L'agent était-il ponctuel ?"</li>
+                                <li>"Les explications étaient-elles claires ?"</li>
+                                <li>"Avez-vous des remarques ou suggestions ?"</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">5. COLLECTE FEEDBACK</div>
+                            <table>
+                                <tr>
+                                    <th>Critère</th>
+                                    <th>Options</th>
+                                </tr>
+                                <tr>
+                                    <td>Ponctualité agent</td>
+                                    <td>À l'heure / Retard / En avance</td>
+                                </tr>
+                                <tr>
+                                    <td>Professionnalisme</td>
+                                    <td>Note de 1 à 5</td>
+                                </tr>
+                                <tr>
+                                    <td>Clarté explications</td>
+                                    <td>Oui / Non / Moyen</td>
+                                </tr>
+                                <tr>
+                                    <td>Durée visite</td>
+                                    <td>Acceptable / Trop longue / Trop courte</td>
+                                </tr>
+                                <tr>
+                                    <td>Satisfaction globale</td>
+                                    <td>Note de 1 à 5</td>
+                                </tr>
+                                <tr style="background: #FFF3CD;">
+                                    <td><strong>Type de visite</strong></td>
+                                    <td><strong>Nouvel entrepreneur / Mise à jour</strong></td>
+                                </tr>
+                                <tr style="background: #FFF3CD;">
+                                    <td><strong>Corrections demandées</strong></td>
+                                    <td><strong>Oui (préciser) / Non</strong></td>
+                                </tr>
+                            </table>
+                        </div>
+                        
+                        <div class="script-item">
+                            <div class="script-label">6. CLÔTURE</div>
+                            <p>"Merci beaucoup pour votre temps et votre collaboration. Bonne journée !"</p>
+                        </div>
+                    </div>
+                    
+                    <div class="ia-box">
+                        <h4>🤖 CONTRÔLE IA CONNECTEL - CONFORMITÉ SCRIPT POST-VISITE</h4>
+                        <p><strong>L'IA Connectel vérifie automatiquement :</strong></p>
+                        <ul style="margin-top: 10px;">
+                            <li>✅ Toutes les questions de satisfaction ont été posées</li>
+                            <li>✅ Les notes ont été correctement collectées</li>
+                            <li>✅ Le feedback est complet</li>
+                            <li>✅ <strong>Type de visite identifié</strong> (Nouvel entrepreneur / Mise à jour)</li>
+                            <li>✅ <strong>Pour nouveaux entrepreneurs : Confirmation activité effectuée</strong></li>
+                            <li>✅ <strong>Vérification demande de corrections</strong></li>
+                            <li>✅ <strong>Si corrections : Détails notés clairement</strong></li>
+                            <li>✅ L'appel a été fait dans le délai optimal (2-4h après visite)</li>
+                            <li>✅ Le ton reste professionnel et empathique</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ÉTAPE 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-title">📊 GÉNÉRATION DOUBLE RAPPORT</div>
+                <div class="step-content">
+                    <p><strong>Action :</strong> Suite à chaque appel (pré ou post-visite), le système génère DEUX rapports distincts.</p>
+                    
+                    <div class="parallel-box">
+                        <div class="parallel-item">
+                            <h5>📝 RAPPORT AGENT</h5>
+                            <p>Formulaire renseigné manuellement par l'agent pendant l'appel</p>
+                            <ul style="margin-top: 10px; font-size: 14px;">
+                                <li>Statut appel</li>
+                                <li>Confirmation RDV</li>
+                                <li>Réponses questions</li>
+                                <li>Observations</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="parallel-item">
+                            <h5>🤖 RAPPORT IA</h5>
+                            <p>Analyse automatique de l'enregistrement vocal par l'IA Connectel</p>
+                            <ul style="margin-top: 10px; font-size: 14px;">
+                                <li>Transcription complète</li>
+                                <li>Détection infos clés</li>
+                                <li>Conformité script</li>
+                                <li>Analyse tonalité</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ANALYSE IA -->
+            <div class="ia-box">
+                <h4>🤖 ANALYSE IA CONNECTEL - COMPARAISON DES RAPPORTS</h4>
+                <p style="margin-bottom: 15px;"><strong>L'intelligence artificielle Connectel effectue une comparaison automatique entre les deux rapports pour détecter les écarts.</strong></p>
+                
+                <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 10px;">
+                    <strong>🔍 Types d'écarts détectés :</strong>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>Écarts d'information :</strong> Agent note "RDV confirmé" mais entrepreneur dit "Peut-être"</li>
+                        <li><strong>Écarts de discours :</strong> Script non respecté, étapes manquantes</li>
+                        <li><strong>Écarts de conformité :</strong> Ton inapproprié, objections mal gérées</li>
+                        <li><strong>Écarts de données :</strong> Date/heure différente entre rapport agent et conversation réelle</li>
+                        <li><strong>Questions manquées :</strong> Questions obligatoires non posées (existence business, changements)</li>
+                        <li><strong>Nouveaux entrepreneurs :</strong> Confirmation activité non effectuée pour première visite</li>
+                        <li><strong>Corrections ignorées :</strong> Entrepreneur demande correction mais agent ne note pas</li>
+                    </ul>
+                </div>
+                
+                <p style="margin-top: 15px; font-style: italic;">💡 Ces écarts sont marqués pour révision superviseur et amélioration continue.</p>
+            </div>
+            
+            <div class="arrow">↓</div>
+            
+            <!-- ÉTAPE 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-title">📈 CONSOLIDATION FIN DE JOURNÉE (17H30)</div>
+                <div class="step-content">
+                    <p><strong>Action :</strong> Le système consolide automatiquement tous les rapports et génère les statistiques.</p>
+                    
+                    <div class="step-details">
+                        <strong>📊 RAPPORT JOURNALIER comprend :</strong>
+                        <table>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Éléments inclus</th>
+                            </tr>
+                            <tr>
+                                <td><strong>Volume global</strong></td>
+                                <td>Nombre total appels (pré + post-visite)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Performance par agent</strong></td>
+                                <td>
+                                    • Volumétrie départ (fiches reçues)<br>
+                                    • Nombre traité en fin de journée<br>
+                                    • Taux confirmation RDV<br>
+                                    • Durée moyenne appels<br>
+                                    • Heure connexion
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Écarts IA détectés</strong></td>
+                                <td>Liste des incohérences par agent</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Taux conformité</strong></td>
+                                <td>Respect scripts et procédures</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Satisfaction</strong></td>
+                                <td>Notes moyennes post-visite</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Liste de présence actualisée</strong></td>
+                                <td>
+                                    <strong>Liste unique créée à 9h et mise à jour à 17h30 :</strong><br>
+                                    • Nom agent<br>
+                                    • Heure connexion<br>
+                                    • Volumétrie attribuée (départ)<br>
+                                    • <strong style="color: #C5504A;">Nombre total traité (ajouté à 17h30)</strong><br>
+                                    • Statut (Présent/Absent/Retard)<br>
+                                    • <strong style="color: #C5504A;">Motif absence/retard (renseigné par admin)</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div class="decision-box">
+                        <div class="decision-title">📅 RAPPORT MENSUEL COMPLÉMENTAIRE :</div>
+                        <p><strong>En plus des éléments journaliers, le rapport mensuel inclut :</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li><strong>Nombre de motifs d'absence par agent</strong> (détail : Maladie x fois, Retard x fois, etc.)</li>
+                            <li><strong>Total global des absences par motif</strong> (Ex: 45 maladies, 23 retards...)</li>
+                            <li><strong>Taux d'assiduité par agent</strong></li>
+                            <li><strong>Tendances de performance</strong></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="decision-box">
+                        <div class="decision-title">📋 EXEMPLE DE LISTE DE PRÉSENCE :</div>
+                        
+                        <p style="margin-bottom: 10px;"><strong>À 9h00 (création initiale) :</strong></p>
+                        <table style="font-size: 13px;">
+                            <tr>
+                                <th>Agent</th>
+                                <th>Heure connexion</th>
+                                <th>Fiches attribuées</th>
+                                <th>Fiches traitées</th>
+                                <th>Statut</th>
+                                <th>Motif</th>
+                            </tr>
+                            <tr>
+                                <td>Koné Yves</td>
+                                <td>08:45</td>
+                                <td>100</td>
+                                <td style="color: #999;">-</td>
+                                <td>Présent</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Diallo Fatoumata</td>
+                                <td>08:52</td>
+                                <td>100</td>
+                                <td style="color: #999;">-</td>
+                                <td>Présent</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Bamba Jean</td>
+                                <td>-</td>
+                                <td>0</td>
+                                <td style="color: #999;">-</td>
+                                <td style="color: #C5504A;">Absent</td>
+                                <td style="color: #C5504A;">Maladie</td>
+                            </tr>
+                            <tr>
+                                <td>Touré Marie</td>
+                                <td>09:25</td>
+                                <td>100</td>
+                                <td style="color: #999;">-</td>
+                                <td style="color: #FFC000;">Retard</td>
+                                <td style="color: #FFC000;">Embouteillage</td>
+                            </tr>
+                            <tr style="background: #FCE4D6;">
+                                <td><strong>Coulibaly Ahmed</strong></td>
+                                <td><strong>-</strong></td>
+                                <td><strong>0</strong></td>
+                                <td style="color: #999;"><strong>-</strong></td>
+                                <td style="color: #C5504A;"><strong>RETIRÉ</strong></td>
+                                <td style="color: #C5504A;"><strong>Congé annuel (3 semaines)</strong></td>
+                            </tr>
+                        </table>
+                        
+                        <p style="margin: 15px 0 10px 0;"><strong>À 17h30 (mise à jour automatique) :</strong></p>
+                        <table style="font-size: 13px;">
+                            <tr>
+                                <th>Agent</th>
+                                <th>Heure connexion</th>
+                                <th>Fiches attribuées</th>
+                                <th>Fiches traitées</th>
+                                <th>Statut</th>
+                                <th>Motif</th>
+                            </tr>
+                            <tr>
+                                <td>Koné Yves</td>
+                                <td>08:45</td>
+                                <td>100</td>
+                                <td style="color: #70AD47; font-weight: bold;">98</td>
+                                <td>Présent</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Diallo Fatoumata</td>
+                                <td>08:52</td>
+                                <td>100</td>
+                                <td style="color: #70AD47; font-weight: bold;">105</td>
+                                <td>Présent</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Bamba Jean</td>
+                                <td>-</td>
+                                <td>0</td>
+                                <td style="color: #C5504A; font-weight: bold;">0</td>
+                                <td style="color: #C5504A;">Absent</td>
+                                <td style="color: #C5504A;">Maladie</td>
+                            </tr>
+                            <tr>
+                                <td>Touré Marie</td>
+                                <td>09:25</td>
+                                <td>100</td>
+                                <td style="color: #70AD47; font-weight: bold;">92</td>
+                                <td style="color: #FFC000;">Retard</td>
+                                <td style="color: #FFC000;">Embouteillage</td>
+                            </tr>
+                            <tr style="background: #FCE4D6;">
+                                <td><strong>Coulibaly Ahmed</strong></td>
+                                <td><strong>-</strong></td>
+                                <td><strong>0</strong></td>
+                                <td style="color: #C5504A; font-weight: bold;"><strong>0</strong></td>
+                                <td style="color: #C5504A;"><strong>RETIRÉ</strong></td>
+                                <td style="color: #C5504A;"><strong>Congé annuel (3 semaines)</strong></td>
+                            </tr>
+                        </table>
+                        
+                        <p style="margin-top: 10px; font-size: 13px;"><strong>💡 Notes importantes :</strong></p>
+                        <ul style="margin-top: 8px; font-size: 13px; margin-left: 20px;">
+                            <li>La colonne "Fiches traitées" est automatiquement remplie par le système à 17h30</li>
+                            <li><strong style="color: #C5504A;">Les motifs d'absence/retard sont renseignés par l'administrateur</strong></li>
+                            <li>Pour agents arrivés après 9h : Le motif du retard est ajouté sur la ligne de pointage</li>
+                            <li><strong style="color: #C5504A;">Pour agents retirés : Le motif du retrait est obligatoire et reste visible dans la liste</strong></li>
+                            <li>Les agents retirés n'apparaissent plus dans le dispatching mais restent dans l'historique</li>
+                        </ul>
+                    </div>
+                    
+                    <div style="background: #E8F4F8; padding: 15px; border-radius: 10px; margin-top: 15px; border-left: 4px solid #2E75B6;">
+                        <strong>👥 Destinataires des rapports :</strong>
+                        <ul style="margin-top: 10px;">
+                            <li>Superviseur Call Center</li>
+                            <li>Superviseur Général</li>
+                            <li>Core Team (synthèse hebdo/mensuelle)</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- RÉSULTAT FINAL -->
+            <div class="final-box">
+                ✅ CYCLE TERMINÉ - PRÊT POUR LE JOUR SUIVANT
+            </div>
+        </div>
+        
+        <!-- RÉCAPITULATIF -->
+        <div class="highlight-box">
+            <h3>🎯 POINTS CLÉS DU SYSTÈME</h3>
+            <ul>
+                <li><strong>Dispatching flexible :</strong> ~100 fiches/agent à 9h, agents en retard reçoivent fiches dès connexion</li>
+                <li><strong>Double mission :</strong> Appels PRÉ-VISITE (confirmation + vérification) et POST-VISITE (satisfaction + feedback)</li>
+                <li><strong>Scripts standardisés :</strong> Conformité vérifiée automatiquement par IA</li>
+                <li><strong>Questions essentielles :</strong> Existence business + Changements depuis enrôlement</li>
+                <li><strong>Double validation :</strong> Rapport agent + Rapport IA pour garantir qualité</li>
+                <li><strong>Détection d'écarts :</strong> L'IA identifie automatiquement les incohérences</li>
+                <li><strong>Liste de présence dynamique :</strong> Créée à 9h avec volumétrie attribuée, actualisée à 17h30 avec nombre total traité</li>
+                <li><strong>Suivi absences :</strong> Motifs enregistrés et consolidés (journalier + mensuel)</li>
+                <li><strong>Traçabilité totale :</strong> Enregistrements, rapports, et consolidation pour analyse</li>
+            </ul>
+        </div>
+        
+    </div>
+</body>
+</html>

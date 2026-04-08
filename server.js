@@ -1,11 +1,13 @@
-const express = require('express');
-const http    = require('http');
-const https   = require('https');
+const express  = require('express');
+const http     = require('http');
+const https    = require('https');
 const { Server } = require('socket.io');
-const fs   = require('fs');
-const path = require('path');
-const os   = require('os');
-const forge = require('node-forge');
+const fs       = require('fs');
+const path     = require('path');
+const os       = require('os');
+const forge    = require('node-forge');
+const session  = require('express-session');
+const bcrypt   = require('bcryptjs');
 
 const app = express();
 
@@ -13,6 +15,7 @@ const PORT      = 3443;
 const PORT_HTTP = 3000;
 const DATA_FILE   = path.join(__dirname, 'data', 'pointages.json');
 const AGENTS_FILE = path.join(__dirname, 'data', 'agents.json');
+const USERS_FILE  = path.join(__dirname, 'data', 'users.json');
 
 // ── Récupérer l'IP locale ──
 function getLocalIP() {
@@ -105,7 +108,31 @@ const PHOTOS_DIR = path.join(__dirname, 'public', 'photos');
 if (!fs.existsSync(PHOTOS_DIR)) fs.mkdirSync(PHOTOS_DIR, { recursive: true });
 
 // ── Middleware ──
-app.use(express.json({ limit: '10mb' }));  // photos base64 peuvent être volumineuses
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
+
+// ── Sessions sécurisées ──
+app.use(session({
+  secret: 'gestion-qualite-mafa-secret-2024',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: true,       // HTTPS uniquement
+    httpOnly: true,     // inaccessible via JS côté client
+    maxAge: 8 * 60 * 60 * 1000  // 8 heures (durée d'une journée de travail)
+  }
+}));
+
+// ── Middleware de protection des routes admin ──
+function requireAuth(req, res, next) {
+  if (req.session && req.session.user) return next();
+  res.redirect('/login');
+}
+function requireAdmin(req, res, next) {
+  if (req.session && req.session.user && req.session.user.role === 'admin') return next();
+  res.status(403).json({ erreur: 'Accès réservé à l\'administrateur.' });
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ──────────────────────────────────────────
@@ -255,18 +282,81 @@ app.post('/api/badger', (req, res) => {
   });
 });
 
-// ── Supprimer un pointage (admin) ──
-app.delete('/api/pointages/:id', (req, res) => {
+// ── Supprimer un pointage (admin uniquement) ──
+app.delete('/api/pointages/:id', requireAuth, requireAdmin, (req, res) => {
   const pointages = lireJSON(DATA_FILE).filter(p => p.id !== req.params.id);
   ecrireJSON(DATA_FILE, pointages);
   io.emit('stats-update');
   res.json({ ok: true });
 });
 
-// ── Pages ──
-app.get('/badge',  (_, res) => res.sendFile(path.join(__dirname, 'public', 'badge.html')));
-app.get('/admin',  (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+// ─────────────────────────────────────────
+// AUTHENTIFICATION
+// ─────────────────────────────────────────
+
+app.post('/api/login', (req, res) => {
+  const { login, password } = req.body;
+  const users = lireJSON(USERS_FILE);
+  const user  = users.find(u => u.login === login && u.actif);
+  if (!user || !bcrypt.compareSync(password, user.password))
+    return res.status(401).json({ erreur: 'Identifiant ou mot de passe incorrect.' });
+  req.session.user = { id: user.id, nom: user.nom, login: user.login, role: user.role };
+  res.json({ ok: true, role: user.role, nom: user.nom });
+});
+
+app.post('/api/logout', requireAuth, (req, res) => {
+  req.session.destroy(() => res.json({ ok: true }));
+});
+
+app.get('/api/me', requireAuth, (req, res) => {
+  res.json(req.session.user);
+});
+
+app.post('/api/changer-mdp', requireAuth, (req, res) => {
+  const { ancien, nouveau } = req.body;
+  if (!nouveau || nouveau.length < 6)
+    return res.status(400).json({ erreur: 'Minimum 6 caractères requis.' });
+  const users = lireJSON(USERS_FILE);
+  const idx   = users.findIndex(u => u.id === req.session.user.id);
+  if (idx < 0 || !bcrypt.compareSync(ancien, users[idx].password))
+    return res.status(401).json({ erreur: 'Ancien mot de passe incorrect.' });
+  users[idx].password = bcrypt.hashSync(nouveau, 10);
+  ecrireJSON(USERS_FILE, users);
+  res.json({ ok: true });
+});
+
+app.get('/api/users', requireAuth, requireAdmin, (req, res) => {
+  res.json(lireJSON(USERS_FILE).map(u => ({ ...u, password: undefined })));
+});
+
+app.post('/api/users', requireAuth, requireAdmin, (req, res) => {
+  const { nom, login, password, role } = req.body;
+  if (!login || !password || !nom)
+    return res.status(400).json({ erreur: 'Champs manquants.' });
+  const users = lireJSON(USERS_FILE);
+  if (users.find(u => u.login === login))
+    return res.status(400).json({ erreur: 'Ce login existe déjà.' });
+  users.push({ id: Date.now().toString(), nom, login,
+    password: bcrypt.hashSync(password, 10), role: role || 'superviseur', actif: true });
+  ecrireJSON(USERS_FILE, users);
+  res.json({ ok: true });
+});
+
+app.delete('/api/users/:id', requireAuth, requireAdmin, (req, res) => {
+  if (req.session.user.id === req.params.id)
+    return res.status(400).json({ erreur: 'Impossible de supprimer votre propre compte.' });
+  ecrireJSON(USERS_FILE, lireJSON(USERS_FILE).filter(u => u.id !== req.params.id));
+  res.json({ ok: true });
+});
+
+// ─────────────────────────────────────────
+// PAGES
+// ─────────────────────────────────────────
+app.get('/login',     (_, res) => res.sendFile(path.join(__dirname, 'public', 'login.html')));
+app.get('/badge',     (_, res) => res.sendFile(path.join(__dirname, 'public', 'badge.html')));
 app.get('/affichage', (_, res) => res.sendFile(path.join(__dirname, 'public', 'affichage.html')));
+app.get('/admin',     requireAuth, (_, res) => res.sendFile(path.join(__dirname, 'public', 'admin.html')));
+app.get('/', (req, res) => req.session && req.session.user ? res.redirect('/admin') : res.redirect('/login'));
 
 // ── WebSocket ──
 io.on('connection', (socket) => {

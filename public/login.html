@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Gestion Qualité</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Segoe UI',system-ui,sans-serif;
+    background:linear-gradient(160deg,#0d1f2d 0%,#1A5676 60%,#2c7da0 100%);
+    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    padding:20px;
+  }
+
+  .login-wrapper { width:100%; max-width:420px; }
+
+  /* ── En-tête ── */
+  .login-header { text-align:center; margin-bottom:32px; color:white; }
+  .login-logo {
+    width:72px; height:72px; background:rgba(255,255,255,0.12);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-size:2rem; margin:0 auto 16px;
+    border:2px solid rgba(255,255,255,0.2);
+  }
+  .login-header h1 { font-size:1.4rem; font-weight:700; letter-spacing:1px; }
+  .login-header p  { font-size:0.82rem; opacity:0.55; margin-top:4px; }
+
+  /* ── Carte connexion ── */
+  .login-card {
+    background:white; border-radius:20px; padding:36px 32px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.3);
+  }
+  .login-card h2 { font-size:1.1rem; color:#1A5676; font-weight:700; margin-bottom:24px; }
+
+  .form-group { margin-bottom:18px; }
+  .form-group label {
+    display:block; font-size:0.76rem; font-weight:700; color:#666;
+    text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
+  }
+  .input-wrap { position:relative; }
+  .input-wrap .input-icon {
+    position:absolute; left:12px; top:50%; transform:translateY(-50%);
+    font-size:1rem; opacity:0.4; pointer-events:none;
+  }
+  .input-wrap input {
+    width:100%; padding:12px 12px 12px 38px;
+    border:1.5px solid #dde6ef; border-radius:10px;
+    font-size:0.95rem; color:#2c3e50; transition:border 0.2s;
+    background:#fafbfc;
+  }
+  .input-wrap input:focus { outline:none; border-color:#1A5676; background:white; }
+  .input-wrap .toggle-pw {
+    position:absolute; right:12px; top:50%; transform:translateY(-50%);
+    cursor:pointer; font-size:1rem; opacity:0.4; user-select:none;
+    transition:opacity 0.2s;
+  }
+  .input-wrap .toggle-pw:hover { opacity:0.8; }
+
+  /* ── Erreur ── */
+  .error-box {
+    display:none; background:#fde8e8; color:#c0392b;
+    border:1px solid #f5c6c6; border-radius:8px;
+    padding:10px 14px; font-size:0.84rem; margin-bottom:16px;
+    align-items:center; gap:8px;
+  }
+  .error-box.show { display:flex; animation:shake 0.3s ease; }
+  @keyframes shake {
+    0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)}
+  }
+
+  /* ── Bouton ── */
+  .btn-login {
+    width:100%; padding:14px; border:none; border-radius:10px;
+    background:linear-gradient(135deg,#1A5676,#2c7da0);
+    color:white; font-size:1rem; font-weight:700; cursor:pointer;
+    transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
+    margin-top:8px;
+  }
+  .btn-login:hover { opacity:0.9; transform:translateY(-1px); box-shadow:0 4px 12px rgba(26,86,118,0.4); }
+  .btn-login:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+  .btn-login .spinner {
+    width:18px; height:18px; border:2px solid rgba(255,255,255,0.4);
+    border-top-color:white; border-radius:50%; animation:spin 0.7s linear infinite; display:none;
+  }
+  @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* ── Infos rôles ── */
+  .roles-info {
+    margin-top:24px; padding-top:20px; border-top:1px solid #f0f0f0;
+    display:flex; gap:10px;
+  }
+  .role-badge {
+    flex:1; padding:10px; border-radius:8px; text-align:center;
+    font-size:0.76rem;
+  }
+  .role-badge.admin { background:#eaf4fb; color:#1A5676; }
+  .role-badge.superviseur { background:#fff3e0; color:#e67e22; }
+  .role-badge .role-icon { font-size:1.2rem; display:block; margin-bottom:4px; }
+  .role-badge .role-nom  { font-weight:700; display:block; }
+  .role-badge .role-desc { opacity:0.7; margin-top:2px; }
+
+  /* ── Footer ── */
+  .login-footer { text-align:center; margin-top:20px; color:rgba(255,255,255,0.4); font-size:0.75rem; }
+</style>
+</head>
+<body>
+
+<div class="login-wrapper">
+  <div class="login-header">
+    <div class="login-logo">🏢</div>
+    <h1>GESTION QUALITÉ</h1>
+    <p>Tableau de bord administrateur</p>
+  </div>
+
+  <div class="login-card">
+    <h2>Connexion</h2>
+
+    <div class="error-box" id="error-box">
+      <span>⚠️</span>
+      <span id="error-msg">Identifiant ou mot de passe incorrect.</span>
+    </div>
+
+    <form id="login-form" onsubmit="seConnecter(event)">
+      <div class="form-group">
+        <label>Identifiant</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="login" placeholder="Votre identifiant" autocomplete="username" required />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required />
+          <span class="toggle-pw" onclick="togglePw()" id="toggle-pw">👁️</span>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-login" id="btn-login">
+        <div class="spinner" id="spinner"></div>
+        <span id="btn-text">Se connecter</span>
+      </button>
+    </form>
+
+    <div class="roles-info">
+      <div class="role-badge admin">
+        <span class="role-icon">🛡️</span>
+        <span class="role-nom">Admin</span>
+        <span class="role-desc">Accès complet</span>
+      </div>
+      <div class="role-badge superviseur">
+        <span class="role-icon">👁️</span>
+        <span class="role-nom">Superviseur</span>
+        <span class="role-desc">Lecture seule</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="login-footer">Service Gestion Qualité &mdash; Accès sécurisé HTTPS</div>
+</div>
+
+<script>
+function togglePw() {
+  const input = document.getElementById('password');
+  const icon  = document.getElementById('toggle-pw');
+  if (input.type === 'password') { input.type = 'text';     icon.textContent = '🙈'; }
+  else                           { input.type = 'password'; icon.textContent = '👁️'; }
+}
+
+async function seConnecter(e) {
+  e.preventDefault();
+  const login    = document.getElementById('login').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('btn-login');
+  const spinner  = document.getElementById('spinner');
+  const btnText  = document.getElementById('btn-text');
+  const errBox   = document.getElementById('error-box');
+
+  // Démarrer le chargement
+  btn.disabled = true;
+  spinner.style.display = 'block';
+  btnText.textContent = 'Connexion...';
+  errBox.classList.remove('show');
+
+  try {
+    const resp = await fetch('/api/login', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ login, password })
+    });
+    const data = await resp.json();
+
+    if (data.ok) {
+      btnText.textContent = '✓ Connecté !';
+      setTimeout(() => window.location.href = '/admin', 400);
+    } else {
+      afficherErreur(data.erreur || 'Identifiant ou mot de passe incorrect.');
+    }
+  } catch(e) {
+    afficherErreur('Erreur de connexion au serveur.');
+  } finally {
+    if (!document.getElementById('btn-text').textContent.includes('Connecté')) {
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      btnText.textContent = 'Se connecter';
+    }
+  }
+}
+
+function afficherErreur(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('error-box').classList.add('show');
+  document.getElementById('btn-login').disabled = false;
+  document.getElementById('spinner').style.display = 'none';
+  document.getElementById('btn-text').textContent = 'Se connecter';
+  document.getElementById('password').value = '';
+  document.getElementById('password').focus();
+}
+</script>
+</body>
+</html>

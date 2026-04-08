@@ -1,6 +1,7 @@
 node_modules/
 data/cert.json
 data/pointages.json
+data/users.json
 public/photos/
 exports/
 qrcodes/

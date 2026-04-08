@@ -217,6 +217,20 @@
   <div class="header-right">
     <div class="live-dot"><div class="dot"></div>Temps réel</div>
     <div class="header-heure" id="heure-header"></div>
+    <div style="display:flex;align-items:center;gap:10px;border-left:1px solid rgba(255,255,255,0.2);padding-left:16px;">
+      <div style="text-align:right;">
+        <div style="font-size:0.82rem;font-weight:700;" id="header-user-nom">—</div>
+        <div style="font-size:0.7rem;opacity:0.6;" id="header-user-role">—</div>
+      </div>
+      <button onclick="seDeconnecter()" title="Se déconnecter"
+        style="background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:white;
+               padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.8rem;font-weight:600;
+               display:flex;align-items:center;gap:5px;transition:background 0.2s;"
+        onmouseover="this.style.background='rgba(255,255,255,0.22)'"
+        onmouseout="this.style.background='rgba(255,255,255,0.12)'">
+        🚪 Quitter
+      </button>
+    </div>
   </div>
 </header>
 
@@ -226,6 +240,7 @@
   <button onclick="showTab('tab-historique')">Historique</button>
   <button onclick="showTab('tab-agents')">Agents</button>
   <button onclick="showTab('tab-rapports')">Rapports & Export</button>
+  <button onclick="showTab('tab-acces')" id="nav-acces" style="display:none;">Accès & Comptes</button>
 </nav>
 
 <main>
@@ -438,6 +453,61 @@
 
 </main>
 
+<!-- ══════════════════════════════════ -->
+<!-- TAB 6 — ACCÈS & COMPTES          -->
+<!-- ══════════════════════════════════ -->
+<div class="tab-content" id="tab-acces">
+
+  <!-- Changer mon mot de passe -->
+  <div class="card" style="max-width:480px;">
+    <div class="card-header"><h2>Changer mon mot de passe</h2></div>
+    <div style="display:flex;flex-direction:column;gap:12px;">
+      <div class="form-group"><label>Ancien mot de passe</label>
+        <input type="password" id="mdp-ancien" class="form-control" style="width:100%;padding:9px 12px;border:1.5px solid #dde6ef;border-radius:8px;font-size:0.88rem;" placeholder="••••••••" />
+      </div>
+      <div class="form-group"><label>Nouveau mot de passe</label>
+        <input type="password" id="mdp-nouveau" style="width:100%;padding:9px 12px;border:1.5px solid #dde6ef;border-radius:8px;font-size:0.88rem;" placeholder="Minimum 6 caractères" />
+      </div>
+      <div class="form-group"><label>Confirmer</label>
+        <input type="password" id="mdp-confirm" style="width:100%;padding:9px 12px;border:1.5px solid #dde6ef;border-radius:8px;font-size:0.88rem;" placeholder="Répétez le nouveau mot de passe" />
+      </div>
+      <div id="mdp-msg" style="font-size:0.84rem;display:none;padding:8px 12px;border-radius:8px;"></div>
+      <button class="btn btn-primary" onclick="changerMdp()">🔒 Changer le mot de passe</button>
+    </div>
+  </div>
+
+  <!-- Gestion des comptes (admin seulement) -->
+  <div class="card" id="card-users">
+    <div class="card-header">
+      <h2>Comptes d'accès (<span id="nb-users">0</span>)</h2>
+    </div>
+
+    <!-- Formulaire ajout -->
+    <div style="background:#f8fbfd;border-radius:10px;padding:16px;margin-bottom:16px;border:1px solid #e8f0f8;">
+      <div style="font-size:0.8rem;font-weight:700;color:#1A5676;margin-bottom:12px;text-transform:uppercase;letter-spacing:0.5px;">Ajouter un compte</div>
+      <div class="form-grid" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr));">
+        <div class="form-group"><label>Nom</label><input id="u-nom" placeholder="Prénom Nom" style="padding:8px 10px;border:1.5px solid #dde6ef;border-radius:8px;width:100%;font-size:0.86rem;" /></div>
+        <div class="form-group"><label>Login</label><input id="u-login" placeholder="superviseur2" style="padding:8px 10px;border:1.5px solid #dde6ef;border-radius:8px;width:100%;font-size:0.86rem;" /></div>
+        <div class="form-group"><label>Mot de passe</label><input type="password" id="u-password" placeholder="••••••••" style="padding:8px 10px;border:1.5px solid #dde6ef;border-radius:8px;width:100%;font-size:0.86rem;" /></div>
+        <div class="form-group"><label>Rôle</label>
+          <select id="u-role" style="padding:8px 10px;border:1.5px solid #dde6ef;border-radius:8px;width:100%;font-size:0.86rem;">
+            <option value="superviseur">Superviseur (lecture)</option>
+            <option value="admin">Admin (accès complet)</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="ajouterUser()">+ Ajouter le compte</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Nom</th><th>Login</th><th>Rôle</th><th>Action</th></tr></thead>
+        <tbody id="tbody-users"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <!-- Notifications temps réel -->
 <div id="notif-container"></div>
 
@@ -466,17 +536,7 @@ setInterval(majHeure, 1000); majHeure();
 const today = new Date().toLocaleDateString('fr-FR');
 document.querySelectorAll('#date-today,#date-presence').forEach(el => el.textContent = today);
 
-// ── Tabs ──
-function showTab(id) {
-  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  event.currentTarget.classList.add('active');
-  if (id === 'tab-presence') { chargerPresences(); chargerTodayTable(); }
-  if (id === 'tab-historique') chargerHistorique();
-  if (id === 'tab-agents') chargerAgents();
-  if (id === 'tab-rapports') chargerRecap();
-}
+// ── Tabs (version de base — remplacée par initSession) ──
 
 // ── Stats + Flux ──
 async function chargerStats() {
@@ -844,9 +904,110 @@ socket.on('nouveau-pointage', (p) => {
 socket.on('stats-update', () => { chargerStats(); });
 socket.on('agents-mis-a-jour', () => { if(document.getElementById('tab-agents').classList.contains('active')) chargerAgents(); });
 
+// ── Déconnexion ──
+async function seDeconnecter() {
+  await fetch('/api/logout', { method:'POST' });
+  window.location.href = '/login';
+}
+
+// ── Changer mot de passe ──
+async function changerMdp() {
+  const ancien  = document.getElementById('mdp-ancien').value;
+  const nouveau = document.getElementById('mdp-nouveau').value;
+  const confirm = document.getElementById('mdp-confirm').value;
+  const msg     = document.getElementById('mdp-msg');
+
+  if (nouveau !== confirm) {
+    msg.style.cssText = 'display:block;background:#fde8e8;color:#c0392b;padding:8px 12px;border-radius:8px;font-size:0.84rem;';
+    msg.textContent = '⚠️ Les mots de passe ne correspondent pas.'; return;
+  }
+  const resp = await fetch('/api/changer-mdp', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ ancien, nouveau })
+  });
+  const data = await resp.json();
+  if (data.ok) {
+    msg.style.cssText = 'display:block;background:#d5f5e3;color:#1e8449;padding:8px 12px;border-radius:8px;font-size:0.84rem;';
+    msg.textContent = '✓ Mot de passe modifié avec succès.';
+    ['mdp-ancien','mdp-nouveau','mdp-confirm'].forEach(id => document.getElementById(id).value='');
+  } else {
+    msg.style.cssText = 'display:block;background:#fde8e8;color:#c0392b;padding:8px 12px;border-radius:8px;font-size:0.84rem;';
+    msg.textContent = '⚠️ ' + data.erreur;
+  }
+}
+
+// ── Gestion des comptes ──
+async function chargerUsers() {
+  const users = await fetch('/api/users').then(r=>r.json()).catch(()=>[]);
+  document.getElementById('nb-users').textContent = users.length;
+  const tbody = document.getElementById('tbody-users');
+  tbody.innerHTML = '';
+  users.forEach(u => {
+    const isAdmin = u.role === 'admin';
+    tbody.innerHTML += `<tr>
+      <td><strong>${u.nom}</strong></td>
+      <td><code style="background:#f0f4f8;padding:2px 8px;border-radius:4px;font-size:0.84rem;">${u.login}</code></td>
+      <td>${isAdmin
+        ? '<span class="badge" style="background:#eaf4fb;color:#1A5676;">🛡️ Admin</span>'
+        : '<span class="badge" style="background:#fff3e0;color:#e67e22;">👁️ Superviseur</span>'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="supprimerUser('${u.id}','${u.nom}')">🗑️ Supprimer</button></td>
+    </tr>`;
+  });
+}
+
+async function ajouterUser() {
+  const body = {
+    nom:      document.getElementById('u-nom').value.trim(),
+    login:    document.getElementById('u-login').value.trim(),
+    password: document.getElementById('u-password').value,
+    role:     document.getElementById('u-role').value
+  };
+  if (!body.nom || !body.login || !body.password) { alert('Tous les champs sont requis.'); return; }
+  const resp = await fetch('/api/users', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+  const data = await resp.json();
+  if (data.ok) {
+    ['u-nom','u-login','u-password'].forEach(id => document.getElementById(id).value='');
+    chargerUsers();
+  } else alert(data.erreur);
+}
+
+async function supprimerUser(id, nom) {
+  if (!confirm(`Supprimer le compte de "${nom}" ?`)) return;
+  const resp = await fetch(`/api/users/${id}`, { method:'DELETE' });
+  const data = await resp.json();
+  if (data.ok) chargerUsers(); else alert(data.erreur);
+}
+
 // ── Init ──
+async function initSession() {
+  const me = await fetch('/api/me').then(r=>r.ok?r.json():null).catch(()=>null);
+  if (!me) { window.location.href = '/login'; return; }
+  document.getElementById('header-user-nom').textContent  = me.nom;
+  document.getElementById('header-user-role').textContent = me.role === 'admin' ? '🛡️ Administrateur' : '👁️ Superviseur';
+  // Afficher onglet admin uniquement pour les admins
+  if (me.role === 'admin') document.getElementById('nav-acces').style.display = 'block';
+  // Masquer les boutons de suppression pour les superviseurs
+  if (me.role !== 'admin') {
+    document.querySelectorAll('.btn-danger').forEach(b => b.style.display='none');
+  }
+  window._userRole = me.role;
+}
+
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'tab-presence')   { chargerPresences(); chargerTodayTable(); }
+  if (id === 'tab-historique') chargerHistorique();
+  if (id === 'tab-agents')     chargerAgents();
+  if (id === 'tab-rapports')   chargerRecap();
+  if (id === 'tab-acces')      chargerUsers();
+}
+
 chargerStats();
 chargerFlux();
+initSession();
 setInterval(() => { chargerStats(); chargerFlux(); }, 30000);
 </script>
 </body>

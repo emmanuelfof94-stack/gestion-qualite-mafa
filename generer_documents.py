@@ -65,7 +65,7 @@ def generer_reglement_word():
 
     sous_titre = doc.add_paragraph()
     sous_titre.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    r = sous_titre.add_run("Service Gestion Qualité")
+    r = sous_titre.add_run("COLIBRI TECHNOLOGIES — Service Gestion Qualité")
     r.font.size = Pt(13)
     r.font.italic = True
     r.font.color.rgb = RGBColor(0x55, 0x55, 0x55)
@@ -88,90 +88,165 @@ def generer_reglement_word():
 
     doc.add_paragraph()
 
-    # ── Règles ──
-    regles = [
-        {
-            "num": "Art. 1",
-            "titre": "Utilisation du téléphone personnel",
-            "contenu": [
-                "L'utilisation du téléphone personnel est strictement interdite durant les heures de travail.",
-                "Les appareils doivent être mis en mode silencieux et rangés dès la prise de poste.",
-                "En cas d'urgence personnelle, l'agent doit en informer son supérieur et s'isoler dans un espace dédié.",
-                "Tout manquement répété pourra entraîner une sanction disciplinaire."
-            ]
-        },
-        {
-            "num": "Art. 2",
-            "titre": "Système de pointage — Badge QR Code",
-            "contenu": [
-                "Chaque agent est tenu de badger à l'arrivée (matin) et au départ (soir) via le QR code personnel remis lors de son intégration.",
-                "Le badgeage s'effectue sur la borne installée à l'entrée du service.",
-                "Tout oubli de badgeage doit être signalé immédiatement au responsable.",
-                "Les données de pointage servent de base au suivi des présences et à l'établissement des rapports mensuels."
-            ]
-        },
-        {
-            "num": "Art. 3",
-            "titre": "Code vestimentaire",
-            "contenu": [
-                "Une tenue correcte, propre et professionnelle est exigée en toutes circonstances.",
-                "Les vêtements déchirés, trop courts, transparents ou à slogans sont interdits.",
-                "Le port des équipements de protection individuelle (EPI) est obligatoire dans les zones concernées.",
-                "Toute tenue jugée non conforme pourra entraîner un refus d'accès au poste de travail."
-            ]
-        },
-        {
-            "num": "Art. 4",
-            "titre": "Respect du silence dans le bâtiment",
-            "contenu": [
-                "Le bâtiment est un espace partagé avec d'autres services et occupants.",
-                "Il est formellement interdit de crier, de parler fort dans les couloirs, salles de réunion et espaces communs.",
-                "Les réunions bruyantes doivent se tenir dans les salles prévues à cet effet, portes fermées.",
-                "Musique, vidéos ou sonneries audibles depuis les postes de travail sont interdits."
-            ]
-        },
-        {
-            "num": "Art. 5",
-            "titre": "Hygiène et propreté des lieux",
-            "contenu": [
-                "Chaque agent est responsable de la propreté de son espace de travail.",
-                "Les déchets doivent être déposés dans les poubelles prévues à cet effet.",
-                "La cuisine et les espaces communs doivent être laissés propres après utilisation.",
-                "Il est interdit de consommer de la nourriture aux postes de travail.",
-                "Tout dégât ou désordre constaté doit être signalé sans délai au responsable."
-            ]
-        },
-        {
-            "num": "Art. 6",
-            "titre": "Sanctions",
-            "contenu": [
-                "Tout manquement aux dispositions du présent règlement est susceptible de donner lieu à une sanction disciplinaire.",
-                "Les sanctions applicables vont de l'avertissement verbal à la mise à pied, selon la gravité et la répétition des faits.",
-                "La procédure disciplinaire respectera les droits de la défense de l'agent concerné."
-            ]
-        }
-    ]
+    BLEU   = RGBColor(0x1A, 0x56, 0x76)
+    ROUGE  = RGBColor(0xC0, 0x39, 0x2B)
+    VERT   = RGBColor(0x1E, 0x84, 0x49)
+    VIOLET = RGBColor(0x7D, 0x3C, 0x98)
 
-    BLEU = RGBColor(0x1A, 0x56, 0x76)
+    def ajouter_chapitre(titre, couleur=BLEU):
+        p = doc.add_paragraph()
+        run = p.add_run(titre.upper())
+        run.font.bold = True
+        run.font.size = Pt(12)
+        run.font.color.rgb = couleur
+        p.paragraph_format.space_before = Pt(14)
+        p.paragraph_format.space_after  = Pt(4)
 
-    for regle in regles:
-        # Titre article
+    def ajouter_article(num, titre, contenu_liste, couleur=BLEU, intro=None):
         h = doc.add_heading("", level=2)
         h.clear()
-        r_num = h.add_run(f"{regle['num']} — ")
-        r_num.font.color.rgb = BLEU
-        r_num.font.size = Pt(13)
+        r_num = h.add_run(f"{num} — ")
+        r_num.font.color.rgb = couleur
+        r_num.font.size = Pt(12)
         r_num.font.bold = True
-        r_titre = h.add_run(regle["titre"])
-        r_titre.font.color.rgb = BLEU
-        r_titre.font.size = Pt(13)
+        r_titre = h.add_run(titre)
+        r_titre.font.color.rgb = couleur
+        r_titre.font.size = Pt(12)
         r_titre.font.bold = True
-
-        for ligne in regle["contenu"]:
+        if intro:
+            p = doc.add_paragraph()
+            p.add_run(intro).font.size = Pt(11)
+        for ligne in contenu_liste:
             p = doc.add_paragraph(style="List Bullet")
             p.add_run(ligne).font.size = Pt(11)
-
         doc.add_paragraph()
+
+    # ─── Chapitre I ───
+    ajouter_chapitre("Chapitre I — Organisation Technique du Travail")
+
+    ajouter_article("Art. 1", "Duree du Travail", [
+        "Duree legale : 8 heures par jour, soit 40 heures par semaine (Loi N°2015-532 du 20/07/2015).",
+        "Personnel administratif : Lundi au Vendredi — 09h00-12h30 et 14h30-17h30.",
+        "Travailleurs sur terrain : Lundi au Vendredi — 08h00-12h00 et 13h30-16h30.",
+        "Toute heure supplementaire doit faire l'objet d'une autorisation prealable du responsable.",
+    ])
+
+    ajouter_article("Art. 2", "Absences, Retards et Permissions Exceptionnelles", [
+        "Toute absence doit etre prealablement autorisee par le Superieur hierarchique.",
+        "Le travailleur empeche de se presenter doit immediatement prevenir son Superieur en precisant le motif.",
+        "Les retards ou absences injustifies feront l'objet de sanctions.",
+        "Absence > 72h sans notification = abandon de poste pouvant entrainer la rupture du contrat.",
+        "Mariage du travailleur : 4 jours ouvrables.",
+        "Mariage d'un enfant, frere ou soeur : 2 jours ouvrables.",
+        "Deces du conjoint / enfant / pere / mere : 5 jours ouvrables.",
+        "Deces d'un frere ou d'une soeur : 2 jours ouvrables.",
+        "Deces d'un beau-pere ou belle-mere : 2 jours ouvrables.",
+        "Naissance d'un enfant : 2 jours ouvrables.",
+        "Bapteme d'un enfant : 1 jour ouvrable.",
+        "Demenagement : 1 jour ouvrable.",
+        "Toute permission doit etre autorisee par ecrit au plus tard 7 jours ouvrables avant.",
+        "Les pieces justificatives doivent etre presentees dans les 3 jours suivant l'evenement.",
+    ])
+
+    ajouter_article("Art. 3", "Absences pour Maladies", [
+        "En cas de maladie, prevenir l'employeur dans un delai de 72 heures, sauf force majeure.",
+        "Le travailleur est tenu d'accepter la contre-visite du medecin d'entreprise.",
+        "Tout refus de contre-visite peut entrainer le licenciement.",
+    ])
+
+    ajouter_article("Art. 4", "Accidents de Travail", [
+        "Tout accident, meme leger, doit etre declare dans les 24 heures au Superieur hierarchique.",
+        "L'information doit etre transmise aux RH et au Service Hygiene et Securite.",
+        "Cette obligation s'applique egalement lors des deplacements professionnels.",
+    ])
+
+    ajouter_article("Art. 5", "Conges Annuels", [
+        "Le droit aux conges est acquis apres 1 annee de service effectif.",
+        "Le calendrier est etabli en accord avec le Superieur, selon les imperatifs de l'entreprise.",
+        "La demande de conge doit etre soumise au moins 2 semaines avant la date de depart prevue.",
+        "Chaque salarie est informe de ses dates de conge au moins 15 jours a l'avance.",
+        "Le rappel en conge ne peut intervenir que pour les necessites de service.",
+    ])
+
+    # ─── Chapitre II ───
+    ajouter_chapitre("Chapitre II — Discipline Generale dans la Societe")
+
+    ajouter_article("Art. 6", "Obligations du Personnel", [
+        "Entretenir des rapports de respect et de courtoisie avec superieurs, collegues et tiers.",
+        "Exercer ses fonctions avec conscience, honnetete et devouement.",
+        "Observer une discretion absolue dans l'execution de sa tache.",
+        "Se presenter au poste de travail correctement et proprement vetu.",
+    ])
+
+    ajouter_article("Art. 7", "Interdictions", [
+        "Exercer une activite concurrente ou nuisant a la bonne execution des services.",
+        "Divulguer les renseignements detenus sur la societe.",
+        "Entrer dans les locaux en etat d'ivresse ou sous substances illicites.",
+        "Dormir pendant les heures de travail.",
+        "S'adonner a toute occupation personnelle pendant les heures de travail.",
+        "Introduire des marchandises pour les vendre ou les entreposer.",
+        "Accepter des pots-de-vin ou accorder des avantages indus.",
+        "Emporter sans autorisation des documents ou materiels de COLIBRI TECHNOLOGIES.",
+        "Permettre l'acces aux equipements informatiques a des personnes etrangeres.",
+        "Causer du desordre ou tenir des propos contraires aux bonnes moeurs.",
+        "Faire pression sur un subordonne pour un travail contraire a l'objet social.",
+        "Permettre l'utilisation de vehicules de l'entreprise a des personnes etrangeres.",
+        "Emprunter un vehicule sans autorisation prealable ecrite.",
+        "Adopter tout comportement raciste, xenophobe, sexiste ou discriminant.",
+    ], couleur=ROUGE, intro="Il est formellement interdit a l'ensemble du personnel de COLIBRI TECHNOLOGIES :")
+
+    ajouter_article("Art. 8", "Procedure Disciplinaire", [
+        "Prealablement a toute sanction, le travailleur dispose de 72 heures pour s'expliquer.",
+        "L'explication peut etre fournie par ecrit ou verbalement (article 17.5 du Code du travail).",
+    ])
+
+    ajouter_article("Art. 9", "Sanctions Disciplinaires", [
+        "Niveau 1 — Avertissement ecrit.",
+        "Niveau 2 — Mise a pied temporaire sans salaire (1 a 3 jours).",
+        "Niveau 3 — Mise a pied temporaire sans salaire (4 a 8 jours).",
+        "Niveau 4 — Licenciement.",
+    ], couleur=ROUGE)
+
+    ajouter_article("Art. 10", "Licenciement pour Faute Lourde", [
+        "Incitation du personnel a la desobeissance.",
+        "Etat d'ivresse ou influence de substances illicites.",
+        "Infraction aux regles de securite ou violences physiques.",
+        "Soustraction, meme temporaire, de documents.",
+        "Deterioration volontaire d'un materiel.",
+        "Insultes, menaces, voies de fait envers le personnel.",
+        "Absence non motivee, repetee ou prolongee.",
+        "Abandon de poste.",
+        "Insubordination ou manque de respect caracterise.",
+        "Mauvaise volonte persistante dans l'accomplissement de sa tache.",
+        "Detournement de valeurs, objets ou fonds appartenant a l'entreprise.",
+    ], couleur=ROUGE, intro="Le licenciement sans preavis ni indemnites pourra etre prononce notamment pour :")
+
+    # ─── Chapitre III ───
+    ajouter_chapitre("Chapitre III — Hygiene, Securite et Environnement", couleur=VERT)
+
+    ajouter_article("Art. 11", "Generalites HSE", [
+        "HYGIENE — Le personnel doit se presenter au travail en parfait etat de proprete corporelle et vestimentaire.",
+        "HYGIENE — Les locaux et les lieux d'aisance doivent etre laisses propres apres usage.",
+        "SECURITE — Chacun doit respecter et faire respecter les consignes de securite.",
+        "SECURITE — Toute situation a risque doit etre signalee immediatement au superieur ou au responsable HSE.",
+        "ENVIRONNEMENT — Le personnel doit identifier et reduire les impacts de ses activites sur l'environnement.",
+        "ENVIRONNEMENT — Comportement responsable dans l'utilisation de l'energie, de l'eau et des ressources.",
+        "ENVIRONNEMENT — Prevenir toute situation d'urgence (pollution, incendie...) pour l'environnement.",
+    ], couleur=VERT)
+
+    # ─── Chapitre IV ───
+    ajouter_chapitre("Chapitre IV — Gestion des Missions", couleur=VIOLET)
+
+    ajouter_article("Art. 12", "Procedure de Mission", [
+        "PREPARATION — Completer le fichier Excel de demande de mission avec toutes les informations requises.",
+        "VALIDATION — Soumettre la demande au Superieur hierarchique pour approbation.",
+        "VALIDATION — Transmettre ensuite a la Direction Administrative et Financiere (DAF) pour traitement.",
+        "FINANCEMENT — La DAF procede a la demande de financement aupres de MAFA Holding.",
+        "FINANCEMENT — Le versement est effectue via la plateforme de paiement Julaya.",
+        "POST-MISSION — Etablir un bilan detaille de toutes les depenses effectuees.",
+        "POST-MISSION — En cas d'excedent budgetaire, restituer le montant en especes.",
+        "POST-MISSION — En cas de depassement justifie, la DAF rembourse les frais supplementaires.",
+    ], couleur=VIOLET)
 
     # ── Signatures ──
     doc.add_page_break()

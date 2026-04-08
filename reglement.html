@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Règlement Intérieur — Service Qualité</title>
+<title>Règlement Intérieur — Crystal Solution</title>
 <style>
-  :root { --bleu:#1A5676; --bleu2:#2c7da0; --gris:#f4f6f8; }
+  :root { --bleu:#1A5676; --bleu2:#2c7da0; --gris:#f4f6f8; --rouge:#c0392b; --vert:#1e8449; --violet:#7d3c98; --orange:#d35400; }
   * { margin:0; padding:0; box-sizing:border-box; }
   body { font-family:'Segoe UI',sans-serif; background:var(--gris); color:#2c3e50; }
 
@@ -17,11 +17,10 @@
   }
   header h1 { font-size:1.5rem; font-weight:700; letter-spacing:1px; }
 
-  nav { background:white; border-bottom:3px solid var(--bleu); display:flex; }
+  nav { background:white; border-bottom:3px solid var(--bleu); display:flex; flex-wrap:wrap; }
   nav a { padding:12px 22px; text-decoration:none; color:#444; font-weight:600;
-          font-size:0.88rem; border-bottom:3px solid transparent;
-          margin-bottom:-3px; transition:all 0.2s; }
-  nav a:hover { color:var(--bleu); border-bottom-color:var(--bleu); }
+          font-size:0.88rem; border-bottom:3px solid transparent; margin-bottom:-3px; transition:all 0.2s; }
+  nav a:hover, nav a.active { color:var(--bleu); border-bottom-color:var(--bleu); }
 
   .print-btn {
     background:white; color:var(--bleu); border:2px solid var(--bleu);
@@ -30,72 +29,178 @@
   }
   .print-btn:hover { background:#eaf4fb; }
 
-  main { max-width:860px; margin:30px auto; padding:0 20px 40px; }
+  main { max-width:920px; margin:30px auto; padding:0 20px 60px; }
 
-  /* ── Règlement ── */
+  /* ── En-tête ── */
   .reglement-header {
-    background:white; border-radius:12px; padding:36px;
+    background:white; border-radius:12px; padding:40px 36px;
     text-align:center; margin-bottom:24px;
-    box-shadow:0 2px 10px rgba(0,0,0,0.08);
-    border-top:6px solid var(--bleu);
+    box-shadow:0 2px 10px rgba(0,0,0,0.08); border-top:6px solid var(--bleu);
   }
-  .reglement-header h2 { font-size:2rem; color:var(--bleu); margin-bottom:8px; letter-spacing:2px; }
-  .reglement-header .service { font-size:1.1rem; color:#666; margin-bottom:12px; }
-  .reglement-header .vigeur { font-size:0.88rem; color:#999; }
+  .reglement-header .logo { font-size:3rem; margin-bottom:12px; }
+  .reglement-header h2 { font-size:1.8rem; color:var(--bleu); margin-bottom:6px; letter-spacing:2px; text-transform:uppercase; }
+  .reglement-header .societe { font-size:1.1rem; color:#444; font-weight:700; margin-bottom:4px; }
+  .reglement-header .service { font-size:0.95rem; color:#666; margin-bottom:14px; }
+  .reglement-header .vigeur { font-size:0.85rem; color:#999; padding:8px 20px; background:#f8f9fa; border-radius:20px; display:inline-block; }
 
+  /* ── Badges contrats ── */
+  .badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:12px; font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap; }
+  .badge-bo   { background:#dbeafe; color:#1d4ed8; }
+  .badge-sup  { background:#ede9fe; color:#6d28d9; }
+  .badge-jour { background:#fef3c7; color:#92400e; }
+  .badge-all  { background:#dcfce7; color:#166534; }
+
+  /* ── Tableau contrats ── */
+  .contrats-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-bottom:24px;
+  }
+  .contrat-card {
+    background:white; border-radius:12px; padding:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06); border-top:4px solid;
+  }
+  .contrat-card.bo  { border-color:#1d4ed8; }
+  .contrat-card.sup { border-color:#6d28d9; }
+  .contrat-card.jour { border-color:#92400e; }
+  .contrat-card h4 { font-size:0.95rem; margin-bottom:10px; }
+  .contrat-card.bo  h4 { color:#1d4ed8; }
+  .contrat-card.sup h4 { color:#6d28d9; }
+  .contrat-card.jour h4 { color:#92400e; }
+  .contrat-row { display:flex; justify-content:space-between; gap:6px; font-size:0.8rem; padding:4px 0; border-bottom:1px solid #f0f0f0; color:#555; }
+  .contrat-row:last-child { border-bottom:none; }
+  .contrat-row .val { font-weight:700; color:#2c3e50; text-align:right; }
+
+  /* ── Intro ── */
   .intro {
     background:#eaf4fb; border-left:5px solid var(--bleu);
     padding:18px 22px; border-radius:0 10px 10px 0; margin-bottom:24px;
-    font-size:0.95rem; line-height:1.7; color:#333;
+    font-size:0.93rem; line-height:1.7; color:#333;
   }
 
+  /* ── Chapitre ── */
+  .chapitre {
+    color:white; border-radius:10px; padding:13px 22px; margin:28px 0 14px;
+    font-size:0.95rem; font-weight:700; letter-spacing:1px;
+    text-transform:uppercase; display:flex; align-items:center; gap:12px;
+  }
+  .ch-bleu   { background:var(--bleu); }
+  .ch-rouge  { background:var(--rouge); }
+  .ch-vert   { background:var(--vert); }
+  .ch-violet { background:var(--violet); }
+
+  /* ── Article ── */
   .article {
-    background:white; border-radius:12px; padding:28px 32px;
-    margin-bottom:18px; box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    background:white; border-radius:12px; padding:26px 30px;
+    margin-bottom:14px; box-shadow:0 2px 10px rgba(0,0,0,0.06);
     border-left:5px solid var(--bleu);
-    transition:transform 0.15s, box-shadow 0.15s;
   }
-  .article:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,0.1); }
+  .article.rouge  { border-left-color:var(--rouge); background:#fff8f8; }
+  .article.vert   { border-left-color:var(--vert);  background:#f0faf3; }
+  .article.violet { border-left-color:var(--violet); background:#fdf6ff; }
+  .article.orange { border-left-color:var(--orange); background:#fff8f2; }
 
-  .article-header { display:flex; align-items:center; gap:16px; margin-bottom:16px; }
-  .article-icon { font-size:2.2rem; width:52px; text-align:center; }
-  .article-title { flex:1; }
-  .article-title .num { font-size:0.8rem; color:#999; text-transform:uppercase; letter-spacing:1px; }
-  .article-title h3 { font-size:1.1rem; color:var(--bleu); font-weight:700; }
+  .article-header { display:flex; align-items:flex-start; gap:14px; margin-bottom:14px; }
+  .article-icon { font-size:2rem; width:46px; text-align:center; flex-shrink:0; margin-top:2px; }
+  .article-title .num { font-size:0.76rem; color:#999; text-transform:uppercase; letter-spacing:1px; }
+  .article-title h3 { font-size:1.02rem; color:var(--bleu); font-weight:700; }
+  .article.rouge  .article-title h3 { color:var(--rouge); }
+  .article.vert   .article-title h3 { color:var(--vert); }
+  .article.violet .article-title h3 { color:var(--violet); }
+  .article.orange .article-title h3 { color:var(--orange); }
 
-  .article ul { list-style:none; display:flex; flex-direction:column; gap:10px; }
-  .article li {
-    display:flex; align-items:flex-start; gap:10px;
-    font-size:0.92rem; line-height:1.6; color:#444;
-  }
-  .article li::before {
-    content:'▸'; color:var(--bleu); font-size:0.9rem; margin-top:2px; flex-shrink:0;
-  }
+  .article ul { list-style:none; display:flex; flex-direction:column; gap:8px; }
+  .article li { display:flex; align-items:flex-start; gap:8px; font-size:0.9rem; line-height:1.65; color:#444; }
+  .article li::before { content:'▸'; color:var(--bleu); font-size:0.85rem; margin-top:3px; flex-shrink:0; }
+  .article.rouge  li::before { color:var(--rouge); }
+  .article.vert   li::before { color:var(--vert); }
+  .article.violet li::before { color:var(--violet); }
+  .article.orange li::before { color:var(--orange); }
+  .article p { font-size:0.9rem; line-height:1.65; color:#444; margin-bottom:10px; }
 
-  .sanctions {
-    background:#fff8f8; border-left-color:#c0392b;
+  /* ── Bloc par type de contrat ── */
+  .contrat-bloc {
+    border-radius:8px; padding:12px 16px; margin:10px 0;
+    border-left:3px solid;
   }
-  .sanctions .article-title h3 { color:#c0392b; }
+  .contrat-bloc.bo   { background:#eff6ff; border-color:#1d4ed8; }
+  .contrat-bloc.sup  { background:#f5f3ff; border-color:#6d28d9; }
+  .contrat-bloc.jour { background:#fffbeb; border-color:#92400e; }
+  .contrat-bloc .cb-title {
+    font-size:0.74rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .contrat-bloc.bo   .cb-title { color:#1d4ed8; }
+  .contrat-bloc.sup  .cb-title { color:#6d28d9; }
+  .contrat-bloc.jour .cb-title { color:#92400e; }
+  .contrat-bloc ul { margin:0; }
+  .contrat-bloc li { font-size:0.87rem; }
+  .contrat-bloc li::before { color:inherit !important; }
+
+  /* ── Tableau permissions ── */
+  .perm-table { width:100%; border-collapse:collapse; font-size:0.86rem; margin-top:10px; }
+  .perm-table th { background:#eaf4fb; color:var(--bleu); padding:8px 12px; text-align:left; font-weight:700; border:1px solid #dde6ef; }
+  .perm-table td { padding:7px 12px; border:1px solid #eee; }
+  .perm-table tr:nth-child(even) td { background:#fafbfc; }
+  .perm-table td:last-child { font-weight:600; color:var(--bleu); text-align:center; }
+
+  /* ── Sanctions ── */
+  .sanc-list { list-style:none; display:flex; flex-direction:column; gap:8px; margin-top:10px; }
+  .sanc-item { display:flex; align-items:center; gap:12px; padding:10px 14px; border-radius:8px; font-size:0.9rem; }
+  .sanc-item.niv1 { background:#fff3cd; border-left:3px solid #f0ad4e; color:#6d4c00; }
+  .sanc-item.niv2 { background:#ffe0b2; border-left:3px solid #fb8c00; color:#7a3800; }
+  .sanc-item.niv3 { background:#ffd7d7; border-left:3px solid #e74c3c; color:#7a0000; }
+  .sanc-item.niv4 { background:#c0392b; border-left:3px solid #922b21; color:white; font-weight:700; }
+  .sanc-num { font-weight:800; font-size:1rem; min-width:20px; }
+
+  /* ── Primes ── */
+  .prime-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:12px; }
+  .prime-card { border-radius:8px; padding:14px; border:1px solid #eee; }
+  .prime-card h5 { font-size:0.82rem; font-weight:700; margin-bottom:10px; padding-bottom:6px; border-bottom:2px solid; }
+  .prime-card.bo  h5 { color:#1d4ed8; border-color:#1d4ed8; }
+  .prime-card.cc  h5 { color:#6d28d9; border-color:#6d28d9; }
+  .prime-card .critere { font-size:0.82rem; margin-bottom:8px; padding:6px 10px; background:#f9f9f9; border-radius:6px; }
+  .prime-card .critere .montant { font-weight:700; float:right; }
+
+  /* ── Sous-section ── */
+  .sub-section { margin-top:14px; }
+  .sub-section .sub-title {
+    font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.8px;
+    color:var(--bleu); margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid #eee;
+  }
+  .article.vert .sub-section .sub-title { color:var(--vert); }
+
+  /* ── Alerte ── */
+  .alerte {
+    background:#fff3cd; border:1px solid #ffc107; border-radius:8px;
+    padding:10px 14px; font-size:0.85rem; color:#6d4c00; margin:10px 0;
+    display:flex; align-items:flex-start; gap:8px;
+  }
 
   /* ── Signatures ── */
   .signatures {
     background:white; border-radius:12px; padding:28px 32px;
-    margin-top:24px; box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    margin-top:30px; box-shadow:0 2px 10px rgba(0,0,0,0.06);
   }
   .signatures h3 { text-align:center; color:var(--bleu); margin-bottom:20px;
                    font-size:1rem; text-transform:uppercase; letter-spacing:1px; }
   .sig-grid { display:grid; grid-template-columns:1fr 1fr; gap:30px; }
   .sig-box { border:1px solid #ddd; border-radius:8px; padding:20px; text-align:center; }
-  .sig-box .sig-titre { font-weight:700; color:var(--bleu); margin-bottom:12px; }
+  .sig-box .sig-titre { font-weight:700; color:var(--bleu); margin-bottom:12px; font-size:0.9rem; }
   .sig-box .sig-ligne { border-bottom:1px solid #999; margin:20px 0 6px; }
   .sig-box .sig-label { font-size:0.78rem; color:#888; }
 
   /* ── Print ── */
   @media print {
     header, nav, .print-btn { display:none !important; }
-    main { margin:0; padding:0; max-width:100%; }
-    .article, .reglement-header, .signatures { box-shadow:none; }
+    main { margin:0; padding:10px; max-width:100%; }
+    .article, .reglement-header, .signatures, .contrats-grid { box-shadow:none; break-inside:avoid; }
     body { background:white; }
+    .chapitre { break-before:auto; }
+  }
+  @media (max-width:700px) {
+    .contrats-grid { grid-template-columns:1fr; }
+    .prime-grid    { grid-template-columns:1fr; }
+    .sig-grid      { grid-template-columns:1fr; }
+    .article { padding:18px 16px; }
   }
 </style>
 </head>
@@ -104,157 +209,563 @@
 <header>
   <div>
     <h1>RÈGLEMENT INTÉRIEUR</h1>
-    <div style="font-size:0.85rem;opacity:0.8;">Service Gestion Qualité</div>
+    <div style="font-size:0.85rem;opacity:0.8;">Crystal Solution — Service Gestion Qualité</div>
   </div>
   <div style="display:flex;gap:10px;align-items:center;">
     <button class="print-btn" onclick="window.print()">🖨️ Imprimer</button>
-    <a href="index.html" style="color:white;text-decoration:none;background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:6px;font-size:0.88rem;">← Dashboard</a>
+    <a href="/admin" style="color:white;text-decoration:none;background:rgba(255,255,255,0.15);padding:8px 16px;border-radius:6px;font-size:0.88rem;">← Dashboard</a>
   </div>
 </header>
 
 <nav>
-  <a href="index.html">Dashboard</a>
-  <a href="scan.html">Badgeage</a>
-  <a href="agents.html">Agents</a>
-  <a href="reglement.html" style="color:#1A5676;border-bottom:3px solid #1A5676;">Règlement</a>
-  <a href="rapports.html">Rapports</a>
+  <a href="/admin">Dashboard</a>
+  <a href="/badge">Badgeage</a>
+  <a href="/affichage">Affichage QR</a>
+  <a href="/reglement" class="active">Règlement</a>
 </nav>
 
 <main>
 
+  <!-- ── En-tête ── -->
   <div class="reglement-header">
-    <h2>RÈGLEMENT INTÉRIEUR</h2>
-    <div class="service">Service Gestion Qualité</div>
+    <div class="logo">💎</div>
+    <h2>Règlement Intérieur</h2>
+    <div class="societe">CRYSTAL SOLUTION</div>
+    <div class="service">Service Gestion Qualité — Abidjan, Côte d'Ivoire</div>
     <div class="vigeur">En vigueur à compter du <span id="date-vigueur"></span></div>
   </div>
 
-  <div class="intro">
-    Le présent règlement intérieur s'applique à l'ensemble du personnel affecté au service.
-    Son respect est <strong>obligatoire</strong> et conditionne le bon fonctionnement collectif de notre
-    environnement de travail. Tout manquement sera traité conformément à la procédure disciplinaire en vigueur.
+  <!-- ── Récapitulatif types de contrats ── -->
+  <div class="contrats-grid">
+    <div class="contrat-card bo">
+      <h4>🗂️ CDD — Back Office</h4>
+      <div class="contrat-row"><span>Catégorie</span><span class="val">1A — Commerce</span></div>
+      <div class="contrat-row"><span>Essai</span><span class="val">1 mois (renouvelable)</span></div>
+      <div class="contrat-row"><span>Salaire fixe</span><span class="val">100 000 FCFA/mois</span></div>
+      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 100 000 FCFA</span></div>
+      <div class="contrat-row"><span>Paiement</span><span class="val">Mensuel</span></div>
+      <div class="contrat-row"><span>Congés</span><span class="val">2,2 j/mois (après 1 an)</span></div>
+    </div>
+    <div class="contrat-card sup">
+      <h4>🎧 CDD — Superviseur Call Center</h4>
+      <div class="contrat-row"><span>Catégorie</span><span class="val">1A — Commerce</span></div>
+      <div class="contrat-row"><span>Essai</span><span class="val">1 mois (renouvelable)</span></div>
+      <div class="contrat-row"><span>Salaire fixe</span><span class="val">150 000 FCFA/mois</span></div>
+      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 100 000 FCFA</span></div>
+      <div class="contrat-row"><span>Paiement</span><span class="val">Mensuel</span></div>
+      <div class="contrat-row"><span>Congés</span><span class="val">2,2 j/mois (après 1 an)</span></div>
+    </div>
+    <div class="contrat-card jour">
+      <h4>📅 Journalier — Call Center</h4>
+      <div class="contrat-row"><span>Durée max</span><span class="val">3 mois consécutifs</span></div>
+      <div class="contrat-row"><span>Convocation</span><span class="val">24h à l'avance</span></div>
+      <div class="contrat-row"><span>Salaire</span><span class="val">4 000 FCFA/jour (≤ 100k/mois)</span></div>
+      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 70 000 FCFA</span></div>
+      <div class="contrat-row"><span>Paiement</span><span class="val">Quinzaine</span></div>
+      <div class="contrat-row"><span>Congés</span><span class="val">Indemnité incluse dans salaire</span></div>
+    </div>
   </div>
 
-  <!-- Art. 1 — Téléphone -->
+  <div class="intro">
+    Le présent règlement intérieur est établi conformément aux dispositions de la <strong>loi n°2015-532 du 20 Juillet 2015</strong>
+    portant Code du Travail et de la <strong>Convention Collective Interprofessionnelle du 19 juillet 1977</strong>.
+    Il s'applique à l'ensemble du personnel de Crystal Solution, quelle que soit la nature de son contrat
+    (CDD Back Office, CDD Superviseur Call Center, ou Journalier Call Center).
+    Son respect est <strong>obligatoire</strong>. Tout manquement sera traité conformément à la procédure disciplinaire en vigueur.
+  </div>
+
+  <!-- ═══════════════════════════════
+       CHAPITRE I — ORGANISATION DU TRAVAIL
+  ════════════════════════════════ -->
+  <div class="chapitre ch-bleu">
+    <span>📋</span> Chapitre I — Organisation Technique du Travail
+  </div>
+
+  <!-- Art. 1 — Durée du travail -->
   <div class="article">
     <div class="article-header">
-      <div class="article-icon">📵</div>
+      <div class="article-icon">⏰</div>
       <div class="article-title">
         <div class="num">Article 1</div>
-        <h3>Utilisation du téléphone personnel</h3>
+        <h3>Durée du Travail et Horaires</h3>
+      </div>
+    </div>
+
+    <div class="contrat-bloc bo">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span></div>
+      <ul>
+        <li>Durée légale : <strong>8h/jour — 40h/semaine</strong> (Loi n°2015-532, art. 21.1 et Décret n°96-203)</li>
+        <li>Personnel administratif — Lundi au Vendredi : <strong>09h00 – 12h30</strong> et <strong>14h30 – 17h30</strong></li>
+        <li>Toute heure supplémentaire requiert une autorisation préalable du responsable.</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc sup">
+      <div class="cb-title"><span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+      <ul>
+        <li>Durée légale : <strong>8h/jour — 40h/semaine</strong></li>
+        <li>Terrain — Lundi au Vendredi : <strong>08h00 – 12h00</strong> et <strong>13h30 – 16h30</strong></li>
+        <li>Le Superviseur peut être affecté sur différents sites selon les nécessités de service.</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc jour">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
+      <ul>
+        <li>Les horaires sont définis <strong>quotidiennement</strong> par Crystal Solution selon la mission du jour.</li>
+        <li>La convocation est transmise par appel téléphonique ou écrit <strong>au moins 24 heures</strong> avant le début de la mission.</li>
+        <li>En l'absence de convocation, aucune présentation n'est requise.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Art. 2 — Absences -->
+  <div class="article">
+    <div class="article-header">
+      <div class="article-icon">📅</div>
+      <div class="article-title">
+        <div class="num">Article 2</div>
+        <h3>Absences, Retards et Permissions Exceptionnelles</h3>
+      </div>
+    </div>
+
+    <div class="contrat-bloc bo">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span> &amp; <span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+      <ul>
+        <li>Toute absence doit être <strong>préalablement autorisée</strong> par le Supérieur hiérarchique.</li>
+        <li>En cas d'empêchement, prévenir immédiatement le Supérieur en précisant le motif.</li>
+        <li>Absence sans notification > <strong>72 heures</strong> = abandon de poste pouvant entraîner rupture du contrat.</li>
+        <li>Les retards répétés feront l'objet de sanctions.</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc jour">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
+      <ul>
+        <li>En cas d'impossibilité de répondre à une convocation, le journalier doit en informer Crystal Solution <strong>dès que possible</strong> avant l'heure de prise de poste.</li>
+        <li>Le non-respect répété des convocations peut entraîner la fin des missions confiées.</li>
+      </ul>
+    </div>
+
+    <div class="sub-section">
+      <div class="sub-title">Permissions exceptionnelles — applicable aux CDD (sans retenue, max 10 jours/an)</div>
+      <table class="perm-table">
+        <thead><tr><th>Événement familial</th><th>Durée</th></tr></thead>
+        <tbody>
+          <tr><td>Mariage du travailleur</td><td>4 jours ouvrables</td></tr>
+          <tr><td>Mariage d'un enfant, frère ou sœur</td><td>2 jours ouvrables</td></tr>
+          <tr><td>Décès du conjoint / enfant / père / mère</td><td>5 jours ouvrables</td></tr>
+          <tr><td>Décès d'un frère ou d'une sœur</td><td>2 jours ouvrables</td></tr>
+          <tr><td>Décès d'un beau-père ou d'une belle-mère</td><td>2 jours ouvrables</td></tr>
+          <tr><td>Naissance d'un enfant</td><td>2 jours ouvrables</td></tr>
+          <tr><td>Baptême d'un enfant</td><td>1 jour ouvrable</td></tr>
+          <tr><td>Déménagement</td><td>1 jour ouvrable</td></tr>
+        </tbody>
+      </table>
+      <ul style="margin-top:10px;">
+        <li>Autorisation écrite requise dans un délai de 7 jours ouvrables.</li>
+        <li>Pièces justificatives à présenter dans les 3 jours suivant l'événement.</li>
+        <li>Absences non prévues par ce règlement = <strong>jours non rémunérés</strong>.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Art. 3 — Maladies -->
+  <div class="article">
+    <div class="article-header">
+      <div class="article-icon">🏥</div>
+      <div class="article-title">
+        <div class="num">Article 3</div>
+        <h3>Absences pour Maladies</h3>
       </div>
     </div>
     <ul>
-      <li>L'utilisation du téléphone personnel est <strong>strictement interdite</strong> durant les heures de travail.</li>
-      <li>Les appareils doivent être mis en mode silencieux et rangés dès la prise de poste.</li>
-      <li>En cas d'urgence personnelle, l'agent doit en informer son supérieur et s'isoler dans un espace approprié.</li>
-      <li>Tout manquement répété entraînera une sanction disciplinaire.</li>
+      <li>Prévenir l'employeur dans un délai de <strong>72 heures</strong> dès la date de début d'absence.</li>
+      <li>Le salarié est tenu d'accepter la contre-visite du médecin d'entreprise.</li>
+      <li>Tout refus de contre-visite peut entraîner le <strong>licenciement</strong>.</li>
+    </ul>
+    <div class="alerte">⚠️ <span>Pour les journaliers : l'absence pour maladie suspend la convocation. La couverture des risques maladie professionnelle est assurée par la CNPS.</span></div>
+  </div>
+
+  <!-- Art. 4 — Accidents -->
+  <div class="article">
+    <div class="article-header">
+      <div class="article-icon">⚠️</div>
+      <div class="article-title">
+        <div class="num">Article 4</div>
+        <h3>Accidents de Travail</h3>
+      </div>
+    </div>
+    <ul>
+      <li>Tout accident, même léger, doit être déclaré <strong>dans les 24 heures</strong> au Supérieur hiérarchique.</li>
+      <li>L'information est transmise aux RH et au Service Hygiène & Sécurité.</li>
+      <li>Les risques accident du travail et maladie professionnelle sont couverts par la <strong>CNPS</strong>, pour tous types de contrats.</li>
+      <li>Cette obligation s'applique également lors des déplacements professionnels.</li>
     </ul>
   </div>
 
-  <!-- Art. 2 — Badgeage -->
+  <!-- Art. 5 — Congés -->
   <div class="article">
+    <div class="article-header">
+      <div class="article-icon">🌴</div>
+      <div class="article-title">
+        <div class="num">Article 5</div>
+        <h3>Congés Annuels</h3>
+      </div>
+    </div>
+
+    <div class="contrat-bloc bo">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span> &amp; <span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+      <ul>
+        <li>Droit aux congés acquis après <strong>1 an de service effectif</strong>.</li>
+        <li>Durée : <strong>2,2 jours ouvrables par mois</strong> de service effectif.</li>
+        <li>Les dates de congés sont arrêtées par la Direction.</li>
+        <li>Demande à soumettre au moins <strong>2 semaines avant</strong> la date de départ sur formulaire prévu à cet effet.</li>
+        <li>Préavis de départ communiqué au salarié au moins <strong>15 jours à l'avance</strong>.</li>
+        <li>Si les congés n'ont pu être pris, une <strong>indemnité compensatrice</strong> est versée en fin de contrat.</li>
+        <li>Rappel pendant les congés uniquement pour nécessités de service.</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc jour">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
+      <ul>
+        <li>En raison du caractère <strong>occasionnel et discontinu</strong> de l'activité, le journalier ne bénéficie <strong>pas de congés payés</strong>.</li>
+        <li>Une <strong>indemnité compensatrice de congés est incluse</strong> dans la rémunération journalière, conformément au Code du Travail.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       CHAPITRE II — RÉMUNÉRATION & PRIMES
+  ════════════════════════════════ -->
+  <div class="chapitre ch-violet">
+    <span>💰</span> Chapitre II — Rémunération, Primes et Équipements
+  </div>
+
+  <!-- Art. 6 — Rémunération -->
+  <div class="article violet">
+    <div class="article-header">
+      <div class="article-icon">💵</div>
+      <div class="article-title">
+        <div class="num">Article 6</div>
+        <h3>Rémunération fixe et modalités de paiement</h3>
+      </div>
+    </div>
+
+    <div class="contrat-bloc bo">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span></div>
+      <ul>
+        <li>Salaire fixe net : <strong>100 000 FCFA par mois travaillé</strong>.</li>
+        <li>Paiement : <strong>mensuel</strong>.</li>
+        <li>Catégorie professionnelle : 1A (barème Commerce, Distribution, Négoce et Professions Libérales).</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc sup">
+      <div class="cb-title"><span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+      <ul>
+        <li>Salaire fixe net : <strong>150 000 FCFA par mois travaillé</strong>.</li>
+        <li>Paiement : <strong>mensuel</strong>.</li>
+        <li>Catégorie professionnelle : 1A (barème Commerce, Distribution, Négoce et Professions Libérales).</li>
+      </ul>
+    </div>
+
+    <div class="contrat-bloc jour">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
+      <ul>
+        <li>Rémunération journalière : <strong>4 000 FCFA par jour effectivement travaillé</strong>, plafonnée à <strong>100 000 FCFA par mois</strong>.</li>
+        <li>Paiement : <strong>quinzaine</strong> (deux versements par mois).</li>
+        <li>Le paiement s'effectue via Mobile Money (numéro communiqué à l'embauche).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Art. 7 — Primes variables -->
+  <div class="article violet">
+    <div class="article-header">
+      <div class="article-icon">🎯</div>
+      <div class="article-title">
+        <div class="num">Article 7</div>
+        <h3>Prime Variable — Critères d'obtention</h3>
+      </div>
+    </div>
+    <p>La prime variable est attribuée à la discrétion de l'Employeur, selon l'atteinte des objectifs suivants :</p>
+
+    <div class="prime-grid">
+      <div class="prime-card bo">
+        <h5>🗂️ Back Office — Prime jusqu'à 100 000 FCFA</h5>
+        <div class="critere">
+          <strong>Critère 1 — 40 000 FCFA</strong><br>
+          <span style="font-size:0.8rem;color:#555;">Pertinence des retours faits aux agents terrain (erreurs saisie/image confirmées).</span>
+        </div>
+        <div class="critere">
+          <strong>Critère 2 — 40 000 FCFA</strong><br>
+          <span style="font-size:0.8rem;color:#555;">Détection de fraudes (dossiers signalés et confirmés : CNI illisible, GPS erroné, photo incohérente).</span>
+        </div>
+        <div class="critere">
+          <strong>Critère 3 — 20 000 FCFA</strong><br>
+          <span style="font-size:0.8rem;color:#555;">SLA &lt; 24h : 80% des fiches traitées dans les 24h suivant leur transmission.</span>
+        </div>
+      </div>
+
+      <div class="prime-card cc">
+        <h5>🎧 Call Center — Prime jusqu'à 100 000 / 70 000 FCFA</h5>
+        <div class="critere">
+          <strong>Critère 1 — Marchands réactivés J+3</strong><br>
+          <span style="font-size:0.8rem;color:#555;">80% des inactifs appelés effectuent 2 transactions dans les 3 jours.</span>
+        </div>
+        <div class="critere">
+          <strong>Critère 2 — Qualité du feedback</strong><br>
+          <span style="font-size:0.8rem;color:#555;">90% des appels qualifiés dans l'outil (aucun champ vide).</span>
+        </div>
+        <div class="critere">
+          <strong>Critère 3 — Volume d'appels quotidien</strong><br>
+          <span style="font-size:0.8rem;color:#555;">Minimum 80 appels effectués par jour par agent.</span>
+        </div>
+        <div style="font-size:0.78rem;margin-top:6px;color:#777;">Journaliers : prime calculée au prorata des jours travaillés (max 70 000 FCFA).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Art. 8 — Équipements -->
+  <div class="article violet">
     <div class="article-header">
       <div class="article-icon">🏷️</div>
       <div class="article-title">
-        <div class="num">Article 2</div>
-        <h3>Système de pointage — Badge QR Code</h3>
+        <div class="num">Article 8</div>
+        <h3>Équipements de travail et badge professionnel</h3>
       </div>
     </div>
     <ul>
-      <li>Chaque agent est tenu de <strong>badger à l'arrivée (matin)</strong> et <strong>au départ (soir)</strong> via son QR code personnel.</li>
-      <li>Le badgeage s'effectue sur la borne installée à l'entrée du service.</li>
-      <li>Tout oubli de badgeage doit être signalé immédiatement au responsable.</li>
-      <li>Les données de pointage servent de base au suivi des présences et aux rapports mensuels.</li>
+      <li>Le badge professionnel est remis à chaque agent dès son intégration. Il permet le <strong>badgeage quotidien</strong> (entrée et sortie).</li>
+      <li>En cas de cessation d'activité, <strong>tout agent est tenu de restituer</strong> le badge professionnel et le matériel informatique confié.</li>
+      <li>Tout matériel manquant ou endommagé pourra faire l'objet d'une retenue sur salaire.</li>
     </ul>
+    <div class="contrat-bloc bo" style="margin-top:12px;">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span> &amp; <span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+      <ul><li>Matériel à restituer : badge professionnel + <strong>matériel informatique</strong>.</li></ul>
+    </div>
+    <div class="contrat-bloc jour" style="margin-top:8px;">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
+      <ul><li>Matériel à restituer : badge professionnel uniquement.</li></ul>
+    </div>
   </div>
 
-  <!-- Art. 3 — Vestimentaire -->
+  <!-- ═══════════════════════════════
+       CHAPITRE III — DISCIPLINE GÉNÉRALE
+  ════════════════════════════════ -->
+  <div class="chapitre ch-bleu">
+    <span>⚖️</span> Chapitre III — Discipline Générale dans la Société
+  </div>
+
+  <!-- Art. 9 — Obligations -->
   <div class="article">
     <div class="article-header">
-      <div class="article-icon">👔</div>
+      <div class="article-icon">✅</div>
       <div class="article-title">
-        <div class="num">Article 3</div>
-        <h3>Code vestimentaire</h3>
+        <div class="num">Article 9</div>
+        <h3>Obligations du Personnel</h3>
       </div>
     </div>
-    <ul>
-      <li>Une tenue <strong>correcte, propre et professionnelle</strong> est exigée en toutes circonstances.</li>
-      <li>Les vêtements déchirés, trop courts, transparents ou à slogans sont interdits.</li>
-      <li>Le port des équipements de protection individuelle (EPI) est obligatoire dans les zones concernées.</li>
-      <li>Une tenue jugée non conforme peut entraîner un refus d'accès au poste de travail.</li>
+    <p>Le personnel est tenu de se conformer strictement aux ordres de service, instructions et consignes portés à sa connaissance par son supérieur hiérarchique.</p>
+    <ul style="margin-top:10px;">
+      <li>Entretenir des <strong>rapports de respect et de courtoisie</strong> avec supérieurs, collègues et tiers.</li>
+      <li>Exercer les fonctions confiées avec <strong>conscience, honnêteté et dévouement</strong>.</li>
+      <li>Observer une <strong>discrétion absolue</strong> et respecter le secret professionnel en toutes circonstances.</li>
+      <li>Se présenter au poste <strong>correctement et proprement vêtu</strong>.</li>
+      <li>Consacrer <strong>tout son temps et ses connaissances</strong> à l'exercice de ses fonctions.</li>
+      <li>Observer toutes les instructions et consignes particulières de travail données par l'Employeur.</li>
     </ul>
   </div>
 
-  <!-- Art. 4 — Bruit -->
+  <!-- Art. 10 — Interdictions -->
+  <div class="article rouge">
+    <div class="article-header">
+      <div class="article-icon">🚫</div>
+      <div class="article-title">
+        <div class="num">Article 10</div>
+        <h3>Interdictions</h3>
+      </div>
+    </div>
+    <p>Il est <strong>formellement interdit</strong> à l'ensemble du personnel de Crystal Solution :</p>
+    <ul style="margin-top:10px;">
+      <li>D'exercer toute activité professionnelle concurrente à celle de Crystal Solution.</li>
+      <li>De divulguer les renseignements, données ou informations confidentiels détenus sur la société.</li>
+      <li>D'entrer dans les locaux en état d'ivresse ou sous l'influence de substances illicites.</li>
+      <li>De dormir ou de s'adonner à des occupations personnelles pendant les heures de travail.</li>
+      <li>D'accepter des pots-de-vin ou d'accorder des avantages indus à des tiers.</li>
+      <li>D'emporter sans autorisation tout document, matériel ou fourniture appartenant à Crystal Solution.</li>
+      <li>De permettre l'accès aux équipements informatiques ou téléphoniques à des personnes étrangères.</li>
+      <li>De causer du désordre ou de tenir des propos contraires aux bonnes mœurs.</li>
+      <li>D'adopter tout comportement <strong>raciste, xénophobe, sexiste ou discriminant</strong>.</li>
+      <li>De faire pression sur un subordonné pour l'accomplissement d'un acte contraire à l'objet social.</li>
+      <li>D'utiliser les véhicules de l'entreprise sans autorisation préalable écrite.</li>
+      <li>De revendiquer tout droit sur les produits, documents ou systèmes réalisés dans le cadre des fonctions — ceux-ci restant la <strong>propriété exclusive du groupe MAFA Holding</strong>.</li>
+    </ul>
+    <p style="margin-top:12px; font-style:italic; font-size:0.84rem; color:#888;">Tout manquement à l'obligation de secret professionnel constitue une faute lourde pouvant justifier un licenciement.</p>
+  </div>
+
+  <!-- Art. 11 — Procédure disciplinaire -->
   <div class="article">
     <div class="article-header">
-      <div class="article-icon">🔇</div>
+      <div class="article-icon">📝</div>
       <div class="article-title">
-        <div class="num">Article 4</div>
-        <h3>Respect du silence dans le bâtiment</h3>
+        <div class="num">Article 11</div>
+        <h3>Procédure Disciplinaire</h3>
       </div>
     </div>
     <ul>
-      <li>Le bâtiment est un <strong>espace partagé</strong> avec d'autres services et occupants.</li>
-      <li>Il est formellement interdit de crier ou de parler fort dans les couloirs et espaces communs.</li>
-      <li>Les réunions doivent se tenir dans les salles prévues à cet effet, portes fermées.</li>
-      <li>Musique, vidéos ou sonneries audibles depuis les postes de travail sont interdites.</li>
+      <li>Préalablement à toute sanction, le travailleur dispose de <strong>72 heures</strong> pour s'expliquer (article 17.5 du Code du Travail).</li>
+      <li>L'explication peut être fournie par écrit ou verbalement.</li>
+      <li>En cas de désaccord non résolu, le différend est porté devant l'<strong>Inspection du Travail</strong> compétente.</li>
     </ul>
   </div>
 
-  <!-- Art. 5 — Hygiène -->
-  <div class="article">
-    <div class="article-header">
-      <div class="article-icon">🧹</div>
-      <div class="article-title">
-        <div class="num">Article 5</div>
-        <h3>Hygiène et propreté des lieux</h3>
-      </div>
-    </div>
-    <ul>
-      <li>Chaque agent est <strong>responsable de la propreté</strong> de son espace de travail.</li>
-      <li>Les déchets doivent être déposés dans les poubelles prévues à cet effet.</li>
-      <li>La cuisine et les espaces communs doivent être laissés propres après utilisation.</li>
-      <li>Il est interdit de consommer de la nourriture aux postes de travail.</li>
-      <li>Tout dégât ou désordre constaté doit être signalé sans délai au responsable.</li>
-    </ul>
-  </div>
-
-  <!-- Art. 6 — Sanctions -->
-  <div class="article sanctions">
+  <!-- Art. 12 — Sanctions -->
+  <div class="article rouge">
     <div class="article-header">
       <div class="article-icon">⚖️</div>
       <div class="article-title">
-        <div class="num">Article 6</div>
-        <h3>Sanctions</h3>
+        <div class="num">Article 12</div>
+        <h3>Sanctions Disciplinaires</h3>
       </div>
     </div>
-    <ul>
-      <li>Tout manquement aux présentes dispositions est susceptible de donner lieu à une sanction disciplinaire.</li>
-      <li>Les sanctions vont de l'avertissement verbal à la mise à pied, selon la gravité et la répétition des faits.</li>
-      <li>La procédure disciplinaire respectera les droits de la défense de l'agent concerné.</li>
+    <p>En cas d'infraction, Crystal Solution se réserve le choix d'infliger une des sanctions suivantes (article 17.3 du Code du Travail) :</p>
+    <ul class="sanc-list">
+      <li class="sanc-item niv1"><span class="sanc-num">1</span> Avertissement écrit</li>
+      <li class="sanc-item niv2"><span class="sanc-num">2</span> Mise à pied temporaire sans salaire — 1 à 3 jours</li>
+      <li class="sanc-item niv3"><span class="sanc-num">3</span> Mise à pied temporaire sans salaire — 4 à 8 jours</li>
+      <li class="sanc-item niv4"><span class="sanc-num">4</span> Licenciement</li>
     </ul>
   </div>
 
-  <!-- Signatures -->
+  <!-- Art. 13 — Licenciement -->
+  <div class="article rouge">
+    <div class="article-header">
+      <div class="article-icon">🔴</div>
+      <div class="article-title">
+        <div class="num">Article 13</div>
+        <h3>Licenciement pour Faute Lourde</h3>
+      </div>
+    </div>
+    <p>Licenciement <strong>sans préavis ni indemnités</strong> pour faute lourde, notamment :</p>
+    <ul style="margin-top:10px;">
+      <li>Incitation du personnel à la désobéissance.</li>
+      <li>État d'ivresse ou influence de substances illicites.</li>
+      <li>Infractions aux règles de sécurité, violences physiques.</li>
+      <li>Soustraction ou détérioration volontaire de matériel.</li>
+      <li>Insultes, menaces, voies de fait envers le personnel.</li>
+      <li>Absence non motivée prolongée ou abandon de poste.</li>
+      <li>Insubordination ou manque de respect caractérisé.</li>
+      <li>Détournement de valeurs, fonds ou propriété de l'entreprise.</li>
+      <li>Violation du secret professionnel ou de la clause de non-concurrence.</li>
+    </ul>
+  </div>
+
+  <!-- ═══════════════════════════════
+       CHAPITRE IV — HSE
+  ════════════════════════════════ -->
+  <div class="chapitre ch-vert">
+    <span>🌿</span> Chapitre IV — Hygiène, Sécurité et Environnement
+  </div>
+
+  <div class="article vert">
+    <div class="article-header">
+      <div class="article-icon">🛡️</div>
+      <div class="article-title">
+        <div class="num">Article 14</div>
+        <h3>Généralités HSE</h3>
+      </div>
+    </div>
+    <p>Ces dispositions s'appliquent à l'ensemble du personnel, sur tous les sites Crystal Solution.</p>
+
+    <div class="sub-section">
+      <div class="sub-title">🧼 Hygiène</div>
+      <ul>
+        <li>Se présenter au travail en <strong>parfait état de propreté corporelle et vestimentaire</strong>.</li>
+        <li>Laisser les locaux et lieux d'aisance <strong>parfaitement propres</strong> après usage.</li>
+      </ul>
+    </div>
+    <div class="sub-section">
+      <div class="sub-title">⛑️ Sécurité</div>
+      <ul>
+        <li>Respecter et faire respecter les <strong>consignes de sécurité</strong> en tout lieu et circonstance.</li>
+        <li>Toute situation à risque doit être signalée immédiatement au Supérieur hiérarchique ou responsable HSE.</li>
+      </ul>
+    </div>
+    <div class="sub-section">
+      <div class="sub-title">🌱 Environnement</div>
+      <ul>
+        <li>Identifier et réduire les impacts de ses activités sur l'environnement.</li>
+        <li>Comportement responsable dans l'utilisation de l'énergie, de l'eau et des ressources.</li>
+        <li>Prévenir toute situation d'urgence (pollution, incendie...).</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════
+       CHAPITRE V — MISSIONS
+  ════════════════════════════════ -->
+  <div class="chapitre ch-violet">
+    <span>✈️</span> Chapitre V — Gestion des Missions
+  </div>
+
+  <div class="article violet">
+    <div class="article-header">
+      <div class="article-icon">📋</div>
+      <div class="article-title">
+        <div class="num">Article 15</div>
+        <h3>Procédure de Mission</h3>
+      </div>
+    </div>
+
+    <div class="sub-section">
+      <div class="sub-title" style="color:var(--violet);">1 — Préparation Administrative</div>
+      <ul><li>Compléter le <strong>fichier Excel de demande de mission</strong> avec toutes les informations requises.</li><li>Soumettre au Supérieur hiérarchique pour approbation.</li></ul>
+    </div>
+    <div class="sub-section">
+      <div class="sub-title" style="color:var(--violet);">2 — Validation</div>
+      <ul><li>Après validation du supérieur, transmission à la <strong>Direction Administrative et Financière (DAF)</strong>.</li></ul>
+    </div>
+    <div class="sub-section">
+      <div class="sub-title" style="color:var(--violet);">3 — Financement</div>
+      <ul><li>La DAF procède à la demande de financement auprès de <strong>MAFA Holding</strong>.</li><li>Versement via la plateforme <strong>Julaya</strong>.</li></ul>
+    </div>
+    <div class="sub-section">
+      <div class="sub-title" style="color:var(--violet);">4 — Gestion post-mission</div>
+      <ul>
+        <li>Établir un <strong>bilan détaillé de toutes les dépenses</strong> effectuées.</li>
+        <li>Excédent budgétaire : <strong>restitution en espèces</strong>.</li>
+        <li>Dépassement justifié : la DAF procède au <strong>remboursement</strong> des frais supplémentaires.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ── Signatures ── -->
   <div class="signatures">
-    <h3>Signatures</h3>
+    <h3>Attestation de Prise de Connaissance</h3>
     <div class="sig-grid">
       <div class="sig-box">
-        <div class="sig-titre">Le Responsable Qualité</div>
+        <div class="sig-titre">Le Responsable Qualité<br><small style="font-weight:400;color:#888;">Crystal Solution</small></div>
         <div class="sig-ligne"></div>
         <div class="sig-label">Nom &amp; Signature</div>
         <div class="sig-ligne" style="margin-top:8px;"></div>
         <div class="sig-label">Date</div>
       </div>
       <div class="sig-box">
-        <div class="sig-titre">L'Agent — Lu et approuvé</div>
+        <div class="sig-titre">L'Agent — Lu et approuvé<br>
+          <span id="type-badge" style="font-size:0.75rem;font-weight:400;color:#888;">( ☐ Back Office &nbsp; ☐ Superviseur CC &nbsp; ☐ Journalier CC )</span>
+        </div>
         <div class="sig-ligne"></div>
         <div class="sig-label">Nom &amp; Signature</div>
         <div class="sig-ligne" style="margin-top:8px;"></div>
         <div class="sig-label">Date</div>
       </div>
     </div>
+    <p style="text-align:center;margin-top:16px;font-size:0.8rem;color:#999;">
+      Je soussigné(e) reconnais avoir pris connaissance du présent règlement intérieur et m'engage à en respecter toutes les dispositions.
+    </p>
   </div>
 
 </main>

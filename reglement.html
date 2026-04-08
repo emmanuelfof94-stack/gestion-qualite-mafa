@@ -188,19 +188,52 @@
   .sig-box .sig-ligne { border-bottom:1px solid #999; margin:20px 0 6px; }
   .sig-box .sig-label { font-size:0.78rem; color:#888; }
 
+  /* ── Référence légale ── */
+  .legal-ref {
+    display:inline-flex; align-items:center; gap:5px;
+    background:#f0f7ff; border:1px solid #bdd7f5; border-radius:6px;
+    padding:3px 9px; font-size:0.76rem; color:#1A5676; margin:2px 0;
+    font-style:italic;
+  }
+  .legal-block {
+    background:#f0f7ff; border-left:3px solid #1A5676;
+    border-radius:0 6px 6px 0; padding:10px 14px; margin-top:12px;
+    font-size:0.8rem; color:#1A5676;
+  }
+  .legal-block strong { display:block; margin-bottom:4px; font-size:0.78rem; text-transform:uppercase; letter-spacing:0.5px; }
+  .legal-block ul { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:3px; }
+  .legal-block li { font-size:0.78rem; color:#2c5282; }
+  .legal-block li::before { content:'§ '; font-weight:700; }
+
+  /* ── Profils couverts ── */
+  .profils-box {
+    background:white; border-radius:12px; padding:20px 28px; margin-bottom:20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--bleu);
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .profils-box h4 { font-size:0.82rem; text-transform:uppercase; letter-spacing:1px; color:#999; margin-bottom:2px; }
+  .profils-list { display:flex; flex-wrap:wrap; gap:10px; }
+  .profil-item {
+    display:flex; align-items:center; gap:8px; padding:8px 14px;
+    border-radius:8px; font-size:0.88rem; font-weight:600;
+  }
+  .profil-item.bo   { background:#eff6ff; color:#1d4ed8; border:1px solid #bfdbfe; }
+  .profil-item.sup  { background:#f5f3ff; color:#6d28d9; border:1px solid #ddd6fe; }
+  .profil-item.jour { background:#fffbeb; color:#92400e; border:1px solid #fde68a; }
+
   /* ── Print ── */
   @media print {
     header, nav, .print-btn { display:none !important; }
     main { margin:0; padding:10px; max-width:100%; }
-    .article, .reglement-header, .signatures, .contrats-grid { box-shadow:none; break-inside:avoid; }
+    .article, .reglement-header, .signatures { box-shadow:none; break-inside:avoid; }
     body { background:white; }
     .chapitre { break-before:auto; }
   }
   @media (max-width:700px) {
-    .contrats-grid { grid-template-columns:1fr; }
-    .prime-grid    { grid-template-columns:1fr; }
-    .sig-grid      { grid-template-columns:1fr; }
-    .article { padding:18px 16px; }
+    .prime-grid { grid-template-columns:1fr; }
+    .sig-grid   { grid-template-columns:1fr; }
+    .article    { padding:18px 16px; }
+    .profils-list { flex-direction:column; }
   }
 </style>
 </head>
@@ -235,43 +268,29 @@
     <div class="vigeur">En vigueur à compter du <span id="date-vigueur"></span></div>
   </div>
 
-  <!-- ── Récapitulatif types de contrats ── -->
-  <div class="contrats-grid">
-    <div class="contrat-card bo">
-      <h4>🗂️ CDD — Back Office</h4>
-      <div class="contrat-row"><span>Catégorie</span><span class="val">1A — Commerce</span></div>
-      <div class="contrat-row"><span>Essai</span><span class="val">1 mois (renouvelable)</span></div>
-      <div class="contrat-row"><span>Salaire fixe</span><span class="val">100 000 FCFA/mois</span></div>
-      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 100 000 FCFA</span></div>
-      <div class="contrat-row"><span>Paiement</span><span class="val">Mensuel</span></div>
-      <div class="contrat-row"><span>Congés</span><span class="val">2,2 j/mois (après 1 an)</span></div>
+  <!-- ── Profils couverts ── -->
+  <div class="profils-box">
+    <h4>Champ d'application — Profils concernés</h4>
+    <p style="font-size:0.88rem;color:#555;margin-bottom:8px;">
+      Le présent règlement intérieur s'applique à l'ensemble du personnel de Crystal Solution, quelle que soit la nature du contrat de travail.
+      Il est opposable à tous les agents dès leur prise de poste.
+    </p>
+    <div class="profils-list">
+      <div class="profil-item bo">🗂️ Back Office — Contrat à Durée Déterminée (CDD)</div>
+      <div class="profil-item sup">🎧 Superviseur Call Center — Contrat à Durée Déterminée (CDD)</div>
+      <div class="profil-item jour">📅 Agent Call Center — Contrat de Main d'Œuvre Occasionnelle (Journalier)</div>
     </div>
-    <div class="contrat-card sup">
-      <h4>🎧 CDD — Superviseur Call Center</h4>
-      <div class="contrat-row"><span>Catégorie</span><span class="val">1A — Commerce</span></div>
-      <div class="contrat-row"><span>Essai</span><span class="val">1 mois (renouvelable)</span></div>
-      <div class="contrat-row"><span>Salaire fixe</span><span class="val">150 000 FCFA/mois</span></div>
-      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 100 000 FCFA</span></div>
-      <div class="contrat-row"><span>Paiement</span><span class="val">Mensuel</span></div>
-      <div class="contrat-row"><span>Congés</span><span class="val">2,2 j/mois (après 1 an)</span></div>
-    </div>
-    <div class="contrat-card jour">
-      <h4>📅 Journalier — Call Center</h4>
-      <div class="contrat-row"><span>Durée max</span><span class="val">3 mois consécutifs</span></div>
-      <div class="contrat-row"><span>Convocation</span><span class="val">24h à l'avance</span></div>
-      <div class="contrat-row"><span>Salaire</span><span class="val">4 000 FCFA/jour (≤ 100k/mois)</span></div>
-      <div class="contrat-row"><span>Prime variable</span><span class="val">jusqu'à 70 000 FCFA</span></div>
-      <div class="contrat-row"><span>Paiement</span><span class="val">Quinzaine</span></div>
-      <div class="contrat-row"><span>Congés</span><span class="val">Indemnité incluse dans salaire</span></div>
-    </div>
+    <p style="font-size:0.78rem;color:#999;margin-top:8px;">
+      Les dispositions spécifiques à chaque type de contrat sont clairement identifiées par un indicateur coloré tout au long du présent document.
+      Les conditions de rémunération sont définies dans le contrat individuel de chaque agent.
+    </p>
   </div>
 
   <div class="intro">
     Le présent règlement intérieur est établi conformément aux dispositions de la <strong>loi n°2015-532 du 20 Juillet 2015</strong>
-    portant Code du Travail et de la <strong>Convention Collective Interprofessionnelle du 19 juillet 1977</strong>.
-    Il s'applique à l'ensemble du personnel de Crystal Solution, quelle que soit la nature de son contrat
-    (CDD Back Office, CDD Superviseur Call Center, ou Journalier Call Center).
-    Son respect est <strong>obligatoire</strong>. Tout manquement sera traité conformément à la procédure disciplinaire en vigueur.
+    portant Code du Travail et de la <strong>Convention Collective Interprofessionnelle de la République de Côte d'Ivoire du 19 juillet 1977</strong>.
+    Son respect est <strong>obligatoire</strong> pour l'ensemble du personnel. Tout manquement sera traité conformément à la procédure disciplinaire en vigueur
+    telle que définie à l'article 17 du Code du Travail.
   </div>
 
   <!-- ═══════════════════════════════
@@ -291,30 +310,28 @@
       </div>
     </div>
 
-    <div class="contrat-bloc bo">
-      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span></div>
-      <ul>
-        <li>Durée légale : <strong>8h/jour — 40h/semaine</strong> (Loi n°2015-532, art. 21.1 et Décret n°96-203)</li>
-        <li>Personnel administratif — Lundi au Vendredi : <strong>09h00 – 12h30</strong> et <strong>14h30 – 17h30</strong></li>
-        <li>Toute heure supplémentaire requiert une autorisation préalable du responsable.</li>
-      </ul>
-    </div>
+    <ul>
+      <li>La durée légale de travail est fixée à <strong>8 heures par jour, soit 40 heures par semaine</strong>.</li>
+      <li>Les horaires applicables à l'ensemble du personnel sont : <strong>08h30 – 17h00</strong>, du lundi au vendredi.</li>
+      <li>Toute heure supplémentaire doit faire l'objet d'une <strong>autorisation préalable écrite</strong> du responsable hiérarchique.</li>
+    </ul>
 
-    <div class="contrat-bloc sup">
-      <div class="cb-title"><span class="badge badge-sup">CDD Superviseur Call Center</span></div>
+    <div class="contrat-bloc jour" style="margin-top:12px;">
+      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center — spécificité</span></div>
       <ul>
-        <li>Durée légale : <strong>8h/jour — 40h/semaine</strong></li>
-        <li>Terrain — Lundi au Vendredi : <strong>08h00 – 12h00</strong> et <strong>13h30 – 16h30</strong></li>
-        <li>Le Superviseur peut être affecté sur différents sites selon les nécessités de service.</li>
-      </ul>
-    </div>
-
-    <div class="contrat-bloc jour">
-      <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
-      <ul>
-        <li>Les horaires sont définis <strong>quotidiennement</strong> par Crystal Solution selon la mission du jour.</li>
-        <li>La convocation est transmise par appel téléphonique ou écrit <strong>au moins 24 heures</strong> avant le début de la mission.</li>
+        <li>La convocation précisant les horaires de la journée est transmise par appel téléphonique ou par tout moyen écrit <strong>au moins 24 heures</strong> avant le début de la mission.</li>
         <li>En l'absence de convocation, aucune présentation n'est requise.</li>
+        <li>La durée maximale du contrat journalier est de <strong>3 mois calendaires consécutifs</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 du 20/07/2015 portant Code du Travail — Art. 21.1 à 21.7 (durée du travail)</li>
+        <li>Décret n°96-203 du 07/03/1996 — Art. 1er (fixation à 40h/semaine)</li>
+        <li>Loi n°2015-532 — Art. 14.5 (contrat de travail journalier et occasionnel, durée max 3 mois)</li>
+        <li>Convention Collective Interprofessionnelle de Côte d'Ivoire du 19/07/1977 — Titre III (organisation du temps de travail)</li>
       </ul>
     </div>
   </div>
@@ -368,6 +385,16 @@
         <li>Absences non prévues par ce règlement = <strong>jours non rémunérés</strong>.</li>
       </ul>
     </div>
+
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 25.3 (autorisations d'absence pour événements familiaux)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Art. 30 (permissions exceptionnelles)</li>
+        <li>Loi n°2015-532 — Art. 17.5 (procédure en cas d'absence non justifiée)</li>
+        <li>Loi n°2015-532 — Art. 14.5 (régime d'absence applicable aux journaliers)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 3 — Maladies -->
@@ -385,6 +412,14 @@
       <li>Tout refus de contre-visite peut entraîner le <strong>licenciement</strong>.</li>
     </ul>
     <div class="alerte">⚠️ <span>Pour les journaliers : l'absence pour maladie suspend la convocation. La couverture des risques maladie professionnelle est assurée par la CNPS.</span></div>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 23.1 à 23.4 (absences pour maladie et obligations de notification)</li>
+        <li>Loi n°2015-532 — Art. 23.6 (contre-visite médicale patronale)</li>
+        <li>Décret n°96-206 du 07/03/1996 (hygiène, sécurité et médecine du travail)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 4 — Accidents -->
@@ -402,6 +437,14 @@
       <li>Les risques accident du travail et maladie professionnelle sont couverts par la <strong>CNPS</strong>, pour tous types de contrats.</li>
       <li>Cette obligation s'applique également lors des déplacements professionnels.</li>
     </ul>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 33.1 à 33.8 (accidents du travail et maladies professionnelles)</li>
+        <li>Décret n°96-204 du 07/03/1996 (réparation et déclaration des accidents du travail)</li>
+        <li>Loi n°99-477 du 02/08/1999 portant Code de Prévoyance Sociale — Art. 63 et suiv. (CNPS)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 5 — Congés -->
@@ -434,6 +477,16 @@
         <li>Une <strong>indemnité compensatrice de congés est incluse</strong> dans la rémunération journalière, conformément au Code du Travail.</li>
       </ul>
     </div>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 25.1 à 25.8 (droits aux congés payés)</li>
+        <li>Loi n°2015-532 — Art. 25.2 (acquisition de 2,2 jours ouvrables par mois de service effectif)</li>
+        <li>Loi n°2015-532 — Art. 25.5 (indemnité compensatrice de congés)</li>
+        <li>Loi n°2015-532 — Art. 14.5 (pas de congés payés pour le contrat journalier — indemnité incluse)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Titre V (congés annuels)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════
@@ -453,30 +506,33 @@
       </div>
     </div>
 
-    <div class="contrat-bloc bo">
-      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span></div>
+    <p>La rémunération de chaque agent est définie dans son <strong>contrat de travail individuel</strong>. Les modalités générales sont les suivantes :</p>
+
+    <div class="contrat-bloc bo" style="margin-top:12px;">
+      <div class="cb-title"><span class="badge badge-bo">CDD Back Office</span> &amp; <span class="badge badge-sup">CDD Superviseur Call Center</span></div>
       <ul>
-        <li>Salaire fixe net : <strong>100 000 FCFA par mois travaillé</strong>.</li>
-        <li>Paiement : <strong>mensuel</strong>.</li>
-        <li>Catégorie professionnelle : 1A (barème Commerce, Distribution, Négoce et Professions Libérales).</li>
+        <li>Rémunération mensuelle fixe versée en fin de mois, telle que définie au contrat.</li>
+        <li>Catégorie professionnelle : <strong>1A</strong> — barème Commerce, Distribution, Négoce et Professions Libérales.</li>
+        <li>Paiement : <strong>mensuel</strong>, conformément au Code du Travail.</li>
       </ul>
     </div>
 
-    <div class="contrat-bloc sup">
-      <div class="cb-title"><span class="badge badge-sup">CDD Superviseur Call Center</span></div>
-      <ul>
-        <li>Salaire fixe net : <strong>150 000 FCFA par mois travaillé</strong>.</li>
-        <li>Paiement : <strong>mensuel</strong>.</li>
-        <li>Catégorie professionnelle : 1A (barème Commerce, Distribution, Négoce et Professions Libérales).</li>
-      </ul>
-    </div>
-
-    <div class="contrat-bloc jour">
+    <div class="contrat-bloc jour" style="margin-top:8px;">
       <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
       <ul>
-        <li>Rémunération journalière : <strong>4 000 FCFA par jour effectivement travaillé</strong>, plafonnée à <strong>100 000 FCFA par mois</strong>.</li>
-        <li>Paiement : <strong>quinzaine</strong> (deux versements par mois).</li>
-        <li>Le paiement s'effectue via Mobile Money (numéro communiqué à l'embauche).</li>
+        <li>Rémunération calculée au <strong>prorata des jours effectivement travaillés</strong>, telle que définie au contrat.</li>
+        <li>Paiement par <strong>quinzaine</strong> (deux versements par mois), via Mobile Money.</li>
+      </ul>
+    </div>
+
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 30.1 à 30.5 (salaire et modalités de paiement)</li>
+        <li>Loi n°2015-532 — Art. 30.2 (paiement mensuel pour les travailleurs permanents)</li>
+        <li>Décret n°2013-792 du 20/11/2013 (SMIG en Côte d'Ivoire)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Titre IV, Art. 24 à 28 (classification et rémunération)</li>
+        <li>Loi n°2015-532 — Art. 14.5 (rémunération des travailleurs journaliers)</li>
       </ul>
     </div>
   </div>
@@ -494,37 +550,45 @@
 
     <div class="prime-grid">
       <div class="prime-card bo">
-        <h5>🗂️ Back Office — Prime jusqu'à 100 000 FCFA</h5>
+        <h5>🗂️ Back Office — Critères de performance</h5>
         <div class="critere">
-          <strong>Critère 1 — 40 000 FCFA</strong><br>
-          <span style="font-size:0.8rem;color:#555;">Pertinence des retours faits aux agents terrain (erreurs saisie/image confirmées).</span>
+          <strong>Critère 1 — Pertinence des retours terrain</strong><br>
+          <span style="font-size:0.8rem;color:#555;">Nombre de retours fondés envoyés aux agents terrain (erreur saisie/image confirmée).</span>
         </div>
         <div class="critere">
-          <strong>Critère 2 — 40 000 FCFA</strong><br>
-          <span style="font-size:0.8rem;color:#555;">Détection de fraudes (dossiers signalés et confirmés : CNI illisible, GPS erroné, photo incohérente).</span>
+          <strong>Critère 2 — Détection de fraudes</strong><br>
+          <span style="font-size:0.8rem;color:#555;">Dossiers signalés et confirmés comme fraude : CNI illisible, GPS erroné, photo incohérente.</span>
         </div>
         <div class="critere">
-          <strong>Critère 3 — 20 000 FCFA</strong><br>
-          <span style="font-size:0.8rem;color:#555;">SLA &lt; 24h : 80% des fiches traitées dans les 24h suivant leur transmission.</span>
+          <strong>Critère 3 — Respect du SLA (&lt; 24h)</strong><br>
+          <span style="font-size:0.8rem;color:#555;">80% des fiches traitées dans les 24h suivant leur transmission.</span>
         </div>
       </div>
 
       <div class="prime-card cc">
-        <h5>🎧 Call Center — Prime jusqu'à 100 000 / 70 000 FCFA</h5>
+        <h5>🎧 Call Center — Critères de performance</h5>
         <div class="critere">
-          <strong>Critère 1 — Marchands réactivés J+3</strong><br>
-          <span style="font-size:0.8rem;color:#555;">80% des inactifs appelés effectuent 2 transactions dans les 3 jours.</span>
+          <strong>Critère 1 — Marchands réactivés (J+3)</strong><br>
+          <span style="font-size:0.8rem;color:#555;">80% des inactifs appelés effectuent 2 transactions dans les 3 jours suivant l'appel.</span>
         </div>
         <div class="critere">
           <strong>Critère 2 — Qualité du feedback</strong><br>
-          <span style="font-size:0.8rem;color:#555;">90% des appels qualifiés dans l'outil (aucun champ vide).</span>
+          <span style="font-size:0.8rem;color:#555;">90% des appels qualifiés dans l'outil — aucun champ vide autorisé.</span>
         </div>
         <div class="critere">
           <strong>Critère 3 — Volume d'appels quotidien</strong><br>
-          <span style="font-size:0.8rem;color:#555;">Minimum 80 appels effectués par jour par agent.</span>
+          <span style="font-size:0.8rem;color:#555;">Minimum 80 appels effectués par agent et par jour.</span>
         </div>
-        <div style="font-size:0.78rem;margin-top:6px;color:#777;">Journaliers : prime calculée au prorata des jours travaillés (max 70 000 FCFA).</div>
+        <div style="font-size:0.78rem;margin-top:6px;color:#777;font-style:italic;">Pour les journaliers, la prime est calculée au prorata des jours effectivement travaillés dans le mois.</div>
       </div>
+    </div>
+
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 30.1 (caractère licite et discrétionnaire des primes de performance)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Art. 28 (primes et accessoires de salaire)</li>
+      </ul>
     </div>
   </div>
 
@@ -549,6 +613,15 @@
     <div class="contrat-bloc jour" style="margin-top:8px;">
       <div class="cb-title"><span class="badge badge-jour">Journalier Call Center</span></div>
       <ul><li>Matériel à restituer : badge professionnel uniquement.</li></ul>
+    </div>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 12.1 al. 4 (obligation de restitution des biens de l'employeur)</li>
+        <li>Code Civil ivoirien — Art. 1137 (obligation de conservation et de restitution)</li>
+        <li>Contrat individuel — Art. 7 (clauses particulières — restitution du matériel en fin de contrat)</li>
+        <li>Contrat individuel — Art. 18 (propriété intellectuelle et industrielle — MAFA Holding)</li>
+      </ul>
     </div>
   </div>
 
@@ -577,6 +650,15 @@
       <li>Consacrer <strong>tout son temps et ses connaissances</strong> à l'exercice de ses fonctions.</li>
       <li>Observer toutes les instructions et consignes particulières de travail données par l'Employeur.</li>
     </ul>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 12.1 (obligations générales du travailleur)</li>
+        <li>Loi n°2015-532 — Art. 17.1 (discipline dans l'entreprise)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Art. 20 (devoirs du salarié)</li>
+        <li>Contrat individuel — Art. 12 (obligations professionnelles), Art. 14 (secret professionnel), Art. 15 (clause de non-concurrence)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 10 — Interdictions -->
@@ -604,6 +686,16 @@
       <li>De revendiquer tout droit sur les produits, documents ou systèmes réalisés dans le cadre des fonctions — ceux-ci restant la <strong>propriété exclusive du groupe MAFA Holding</strong>.</li>
     </ul>
     <p style="margin-top:12px; font-style:italic; font-size:0.84rem; color:#888;">Tout manquement à l'obligation de secret professionnel constitue une faute lourde pouvant justifier un licenciement.</p>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 17.2 (fautes disciplinaires et comportements interdits)</li>
+        <li>Code Pénal de Côte d'Ivoire — Art. 226-13 (violation du secret professionnel)</li>
+        <li>Loi n°2015-532 — Art. 12.1 al. 3 (interdiction de concurrence déloyale)</li>
+        <li>Contrat individuel — Art. 14 (secret professionnel), Art. 15 (non-concurrence), Art. 18 (propriété intellectuelle MAFA Holding)</li>
+        <li>Loi n°2013-546 du 30/07/2013 (transactions électroniques — protection des données)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 11 — Procédure disciplinaire -->
@@ -620,6 +712,14 @@
       <li>L'explication peut être fournie par écrit ou verbalement.</li>
       <li>En cas de désaccord non résolu, le différend est porté devant l'<strong>Inspection du Travail</strong> compétente.</li>
     </ul>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 17.5 (droit à la défense : délai de 72h pour s'expliquer)</li>
+        <li>Loi n°2015-532 — Art. 71.1 et suiv. (rôle de l'Inspection du Travail)</li>
+        <li>Contrat individuel — Art. 20.1 (règlement amiable), Art. 20.2 (recours à l'Inspection du Travail)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 12 — Sanctions -->
@@ -638,6 +738,14 @@
       <li class="sanc-item niv3"><span class="sanc-num">3</span> Mise à pied temporaire sans salaire — 4 à 8 jours</li>
       <li class="sanc-item niv4"><span class="sanc-num">4</span> Licenciement</li>
     </ul>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 17.3 (liste des sanctions disciplinaires autorisées)</li>
+        <li>Loi n°2015-532 — Art. 17.4 (conditions de la mise à pied)</li>
+        <li>Convention Collective Interprofessionnelle 1977 — Art. 21 à 23 (sanctions disciplinaires)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- Art. 13 — Licenciement -->
@@ -661,6 +769,15 @@
       <li>Détournement de valeurs, fonds ou propriété de l'entreprise.</li>
       <li>Violation du secret professionnel ou de la clause de non-concurrence.</li>
     </ul>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 16.1 (licenciement pour faute lourde sans préavis ni indemnités)</li>
+        <li>Loi n°2015-532 — Art. 17.4 (définition et cas de faute lourde)</li>
+        <li>Code Pénal de Côte d'Ivoire — Art. 389 à 411 (vol, abus de confiance, détournement)</li>
+        <li>Contrat individuel — Art. 13 (rupture du contrat), Art. 14 (secret professionnel — faute lourde)</li>
+      </ul>
+    </div>
   </div>
 
   <!-- ═══════════════════════════════
@@ -700,6 +817,15 @@
         <li>Identifier et réduire les impacts de ses activités sur l'environnement.</li>
         <li>Comportement responsable dans l'utilisation de l'énergie, de l'eau et des ressources.</li>
         <li>Prévenir toute situation d'urgence (pollution, incendie...).</li>
+      </ul>
+    </div>
+    <div class="legal-block">
+      <strong>📜 Textes de référence</strong>
+      <ul>
+        <li>Loi n°2015-532 — Art. 41.1 à 41.5 (obligations de l'employeur et du travailleur en matière de sécurité)</li>
+        <li>Décret n°96-206 du 07/03/1996 (mesures générales d'hygiène et de sécurité au travail)</li>
+        <li>Loi n°96-766 du 03/10/1996 portant Code de l'Environnement de Côte d'Ivoire</li>
+        <li>Arrêté n°3 du 17/01/2017 (normes d'hygiène en milieu professionnel)</li>
       </ul>
     </div>
   </div>

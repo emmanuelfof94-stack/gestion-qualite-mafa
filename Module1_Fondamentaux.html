@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 1 — Fondamentaux | Formation Connectel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#8D0C23; --blue-light:#B5112C; --blue-pale:#F9E8EC;
+  --orange:#CF9E41; --orange-light:#DDB55A; --orange-pale:#FAF3E0;
+  --teal:#584B26; --teal-pale:#F3EDD8;
+  --red:#6A091A; --red-pale:#F2D6DC;
+  --grey:#455A64; --grey-light:#ECEFF1;
+  --bg:#FCFBF8; --white:#FFFFFF;
+  --shadow:0 4px 24px rgba(141,12,35,0.12); --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:#1a2332;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:280px;min-height:100vh;background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:24px 20px 16px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo .badge{display:inline-block;background:var(--orange-light);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;}
+.sidebar-logo h1{color:white;font-size:17px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:4px;}
+.nav-section{padding:12px 10px 4px;}
+.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;padding:0 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,.18);color:white;font-weight:700;}
+.nav-item .icon{font-size:14px;min-width:18px;}
+.nav-progress{padding:14px 20px 20px;margin-top:auto;border-top:1px solid rgba(255,255,255,.12);}
+.nav-progress p{color:rgba(255,255,255,.5);font-size:11px;margin-bottom:6px;}
+.progress-bar-wrap{background:rgba(255,255,255,.15);border-radius:10px;height:5px;}
+.progress-bar-fill{height:100%;border-radius:10px;background:var(--orange-light);transition:width .4s;}
+.progress-pct{color:white;font-size:11px;font-weight:700;margin-top:5px;}
+.candidate-field{padding:10px 16px;border-top:1px solid rgba(255,255,255,.15);}
+.candidate-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;}
+.candidate-field input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;color:white;font-size:12px;font-family:inherit;outline:none;}
+.candidate-field input::placeholder{color:rgba(255,255,255,.35);}
+.main{margin-left:280px;flex:1;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:14px 32px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:17px;font-weight:700;color:var(--blue);}
+.topbar-subtitle{font-size:11px;color:var(--grey);margin-top:2px;}
+.topbar-badge{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.content{padding:28px 32px;max-width:980px;}
+.page{display:none;} .page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.module-header{border-radius:var(--radius);overflow:hidden;margin-bottom:28px;}
+.module-header-bg{padding:32px 36px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);}
+.module-num{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.module-title{font-size:26px;font-weight:800;color:white;line-height:1.2;margin-bottom:6px;}
+.module-meta{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;}
+.module-chip{background:rgba(255,255,255,.18);color:white;font-size:12px;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:6px;}
+.module-objectives{background:rgba(255,255,255,.10);padding:18px 36px 22px;border-top:1px solid rgba(255,255,255,.1);}
+.module-objectives p{color:rgba(255,255,255,.6);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;font-weight:700;}
+.obj-list{list-style:none;}
+.obj-list li{color:white;font-size:13px;padding:4px 0;display:flex;align-items:flex-start;gap:10px;}
+.obj-list li::before{content:"→";color:rgba(255,255,255,.5);font-weight:700;flex-shrink:0;}
+.card{background:white;border-radius:var(--radius);padding:22px 26px;margin-bottom:18px;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.card-title{font-size:15px;font-weight:700;color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--blue-pale);}
+.info-box{border-radius:10px;padding:16px 18px;margin-bottom:14px;border-left:4px solid;}
+.info-box.blue{background:var(--blue-pale);border-color:var(--blue);}
+.info-box.orange{background:var(--orange-pale);border-color:var(--orange);}
+.info-box.teal{background:var(--teal-pale);border-color:var(--teal);}
+.info-box.red{background:var(--red-pale);border-color:var(--red);}
+.info-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.info-box.blue .info-box-title{color:var(--blue);}
+.info-box.orange .info-box-title{color:var(--orange);}
+.info-box.teal .info-box-title{color:var(--teal);}
+.info-box.red .info-box-title{color:var(--red);}
+.info-box ul{list-style:none;}
+.info-box ul li{font-size:13px;padding:3px 0;color:#2d3748;display:flex;gap:8px;align-items:flex-start;}
+.info-box ul li::before{content:"•";font-weight:700;flex-shrink:0;}
+.info-box.blue ul li::before{color:var(--blue);}
+.info-box.orange ul li::before{color:var(--orange);}
+.info-box.teal ul li::before{color:var(--teal);}
+.info-box.red ul li::before{color:var(--red);}
+.tbl-wrap{overflow-x:auto;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--blue);color:white;}
+thead th{padding:10px 13px;text-align:left;font-weight:600;font-size:12px;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody td{padding:9px 13px;border-bottom:1px solid #e2e8f0;vertical-align:top;line-height:1.5;}
+.tbl-orange thead tr{background:var(--orange);}
+.tbl-teal thead tr{background:var(--teal);}
+.section-tabs{display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap;}
+.section-tab{padding:7px 16px;border-radius:8px;border:1px solid #e2e8f0;font-size:12px;font-weight:600;cursor:pointer;background:white;color:var(--grey);transition:all .2s;font-family:'Sora',sans-serif;}
+.section-tab:hover{border-color:var(--blue);color:var(--blue);}
+.section-tab.active{background:var(--blue);color:white;border-color:var(--blue);}
+.step-item{display:flex;gap:16px;margin-bottom:16px;align-items:flex-start;}
+.step-num{width:32px;height:32px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.step-content{flex:1;}
+.step-title{font-size:14px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.step-desc{font-size:13px;color:#4a5568;line-height:1.6;}
+.tag{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.tag-blue{background:var(--blue-pale);color:var(--blue);}
+.tag-orange{background:var(--orange-pale);color:var(--orange);}
+.tag-teal{background:var(--teal-pale);color:var(--teal);}
+.highlight-box{background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:12px;padding:20px 24px;margin-bottom:16px;color:white;}
+.highlight-box h3{font-size:16px;font-weight:800;margin-bottom:8px;}
+.highlight-box p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+.mini-card{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:16px 18px;}
+.mini-card .mc-icon{font-size:22px;margin-bottom:8px;}
+.mini-card .mc-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:4px;}
+.mini-card .mc-desc{font-size:12px;color:var(--grey);line-height:1.5;}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">Projet ID30</span>
+    <h1>Formation Connectel</h1>
+    <p>Module 1 — Fondamentaux</p>
+  </div>
+  <div class="candidate-field">
+    <label>Nom du candidat</label>
+    <input type="text" id="candidateName" placeholder="Votre nom complet...">
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Sections</div>
+    <button class="nav-item active" onclick="showSection('s1',this)"><span class="icon">🏢</span>MAFA Holding & ID30</button>
+    <button class="nav-item" onclick="showSection('s2',this)"><span class="icon">📱</span>Orange Money Business</button>
+    <button class="nav-item" onclick="showSection('s3',this)"><span class="icon">🔄</span>Création de Compte OM</button>
+    <button class="nav-item" onclick="showSection('s4',this)"><span class="icon">💻</span>Plateforme Connectel</button>
+    <button class="nav-item" onclick="showSection('s5',this)"><span class="icon">🗺️</span>Flux Global du Projet</button>
+    <button class="nav-item" onclick="showSection('s6',this)"><span class="icon">📖</span>Glossaire</button>
+  </nav>
+  <div class="nav-progress">
+    <p>Progression du module</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar" style="width:17%"></div></div>
+    <div class="progress-pct" id="progressPct">Section 1 / 6</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Module 1 — Fondamentaux</div>
+      <div class="topbar-subtitle">Socle commun · Call Center & Back Office</div>
+    </div>
+    <span class="topbar-badge">M1 · Fondamentaux</span>
+  </div>
+  <div class="content">
+
+    <!-- SECTION 1 -->
+    <div id="s1" class="page active">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 01 · SECTION 01</div>
+          <div class="module-title">MAFA Holding & Projet ID30</div>
+          <div class="module-meta">
+            <span class="module-chip">🏢 Contexte organisationnel</span>
+            <span class="module-chip">🎯 Mission &amp; Vision</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre la mission et le contexte du Projet ID30</li>
+            <li>Identifier la structure organisationnelle complète</li>
+            <li>Connaître les outils et valeurs fondamentales</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>🎯 Notre Mission</h3>
+        <p>MAFA Holding est mandatée par le <strong>Ministère du Commerce et de l'Industrie</strong> pour identifier et enrôler les entrepreneurs du secteur informel dans les <strong>30 grandes villes de Côte d'Ivoire</strong>. Ce projet s'appelle <strong>ID30</strong>.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏢 Qui sommes-nous ?</div>
+        <div class="grid-2">
+          <div class="mini-card">
+            <div class="mc-icon">🎯</div>
+            <div class="mc-title">Cibles du projet</div>
+            <div class="mc-desc"><strong>TCE</strong> — Très Courtes Entreprises<br><strong>TEE</strong> — Très Petites Entreprises Entrepreneuriales<br>Secteur informel uniquement</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">📍</div>
+            <div class="mc-title">Périmètre géographique</div>
+            <div class="mc-desc">30 grandes villes de Côte d'Ivoire couvertes par le projet ID30</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">📋</div>
+            <div class="mc-title">Mission principale</div>
+            <div class="mc-desc">Identification, enrôlement et mise à jour des informations des entrepreneurs du secteur informel</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">🏛️</div>
+            <div class="mc-title">Mandat officiel</div>
+            <div class="mc-desc">Mandaté par le Ministère du Commerce et de l'Industrie — projet gouvernemental officiel</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🏗️ Structure Organisationnelle</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Niveau</th><th>Rôle</th><th>Responsabilités principales</th></tr></thead>
+            <tbody>
+              <tr><td><span class="tag tag-blue">Niveau 1</span></td><td><strong>Direction des Opérations</strong></td><td>Pilotage stratégique, objectifs globaux</td></tr>
+              <tr><td><span class="tag tag-blue">Niveau 2</span></td><td><strong>Manager Opérations</strong></td><td>Coordination inter-villes, suivi performance</td></tr>
+              <tr><td><span class="tag tag-blue">Niveau 2</span></td><td><strong>Manager Qualité</strong></td><td>Contrôle qualité, conformité, audits</td></tr>
+              <tr><td><span class="tag tag-orange">Niveau 3</span></td><td><strong>Responsable Ville (RV)</strong></td><td>Gestion d'une ville : 1 RV + inspecteurs + 3 équipes</td></tr>
+              <tr><td><span class="tag tag-orange">Niveau 4</span></td><td><strong>Inspecteurs</strong></td><td>Contrôle terrain, contre-enquêtes, qualité données</td></tr>
+              <tr><td><span class="tag tag-teal">Niveau 5</span></td><td><strong>Chefs d'équipe</strong></td><td>Gestion d'une équipe de 9 agents, briefings quotidiens</td></tr>
+              <tr><td><span class="tag tag-teal">Niveau 6</span></td><td><strong>Agents terrain</strong></td><td>Collecte de données, enrôlement entrepreneurs (FAMOCO)</td></tr>
+              <tr><td><span class="tag tag-blue">Support</span></td><td><strong>Back Office</strong></td><td>Validation données, KYC, administration plateforme</td></tr>
+              <tr><td><span class="tag tag-blue">Support</span></td><td><strong>Call Center</strong></td><td>Appels pré/post-visite, suivi satisfaction marchands</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box teal">
+          <div class="info-box-title">📐 Composition d'une équipe ville</div>
+          <ul>
+            <li>1 Responsable Ville (RV)</li>
+            <li>Inspecteurs (supervision terrain)</li>
+            <li>3 Chefs d'équipe (par RV)</li>
+            <li>9 Agents par chef d'équipe = 27 agents par ville minimum</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🛠️ Outils du Projet</div>
+        <div class="grid-2">
+          <div class="mini-card">
+            <div class="mc-icon">📟</div>
+            <div class="mc-title">FAMOCO</div>
+            <div class="mc-desc">Tablette/terminal terrain utilisé par les agents pour la collecte et l'enrôlement des données</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">🗺️</div>
+            <div class="mc-title">Cartes de zones</div>
+            <div class="mc-desc">Délimitation des zones de travail attribuées à chaque équipe et agent</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">📝</div>
+            <div class="mc-title">Google Forms</div>
+            <div class="mc-desc">Formulaires de présence, rapports et remontées d'informations quotidiennes</div>
+          </div>
+          <div class="mini-card">
+            <div class="mc-icon">💻</div>
+            <div class="mc-title">Plateforme Connectel</div>
+            <div class="mc-desc">Système central de gestion : call center, back office, IA, rapports</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⭐ Valeurs Fondamentales</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Ce que nous défendons</div>
+          <ul>
+            <li><strong>Traçabilité</strong> — chaque action est enregistrée et vérifiable</li>
+            <li><strong>Qualité des données</strong> — exactitude et complétude de chaque fiche</li>
+            <li><strong>Ponctualité</strong> — respect des horaires et délais à tous les niveaux</li>
+            <li><strong>Conformité</strong> — respect strict des scripts, procédures et directives</li>
+            <li><strong>Respect du marchand</strong> — professionnalisme en toute circonstance</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div id="s2" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 01 · SECTION 02</div>
+          <div class="module-title">Orange Money Business</div>
+          <div class="module-meta">
+            <span class="module-chip">💳 Solution de paiement</span>
+            <span class="module-chip">📊 3 Profils marchands</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser les 3 profils marchands et leurs caractéristiques</li>
+            <li>Connaître toutes les fonctionnalités disponibles</li>
+            <li>Comprendre la grille tarifaire complète</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+        <h3>🎯 Vision OM Business</h3>
+        <p>Plateforme centralisée de paiement marchand intégrant toutes les fonctions essentielles. Accessible <strong>sans SIM</strong> (fonctionne en OTT). Promesse : <em>"Always connecting you to the essentials"</em></p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">👥 Les 3 Profils Marchands</div>
+        <div class="tbl-wrap">
+          <table class="tbl-orange">
+            <thead><tr><th>Profil</th><th>Cible</th><th>CA Annuel</th><th>Employés</th><th>Exemples</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><strong>🟡 Essentiel</strong></td>
+                <td>Micro-entreprises informelles</td>
+                <td>&lt; 150 000 FCFA</td>
+                <td>1 à 5</td>
+                <td>Vendeurs de rue, artisans, chauffeurs VTC, petits commerces</td>
+              </tr>
+              <tr>
+                <td><strong>🟠 Classique</strong></td>
+                <td>Petites entreprises formelles</td>
+                <td>150 000 – 400M FCFA</td>
+                <td>2 à 10</td>
+                <td>Commerces de détail, supérettes, bars, boulangeries, quincailleries</td>
+              </tr>
+              <tr>
+                <td><strong>🔴 Premium</strong></td>
+                <td>Moyennes/Grandes entreprises</td>
+                <td>&gt; 400M FCFA</td>
+                <td>+10</td>
+                <td>Supermarchés, stations-service, pharmacies, hôtels, organismes publics</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ Fonctionnalités Clés</div>
+        <div class="grid-2">
+          <div class="info-box teal" style="margin-bottom:0">
+            <div class="info-box-title">💳 Encaissement QR</div>
+            <ul>
+              <li>Le marchand affiche son QR code</li>
+              <li>Le client scanne, saisit le montant</li>
+              <li>Confirmation instantanée</li>
+              <li>0% jusqu'à 50 000 FCFA/jour</li>
+            </ul>
+          </div>
+          <div class="info-box teal" style="margin-bottom:0">
+            <div class="info-box-title">🔗 Lien de Paiement Distant</div>
+            <ul>
+              <li>Génération d'un lien personnalisé</li>
+              <li>Montant prédéfini ou libre</li>
+              <li>Envoi par WhatsApp, SMS, email</li>
+              <li>Suivi des paiements reçus</li>
+            </ul>
+          </div>
+          <div class="info-box orange" style="margin-bottom:0">
+            <div class="info-box-title">💸 Transfert Gratuit</div>
+            <ul>
+              <li>Vers soi-même : 0 FCFA</li>
+              <li>Vers tiers : 0 FCFA</li>
+              <li>Via contact ou numéro</li>
+              <li>Confirmation par code secret</li>
+            </ul>
+          </div>
+          <div class="info-box orange" style="margin-bottom:0">
+            <div class="info-box-title">🏧 Retrait PDV Gratuit</div>
+            <ul>
+              <li>Via QR code au PDV</li>
+              <li>Via USSD : #145*2#</li>
+              <li>Confirmation dans liste d'attente</li>
+              <li>0 FCFA tous profils</li>
+            </ul>
+          </div>
+          <div class="info-box blue" style="margin-bottom:0">
+            <div class="info-box-title">📊 Historique Temps Réel</div>
+            <ul>
+              <li>Montant net, frais, statut</li>
+              <li>Date, heure, ID transaction</li>
+              <li>Option partage et remboursement</li>
+            </ul>
+          </div>
+          <div class="info-box blue" style="margin-bottom:0">
+            <div class="info-box-title">↩️ Remboursement</div>
+            <ul>
+              <li>Depuis le détail transaction</li>
+              <li>Confirmation dialog</li>
+              <li>Notification de succès immédiate</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">💰 Grille Tarifaire</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Opération</th><th>Essentiel &amp; Classique</th><th>Premium</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Encaissement QR</strong></td><td>0% jusqu'à 50 000 FCFA/jour<br>1% au-delà (plafond 500 000 FCFA cumulé/mois)</td><td>1% par encaissement</td></tr>
+              <tr><td><strong>Retrait PDV</strong></td><td>0 FCFA</td><td>0 FCFA</td></tr>
+              <tr><td><strong>Transfert (soi-même)</strong></td><td>0 FCFA</td><td>0 FCFA</td></tr>
+              <tr><td><strong>Transfert (tiers)</strong></td><td>0 FCFA</td><td>0 FCFA</td></tr>
+              <tr><td><strong>Lien de paiement</strong></td><td>Inclus</td><td>Inclus</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📏 Limites de Transactions</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Profil</th><th>Limite / jour</th><th>Limite / semaine</th><th>Limite / mois</th><th>Limite / transaction</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Essentiel Lite</strong></td><td>200 000 XOF</td><td>—</td><td>—</td><td>—</td></tr>
+              <tr><td><strong>Essentiel Full</strong></td><td>2 000 000 XOF</td><td>7 500 000 XOF</td><td>10 000 000 XOF</td><td>10 000 000 XOF</td></tr>
+              <tr><td><strong>Classique</strong></td><td>15 000 000 XOF</td><td>15 000 000 XOF</td><td>—</td><td>30 000 000 XOF</td></tr>
+              <tr><td><strong>Premium</strong></td><td colspan="4" style="text-align:center">Illimité (9 999 999 999 XOF)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div id="s3" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">MODULE 01 · SECTION 03</div>
+          <div class="module-title">Création de Compte OM Business</div>
+          <div class="module-meta">
+            <span class="module-chip">👤 4 Parcours clients</span>
+            <span class="module-chip">📄 Documents KYC</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Distinguer les 4 parcours de création de compte</li>
+            <li>Maîtriser le processus étape par étape</li>
+            <li>Connaître les documents KYC par profil</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔀 Les 4 Parcours de Création</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Parcours 1 — Marchand OM existant</div>
+          <ul><li>Déjà inscrit sur Orange Money avec statut marchand</li><li>Mise à jour du profil directe</li><li>Pas de nouveau document requis si profil inchangé</li></ul>
+        </div>
+        <div class="info-box orange">
+          <div class="info-box-title">Parcours 2 — Client OM non-marchand</div>
+          <ul><li>Possède un compte Orange Money particulier</li><li>Conversion du compte en profil marchand</li><li>Validation simplifiée (identité déjà vérifiée)</li></ul>
+        </div>
+        <div class="info-box teal">
+          <div class="info-box-title">Parcours 3 — Client Orange (non-OM)</div>
+          <ul><li>Abonné Orange mais sans compte Orange Money</li><li>Création simultanée OM + profil marchand</li><li>Processus complet en une étape</li></ul>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">Parcours 4 — Non-client Orange</div>
+          <ul><li>Aucun lien préexistant avec Orange</li><li>Soumission de documents d'identité obligatoire</li><li>Validation Back Office sous 24h maximum</li><li>Notification d'activation envoyée au marchand</li></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔢 Processus de Création (Étapes)</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Saisie du numéro de téléphone</div><div class="step-desc">Le marchand entre son numéro. Le système identifie son statut actuel (OM / Orange / autre).</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Catégorisation du commerce</div><div class="step-desc">Saisie du nom commercial et sélection du secteur d'activité dans la liste standardisée.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Accès géolocalisation</div><div class="step-desc">Autorisation de localisation GPS pour enregistrer les coordonnées de l'établissement.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Validation des CGU</div><div class="step-desc">Acceptation des Conditions Générales d'Utilisation de la plateforme.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Génération du QR code marchand</div><div class="step-desc">QR code unique généré automatiquement. Le marchand peut l'imprimer ou l'afficher sur mobile.</div></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Activation des notifications</div><div class="step-desc">Paramétrage des alertes pour chaque transaction reçue. Confirmation de la création.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📄 Documents KYC par Profil</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Profil Classique — Documents requis</div>
+          <ul>
+            <li>Pièce d'identité valide du dirigeant (CNI, passeport ou titre de séjour)</li>
+            <li>Procuration notariée si représentant (non-dirigeant)</li>
+            <li>Document commercial : extrait RCCM <strong>OU</strong> carte de commerçant <strong>OU</strong> autorisation d'exercice</li>
+            <li>Coordonnées GPS de l'établissement</li>
+          </ul>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">Profil Premium — Documents selon forme juridique</div>
+          <ul>
+            <li><strong>Entreprise individuelle</strong> : Pièce d'identité + RCCM + DFE + Référence bancaire + Relevé bancaire 3 mois</li>
+            <li><strong>Société commerciale (SARL, SA...)</strong> : Documents ci-dessus + Déclaration notariée + Statuts notariés</li>
+            <li><strong>Association civile</strong> : Documents d'autorisation officiels + Identification des responsables</li>
+            <li><strong>Transport public</strong> : CNI + Extrait de permis + Référence bancaire</li>
+          </ul>
+        </div>
+        <div class="info-box blue">
+          <div class="info-box-title">⏱ Délais de Validation (Back Office)</div>
+          <ul>
+            <li>Essentiel → Classique : <strong>24 heures maximum</strong></li>
+            <li>Classique → Premium : <strong>24 heures maximum</strong></li>
+            <li>Documents incomplets : notification immédiate + délai 48h pour compléter</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div id="s4" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 01 · SECTION 04</div>
+          <div class="module-title">La Plateforme Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">🤖 IA intégrée</span>
+            <span class="module-chip">🔌 5 types d'intégration</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le rôle de l'IA Connectel</li>
+            <li>Identifier les 5 types d'intégrations disponibles</li>
+            <li>Mesurer les bénéfices de la plateforme</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤖 L'IA Connectel — Fonctionnement</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Ce que fait l'IA automatiquement</div>
+          <ul>
+            <li><strong>Enregistrement automatique</strong> de TOUS les appels (sans action de l'agent)</li>
+            <li><strong>Transcription</strong> complète avec horodatage et durée exacte</li>
+            <li><strong>Vérification de conformité</strong> du script (résultat : OUI / NON)</li>
+            <li><strong>Détection des écarts</strong> entre déclaration de l'agent et conversation réelle</li>
+            <li><strong>Analyse de tonalité</strong> : professionnel / neutre / négatif</li>
+            <li><strong>Génération de rapports</strong> automatiques journaliers et mensuels</li>
+          </ul>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">⚠ Point clé à retenir</div>
+          <ul><li>L'IA enregistre <strong>chaque appel</strong> et vérifie si les étapes obligatoires du script ont été respectées. Un résultat "Script Conforme : NON" déclenche une revue superviseur.</li></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔌 Les 5 Types d'Intégrations Connectel</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Description</th><th>Cas d'usage</th><th>Profil requis</th></tr></thead>
+            <tbody>
+              <tr><td><strong>iFrame</strong></td><td>Intègre un système externe directement dans l'interface Connectel</td><td>Afficher le CRM sans quitter la plateforme</td><td>Admin</td></tr>
+              <tr><td><strong>Open Browser Tab</strong></td><td>Ouvre automatiquement une URL externe selon des conditions</td><td>Fiche CRM ouverte dès le démarrage d'un appel</td><td>Admin</td></tr>
+              <tr><td><strong>REST Request</strong></td><td>Échange bidirectionnel de données entre systèmes</td><td>Vérification en temps réel dans la base de données</td><td>Admin / Développeur</td></tr>
+              <tr><td><strong>API Connectel</strong></td><td>Accès développeur complet à toutes les fonctions</td><td>Initier des appels depuis le CRM, synchroniser fiches</td><td>Développeur</td></tr>
+              <tr><td><strong>Cloud Functions</strong></td><td>Code personnalisé exécuté dans Connectel</td><td>Logique métier avancée, routage intelligent</td><td>Développeur expert</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✅ Bénéfices de la Plateforme</div>
+        <div class="grid-2">
+          <div class="mini-card"><div class="mc-icon">⚡</div><div class="mc-title">Efficacité accrue</div><div class="mc-desc">Réduction du temps de traitement par appel grâce à l'automatisation</div></div>
+          <div class="mini-card"><div class="mc-icon">🚫</div><div class="mc-title">Zéro copy-paste</div><div class="mc-desc">Les données circulent automatiquement entre les systèmes connectés</div></div>
+          <div class="mini-card"><div class="mc-icon">📱</div><div class="mc-title">Service 24/7</div><div class="mc-desc">Fonctions en libre-service disponibles au-delà des heures ouvrables</div></div>
+          <div class="mini-card"><div class="mc-icon">📋</div><div class="mc-title">Traçabilité totale</div><div class="mc-desc">Chaque action, appel et décision est enregistré et consultable</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 5 -->
+    <div id="s5" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">MODULE 01 · SECTION 05</div>
+          <div class="module-title">Flux Global du Projet ID30</div>
+          <div class="module-meta">
+            <span class="module-chip">🔄 Chaîne de données</span>
+            <span class="module-chip">🤝 Collaboration entités</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le flux de données de bout en bout</li>
+            <li>Identifier le rôle de chaque entité dans la chaîne</li>
+            <li>Situer sa propre position dans le processus global</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Le Flux de Données du Projet</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Agents terrain — Collecte (FAMOCO)</div><div class="step-desc">Les agents visitent les entrepreneurs, collectent photos, GPS, informations commerce via FAMOCO. Les données remontent aux chefs d'équipe.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Chefs d'équipe → Responsables Villes</div><div class="step-desc">Consolidation des données de l'équipe. Vérification primaire. Remontée vers le Responsable Ville.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Back Office — Chargement fichier Excel</div><div class="step-desc">Le Back Office reçoit le fichier Excel consolidé, vérifie la qualité et le charge dans Connectel.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Distribution automatique à 9h00</div><div class="step-desc">Le système Connectel distribue automatiquement les cas aux agents Call Center (~100 cas/agent).</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Call Center — Appels pré-visite</div><div class="step-desc">Les agents appellent chaque entrepreneur pour confirmer le RDV et vérifier les informations.</div></div></div>
+        <div class="step-item"><div class="step-num">6</div><div class="step-content"><div class="step-title">Visite terrain des agents</div><div class="step-desc">L'agent terrain effectue sa visite selon le RDV confirmé (15 minutes).</div></div></div>
+        <div class="step-item"><div class="step-num">7</div><div class="step-content"><div class="step-title">Call Center — Appels post-visite (2-4h après)</div><div class="step-desc">Appel de satisfaction au marchand pour évaluer la qualité de la visite.</div></div></div>
+        <div class="step-item"><div class="step-num">8</div><div class="step-content"><div class="step-title">IA Connectel — Analyse &amp; Rapports</div><div class="step-desc">L'IA génère les rapports de conformité. Consolidation journalière à 17h30.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤝 Interactions entre les Entités</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Entité</th><th>Ce qu'elle envoie</th><th>Ce qu'elle reçoit</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Agents terrain</strong></td><td>Données collectées (FAMOCO)</td><td>Zones attribuées, planning visites</td></tr>
+              <tr><td><strong>Back Office</strong></td><td>Fichier chargé dans Connectel, validations KYC</td><td>Données terrain, demandes corrections</td></tr>
+              <tr><td><strong>Call Center</strong></td><td>Confirmations RDV, satisfaction, corrections</td><td>Cas distribués par Connectel</td></tr>
+              <tr><td><strong>IA Connectel</strong></td><td>Rapports conformité, alertes, analytics</td><td>Enregistrements appels</td></tr>
+              <tr><td><strong>Direction</strong></td><td>Objectifs, directives</td><td>Rapports journaliers et mensuels</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 6 - GLOSSAIRE -->
+    <div id="s6" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 01 · SECTION 06</div>
+          <div class="module-title">Glossaire — Termes Clés</div>
+          <div class="module-meta">
+            <span class="module-chip">📖 Référence</span>
+            <span class="module-chip">🔤 15+ termes</span>
+          </div>
+        </div>
+        <div class="module-objectives">
+          <p>Utilisation</p>
+          <ul class="obj-list">
+            <li>Consulter ce glossaire à tout moment comme référence</li>
+            <li>S'assurer de maîtriser chaque terme avant les évaluations</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📖 Glossaire Complet</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Terme</th><th>Définition complète</th></tr></thead>
+            <tbody>
+              <tr><td><strong>ID30</strong></td><td>Identification dans 30 villes — nom officiel du projet MAFA Holding</td></tr>
+              <tr><td><strong>TCE</strong></td><td>Très Courte Entreprise — micro-entreprise du secteur informel</td></tr>
+              <tr><td><strong>TEE</strong></td><td>Très Petite Entreprise Entrepreneuriale — structure légèrement plus formalisée</td></tr>
+              <tr><td><strong>RV</strong></td><td>Responsable Ville — manager responsable d'une ville entière dans le projet</td></tr>
+              <tr><td><strong>PDV</strong></td><td>Point de Vente — lieu physique de vente agréé Orange Money</td></tr>
+              <tr><td><strong>USSD</strong></td><td>Unstructured Supplementary Service Data — service d'accès via code téléphonique (ex: #145*2#)</td></tr>
+              <tr><td><strong>RCCM</strong></td><td>Registre du Commerce et du Crédit Mobilier — document d'enregistrement commercial officiel</td></tr>
+              <tr><td><strong>DFE</strong></td><td>Déclaration Fiscale d'Existence — document fiscal obligatoire pour les entreprises</td></tr>
+              <tr><td><strong>KYC</strong></td><td>Know Your Customer — procédure de vérification d'identité du client</td></tr>
+              <tr><td><strong>QR Code</strong></td><td>Code à barres 2D unique généré pour chaque marchand, utilisé pour les paiements</td></tr>
+              <tr><td><strong>XOF / FCFA</strong></td><td>Franc CFA — monnaie officielle des pays d'Afrique de l'Ouest (XOF = code ISO)</td></tr>
+              <tr><td><strong>FAMOCO</strong></td><td>Tablette/terminal terrain utilisé par les agents pour la collecte de données</td></tr>
+              <tr><td><strong>IA Connectel</strong></td><td>Intelligence Artificielle de la plateforme Connectel — analyse automatique des appels</td></tr>
+              <tr><td><strong>OTT</strong></td><td>Over The Top — accès au service sans SIM, via Internet uniquement</td></tr>
+              <tr><td><strong>Déplafonnement</strong></td><td>Migration vers un profil supérieur (Essentiel → Classique → Premium)</td></tr>
+              <tr><td><strong>CA</strong></td><td>Chiffre d'Affaires annuel — critère de classification des profils marchands</td></tr>
+              <tr><td><strong>CGU</strong></td><td>Conditions Générales d'Utilisation — termes acceptés lors de la création de compte</td></tr>
+              <tr><td><strong>KPI</strong></td><td>Key Performance Indicator — indicateur clé de performance</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info-box orange">
+        <div class="info-box-title">✅ Fin du Module 1 — Fondamentaux</div>
+        <ul>
+          <li>Vous avez couvert les 6 sections fondamentales communes à tous les agents</li>
+          <li>Passez maintenant à votre module spécialisé : <strong>Module 2 (Call Center)</strong> ou <strong>Module 3 (Back Office)</strong></li>
+          <li>Le <strong>Module 4</strong> contient les exercices pratiques d'évaluation</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<script>
+const sections = ['s1','s2','s3','s4','s5','s6'];
+let visitedSections = new Set(['s1']);
+
+function showSection(id, btn) {
+  sections.forEach(s => {
+    document.getElementById(s).classList.remove('active');
+  });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn) btn.classList.add('active');
+  visitedSections.add(id);
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function updateProgress() {
+  const pct = Math.round((visitedSections.size / sections.length) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressPct').textContent = 'Section ' + visitedSections.size + ' / ' + sections.length;
+}
+</script>
+</body>
+</html>

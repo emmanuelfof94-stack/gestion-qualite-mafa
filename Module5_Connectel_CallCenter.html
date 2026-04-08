@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module — Connectel pour Agents Call Center | Formation</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#8D0C23;--blue-light:#B5112C;--blue-pale:#F9E8EC;--orange:#CF9E41;--orange-light:#DDB55A;--orange-pale:#FAF3E0;--teal:#584B26;--teal-pale:#F3EDD8;--red:#6A091A;--red-pale:#F2D6DC;--grey:#455A64;--grey-light:#ECEFF1;--bg:#FCFBF8;--white:#FFFFFF;--shadow:0 4px 24px rgba(141,12,35,0.12);--radius:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:#1a2332;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:280px;min-height:100vh;background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo .badge{display:inline-block;background:var(--orange-light);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;}
+.sidebar-logo h1{color:white;font-size:16px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;}
+.nav-section{padding:10px 8px 4px;}
+.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;padding:0 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,.18);color:white;font-weight:700;}
+.nav-item .icon{font-size:14px;min-width:18px;}
+.nav-progress{padding:12px 18px 18px;margin-top:auto;border-top:1px solid rgba(255,255,255,.12);}
+.nav-progress p{color:rgba(255,255,255,.5);font-size:11px;margin-bottom:5px;}
+.progress-bar-wrap{background:rgba(255,255,255,.15);border-radius:10px;height:5px;}
+.progress-bar-fill{height:100%;border-radius:10px;background:var(--orange-light);transition:width .4s;}
+.progress-pct{color:white;font-size:11px;font-weight:700;margin-top:4px;}
+.candidate-field{padding:10px 14px;border-top:1px solid rgba(255,255,255,.15);}
+.candidate-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.candidate-field input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;color:white;font-size:12px;font-family:inherit;outline:none;}
+.candidate-field input::placeholder{color:rgba(255,255,255,.35);}
+.main{margin-left:280px;flex:1;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:13px 30px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:16px;font-weight:700;color:var(--blue);}
+.topbar-subtitle{font-size:11px;color:var(--grey);margin-top:2px;}
+.topbar-badge{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.content{padding:26px 30px;max-width:980px;}
+.page{display:none;}.page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.module-header{border-radius:var(--radius);overflow:hidden;margin-bottom:26px;}
+.module-header-bg{padding:30px 34px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);}
+.module-num{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.module-title{font-size:24px;font-weight:800;color:white;line-height:1.2;margin-bottom:5px;}
+.module-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+.module-chip{background:rgba(255,255,255,.18);color:white;font-size:11px;padding:4px 11px;border-radius:20px;}
+.module-objectives{background:rgba(255,255,255,.10);padding:16px 34px 20px;border-top:1px solid rgba(255,255,255,.1);}
+.module-objectives p{color:rgba(255,255,255,.6);font-size:11px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px;font-weight:700;}
+.obj-list{list-style:none;}
+.obj-list li{color:white;font-size:13px;padding:3px 0;display:flex;align-items:flex-start;gap:9px;}
+.obj-list li::before{content:"→";color:rgba(255,255,255,.5);font-weight:700;flex-shrink:0;}
+.card{background:white;border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;box-shadow:0 1px 8px rgba(0,0,0,.06);}
+.card-title{font-size:14px;font-weight:700;color:var(--blue);margin-bottom:13px;display:flex;align-items:center;gap:8px;}
+.card-title::after{content:'';flex:1;height:1px;background:var(--blue-pale);}
+.info-box{border-radius:10px;padding:14px 16px;margin-bottom:13px;border-left:4px solid;}
+.info-box.blue{background:var(--blue-pale);border-color:var(--blue);}
+.info-box.orange{background:var(--orange-pale);border-color:var(--orange);}
+.info-box.teal{background:var(--teal-pale);border-color:var(--teal);}
+.info-box.red{background:var(--red-pale);border-color:var(--red);}
+.info-box-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:7px;}
+.info-box.blue .info-box-title{color:var(--blue);}
+.info-box.orange .info-box-title{color:var(--orange);}
+.info-box.teal .info-box-title{color:var(--teal);}
+.info-box.red .info-box-title{color:var(--red);}
+.info-box ul{list-style:none;}
+.info-box ul li{font-size:13px;padding:3px 0;color:#2d3748;display:flex;gap:8px;align-items:flex-start;}
+.info-box ul li::before{content:"•";font-weight:700;flex-shrink:0;}
+.info-box.blue ul li::before{color:var(--blue);}
+.info-box.orange ul li::before{color:var(--orange);}
+.info-box.teal ul li::before{color:var(--teal);}
+.info-box.red ul li::before{color:var(--red);}
+.tbl-wrap{overflow-x:auto;margin-bottom:13px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead tr{background:var(--blue);color:white;}
+thead th{padding:9px 12px;text-align:left;font-weight:600;font-size:12px;}
+tbody tr:nth-child(even){background:#f8fafc;}
+tbody td{padding:9px 12px;border-bottom:1px solid #e2e8f0;vertical-align:top;line-height:1.5;}
+.tbl-orange thead tr{background:var(--orange);}
+.tbl-teal thead tr{background:var(--teal);}
+.step-item{display:flex;gap:14px;margin-bottom:14px;align-items:flex-start;}
+.step-num{width:30px;height:30px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.step-content{flex:1;}
+.step-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:3px;}
+.step-desc{font-size:13px;color:#4a5568;line-height:1.6;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:14px;}
+.mini-card{background:white;border:1px solid #e2e8f0;border-radius:10px;padding:14px 16px;}
+.mini-card .mc-icon{font-size:20px;margin-bottom:7px;}
+.mini-card .mc-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:3px;}
+.mini-card .mc-desc{font-size:12px;color:var(--grey);line-height:1.5;}
+.highlight-box{background:linear-gradient(135deg,var(--blue),var(--blue-light));border-radius:12px;padding:18px 22px;margin-bottom:16px;color:white;}
+.highlight-box h3{font-size:15px;font-weight:800;margin-bottom:7px;}
+.highlight-box p{font-size:13px;color:rgba(255,255,255,.8);line-height:1.6;}
+/* Interface mockup */
+.interface-mockup{background:#1a2332;border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.mockup-bar{background:#0d1521;padding:10px 16px;display:flex;align-items:center;gap:8px;}
+.mockup-dot{width:10px;height:10px;border-radius:50%;}
+.mockup-title{color:rgba(255,255,255,.6);font-size:11px;font-family:'JetBrains Mono',monospace;margin-left:6px;}
+.mockup-body{padding:20px;}
+.mockup-menu{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
+.mockup-btn{padding:6px 12px;border-radius:7px;font-size:11px;font-weight:700;border:none;cursor:pointer;font-family:'Sora',sans-serif;}
+.mockup-btn.active-btn{background:var(--orange-light);color:white;}
+.mockup-btn.inactive-btn{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);}
+.mockup-panel{background:rgba(255,255,255,.05);border-radius:8px;padding:14px;color:white;}
+.mockup-panel p{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:8px;}
+.mockup-field{background:rgba(255,255,255,.1);border-radius:6px;padding:8px 12px;font-size:12px;color:rgba(255,255,255,.8);margin-bottom:8px;font-family:'JetBrains Mono',monospace;}
+.status-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.status-green{background:rgba(100,200,100,.2);color:#4ade80;}
+.status-red{background:rgba(200,50,50,.2);color:#f87171;}
+.status-yellow{background:rgba(250,200,50,.2);color:#fbbf24;}
+.status-blue{background:rgba(100,150,250,.2);color:#93c5fd;}
+/* Script box */
+.script-box{background:#1a2332;border-radius:10px;padding:20px 22px;margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.8;color:#e2e8f0;position:relative;}
+.script-box::before{content:'🎙️ SCRIPT';position:absolute;top:-10px;left:14px;background:var(--blue);color:white;font-size:10px;font-weight:700;padding:2px 9px;border-radius:20px;font-family:'Sora',sans-serif;letter-spacing:.08em;}
+.sa{color:var(--orange-light);font-weight:700;}
+/* Workflow diagram */
+.workflow{display:flex;flex-direction:column;gap:0;}
+.wf-step{display:flex;align-items:stretch;gap:0;}
+.wf-line{display:flex;flex-direction:column;align-items:center;width:44px;flex-shrink:0;}
+.wf-circle{width:36px;height:36px;border-radius:50%;background:var(--blue);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0;}
+.wf-connector{width:2px;background:var(--blue-pale);flex:1;min-height:24px;}
+.wf-content{flex:1;padding:0 0 20px 12px;}
+.wf-title{font-size:13px;font-weight:700;color:#1a2332;margin-bottom:3px;margin-top:6px;}
+.wf-desc{font-size:12px;color:#4a5568;line-height:1.6;}
+.badge-stat{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;}
+.badge-stat.green{background:#d1fae5;color:#065f46;}
+.badge-stat.red{background:#fee2e2;color:#991b1b;}
+.badge-stat.yellow{background:#fef3c7;color:#92400e;}
+@media(max-width:768px){.sidebar{display:none;}.main{margin-left:0;}.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">Connectel Agent</span>
+    <h1>Maîtriser Connectel</h1>
+    <p>Module Call Center</p>
+  </div>
+  <div class="candidate-field">
+    <label>Nom du candidat</label>
+    <input type="text" placeholder="Votre nom complet...">
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Sections</div>
+    <button class="nav-item active" onclick="go('s1',this)"><span class="icon">🌐</span>Qu'est-ce que Connectel ?</button>
+    <button class="nav-item" onclick="go('s2',this)"><span class="icon">🖥️</span>Interface de l'Agent</button>
+    <button class="nav-item" onclick="go('s3',this)"><span class="icon">📋</span>Gestion des Cas</button>
+    <button class="nav-item" onclick="go('s4',this)"><span class="icon">📞</span>Passer un Appel</button>
+    <button class="nav-item" onclick="go('s5',this)"><span class="icon">📝</span>Formulaire Pré-Visite</button>
+    <button class="nav-item" onclick="go('s6',this)"><span class="icon">✅</span>Formulaire Post-Visite</button>
+    <button class="nav-item" onclick="go('s7',this)"><span class="icon">🤖</span>Rapport IA &amp; Conformité</button>
+    <button class="nav-item" onclick="go('s8',this)"><span class="icon">⚙️</span>Statuts &amp; Workflows</button>
+    <button class="nav-item" onclick="go('s9',this)"><span class="icon">📊</span>Mon Tableau de Bord</button>
+    <button class="nav-item" onclick="go('s10',this)"><span class="icon">🔚</span>Clôture de Journée</button>
+  </nav>
+  <div class="nav-progress">
+    <p>Progression</p>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="pb" style="width:10%"></div></div>
+    <div class="progress-pct" id="pp">Section 1 / 10</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Connectel — Formation Agent Call Center</div>
+      <div class="topbar-subtitle">Maîtriser la plateforme de A à Z</div>
+    </div>
+    <span class="topbar-badge">Connectel · ID30</span>
+  </div>
+  <div class="content">
+
+    <!-- S1 : Qu'est-ce que Connectel -->
+    <div id="s1" class="page active">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">CONNECTEL · SECTION 01</div>
+          <div class="module-title">Qu'est-ce que Connectel ?</div>
+          <div class="module-meta">
+            <span class="module-chip">🌐 Plateforme omnicanale</span>
+            <span class="module-chip">🤖 IA intégrée</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre ce qu'est Connectel et pourquoi vous l'utilisez</li>
+            <li>Identifier les 4 fonctions clés de la plateforme</li>
+            <li>Savoir ce que l'IA fait automatiquement pendant vos appels</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <h3>🌐 Connectel en une phrase</h3>
+        <p>Connectel est la <strong>plateforme centrale</strong> qui vous permet de gérer tous vos appels, formulaires et rapports en un seul endroit. C'est aussi le système qui <strong>enregistre et analyse automatiquement</strong> chacun de vos appels via l'Intelligence Artificielle.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🎯 Pourquoi utilisons-nous Connectel ?</div>
+        <div class="grid-2">
+          <div class="mini-card"><div class="mc-icon">📋</div><div class="mc-title">Gestion des cas</div><div class="mc-desc">Tous les marchands à appeler vous sont assignés automatiquement. Vous n'avez pas à les chercher.</div></div>
+          <div class="mini-card"><div class="mc-icon">📞</div><div class="mc-title">Appels intégrés</div><div class="mc-desc">Vous appelez directement depuis la plateforme. Pas besoin d'un téléphone séparé.</div></div>
+          <div class="mini-card"><div class="mc-icon">📝</div><div class="mc-title">Formulaires guidés</div><div class="mc-desc">Les formulaires pré et post-visite s'affichent automatiquement pendant l'appel.</div></div>
+          <div class="mini-card"><div class="mc-icon">🤖</div><div class="mc-title">Contrôle qualité IA</div><div class="mc-desc">L'IA vérifie que vous avez bien suivi le script. Résultat immédiat après chaque appel.</div></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤖 Ce que l'IA fait automatiquement (sans action de votre part)</div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">1</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Enregistrement de l'appel</div><div class="wf-desc">Dès que vous démarrez un appel, Connectel l'enregistre automatiquement. Vous n'avez rien à faire.</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">2</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Transcription de la conversation</div><div class="wf-desc">L'IA retranscrit chaque mot de l'appel en texte avec l'horodatage exact.</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">3</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Vérification du script</div><div class="wf-desc">L'IA vérifie que les 5 étapes du script ont été respectées dans l'ordre.</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">4</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Affichage du résultat</div><div class="wf-desc">Immédiatement après l'appel : <span class="badge-stat green">✅ Script Conforme : OUI</span> ou <span class="badge-stat red">❌ Script Conforme : NON</span></div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">5</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Rapport automatique</div><div class="wf-desc">À 17h30, un rapport complet de la journée est généré automatiquement par l'IA.</div></div>
+          </div>
+        </div>
+
+        <div class="info-box red">
+          <div class="info-box-title">⚠ À retenir absolument</div>
+          <ul><li>L'IA enregistre <strong>100% de vos appels</strong>. Il n'y a pas de bouton pour l'activer ou la désactiver. <strong>Chaque mot compte.</strong></li></ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🖥️ Les 3 espaces de Connectel que vous utilisez</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Espace</th><th>Contenu</th><th>Quand l'utiliser</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Ma File d'Attente</strong></td><td>Liste de tous les cas qui vous sont assignés aujourd'hui</td><td>En début de journée et tout au long de la journée</td></tr>
+              <tr><td><strong>Fiche Marchand</strong></td><td>Informations du marchand (nom, téléphone, adresse, secteur)</td><td>Avant et pendant chaque appel</td></tr>
+              <tr><td><strong>Formulaire d'Appel</strong></td><td>Formulaire à remplir pendant l'appel (pré ou post-visite)</td><td>Pendant et immédiatement après chaque appel</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S2 : Interface -->
+    <div id="s2" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">CONNECTEL · SECTION 02</div>
+          <div class="module-title">Interface de l'Agent</div>
+          <div class="module-meta">
+            <span class="module-chip">🖥️ Navigation</span>
+            <span class="module-chip">🗂️ Menus principaux</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Connaître les zones principales de l'interface Connectel</li>
+            <li>Savoir où trouver sa file d'attente et ses cas</li>
+            <li>Maîtriser la navigation entre les différentes sections</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="interface-mockup">
+        <div class="mockup-bar">
+          <div class="mockup-dot" style="background:#ff5f57"></div>
+          <div class="mockup-dot" style="background:#febc2e"></div>
+          <div class="mockup-dot" style="background:#28c840"></div>
+          <span class="mockup-title">Connectel — Espace Agent Call Center</span>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:10px;">
+            <span class="status-pill status-green">● Connecté</span>
+            <span style="color:rgba(255,255,255,.5);font-size:11px;font-family:'JetBrains Mono',monospace">Diallo Aminata</span>
+          </div>
+        </div>
+        <div class="mockup-body">
+          <div class="mockup-menu">
+            <button class="mockup-btn active-btn">📋 Ma File d'Attente (47)</button>
+            <button class="mockup-btn inactive-btn">📞 En Cours d'Appel</button>
+            <button class="mockup-btn inactive-btn">✅ Traités (53)</button>
+            <button class="mockup-btn inactive-btn">❌ Non-Joignables (8)</button>
+            <button class="mockup-btn inactive-btn">📊 Mon Rapport</button>
+          </div>
+          <div class="mockup-panel">
+            <p style="color:rgba(255,255,255,.5);font-size:10px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;">Cas en attente — Appels Pré-Visite</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;flex-shrink:0;"></div>
+                <div style="flex:1;"><div style="color:white;font-size:12px;font-weight:700;">KONAN Kouamé — Commerce général</div><div style="color:rgba(255,255,255,.5);font-size:11px;">Tél: 0701234567 · Abobo, Abidjan</div></div>
+                <span class="status-pill status-yellow">Pré-Visite</span>
+                <button style="background:var(--orange-light);color:white;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;">Appeler</button>
+              </div>
+              <div style="background:rgba(255,255,255,.08);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:12px;">
+                <div style="width:8px;height:8px;border-radius:50%;background:#fbbf24;flex-shrink:0;"></div>
+                <div style="flex:1;"><div style="color:white;font-size:12px;font-weight:700;">BAMBA Fatoumata — Couture/Confection</div><div style="color:rgba(255,255,255,.5);font-size:11px;">Tél: 0709876543 · Yopougon, Abidjan</div></div>
+                <span class="status-pill status-blue">Post-Visite</span>
+                <button style="background:var(--orange-light);color:white;border:none;border-radius:6px;padding:6px 14px;font-size:11px;font-weight:700;cursor:pointer;">Appeler</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🗂️ Description des Zones de l'Interface</div>
+
+        <div class="info-box blue">
+          <div class="info-box-title">📋 Zone 1 — Barre de Navigation (haut)</div>
+          <ul>
+            <li><strong>Ma File d'Attente</strong> : tous les cas à traiter avec le nombre entre parenthèses</li>
+            <li><strong>En Cours d'Appel</strong> : s'active automatiquement pendant un appel</li>
+            <li><strong>Traités</strong> : cas que vous avez déjà complétés aujourd'hui</li>
+            <li><strong>Non-Joignables</strong> : marchands non contactés (sonnerie sans réponse)</li>
+            <li><strong>Mon Rapport</strong> : vos statistiques personnelles de la journée</li>
+          </ul>
+        </div>
+
+        <div class="info-box orange">
+          <div class="info-box-title">📋 Zone 2 — Carte Marchand</div>
+          <ul>
+            <li><strong>Nom complet</strong> du marchand et secteur d'activité</li>
+            <li><strong>Numéro de téléphone</strong> (cliquer pour appeler directement)</li>
+            <li><strong>Adresse complète</strong> et zone géographique</li>
+            <li><strong>Type d'appel</strong> : Pré-Visite ou Post-Visite (affiché en badge coloré)</li>
+            <li><strong>Historique</strong> : derniers appels et statuts précédents</li>
+          </ul>
+        </div>
+
+        <div class="info-box teal">
+          <div class="info-box-title">📋 Zone 3 — Indicateurs de Statut (votre profil)</div>
+          <ul>
+            <li><strong>Statut connexion</strong> : Connecté (vert) / Pause (orange) / Déconnecté (rouge)</li>
+            <li><strong>Compteur de cas</strong> : X traités sur Y assignés</li>
+            <li><strong>Taux de conformité</strong> du jour (mis à jour après chaque appel)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🚦 Les Statuts de Connexion Agent</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Statut</th><th>Signification</th><th>Quand l'utiliser</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge-stat green">● Disponible</span></td><td>Vous êtes prêt à traiter des cas</td><td>Dès votre connexion et après chaque appel</td></tr>
+              <tr><td><span class="badge-stat yellow">● En Pause</span></td><td>Vous ne recevez pas de nouveaux cas temporairement</td><td>Pause repas ou urgence courte</td></tr>
+              <tr><td><span class="badge-stat red">● En Appel</span></td><td>Appel en cours — s'active automatiquement</td><td>Automatique pendant un appel</td></tr>
+              <tr><td><span class="badge-stat red">● Déconnecté</span></td><td>Vous êtes hors de la plateforme</td><td>Fin de journée uniquement</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="info-box red">
+          <div class="info-box-title">⚠ Règle</div>
+          <ul><li>Ne jamais rester en statut <strong>"Pause"</strong> plus de 30 minutes sans justification. Le superviseur est alerté automatiquement.</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S3 : Gestion des Cas -->
+    <div id="s3" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">CONNECTEL · SECTION 03</div>
+          <div class="module-title">Gestion des Cas dans Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">📋 File d'attente</span>
+            <span class="module-chip">🔄 Cycle d'un cas</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Comprendre le cycle de vie d'un cas de A à Z</li>
+            <li>Savoir prioriser les cas dans la file d'attente</li>
+            <li>Gérer correctement les cas non-joignables</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Cycle de Vie d'un Cas</div>
+        <div class="workflow">
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">1</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Assignation (9h00 automatique)</div><div class="wf-desc">Le cas apparaît dans votre file d'attente. Statut : <span class="badge-stat yellow">En attente</span></div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">2</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Consultation de la fiche</div><div class="wf-desc">Vous cliquez sur le cas, lisez les informations du marchand avant d'appeler.</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">3</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Appel en cours</div><div class="wf-desc">Vous cliquez sur "Appeler". Le formulaire s'ouvre. Statut : <span class="badge-stat red">En appel</span></div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">4</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Saisie du formulaire</div><div class="wf-desc">Vous remplissez le formulaire pendant et après l'appel (pré ou post-visite).</div></div>
+          </div>
+          <div class="wf-step">
+            <div class="wf-line"><div class="wf-circle">5</div><div class="wf-connector"></div></div>
+            <div class="wf-content"><div class="wf-title">Validation et clôture du cas</div><div class="wf-desc">Vous cliquez sur "Soumettre". L'IA affiche la conformité. Statut : <span class="badge-stat green">Traité</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Types de Cas dans la File d'Attente</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Badge</th><th>Type de cas</th><th>Action à effectuer</th><th>Formulaire</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge-stat yellow">Pré-Visite</span></td><td>Marchand à appeler avant la visite terrain</td><td>Script pré-visite (5 étapes)</td><td>Formulaire Pré-Visite</td></tr>
+              <tr><td><span class="badge-stat blue">Post-Visite</span></td><td>Marchand à rappeler 2-4h après la visite</td><td>Script post-visite (6 étapes)</td><td>Formulaire Post-Visite</td></tr>
+              <tr><td><span class="badge-stat red">Urgent</span></td><td>Cas à traiter en priorité (RDV imminent)</td><td>Appeler immédiatement</td><td>Selon le type</td></tr>
+              <tr><td><span class="badge-stat yellow">Rappel</span></td><td>Marchand non-joignable — tentative de rappel</td><td>3ème tentative max</td><td>Selon le type</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📵 Gestion des Cas Non-Joignables</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">1ère tentative sans réponse</div><div class="step-desc">Sonnerie sans réponse : sélectionner "Non-joignable — 1ère tentative". Le système replanifie automatiquement un rappel dans 1h.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">2ème tentative sans réponse</div><div class="step-desc">Sélectionner "Non-joignable — 2ème tentative". Replanifié dans 2h.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">3ème tentative sans réponse</div><div class="step-desc">Sélectionner "Non-joignable — 3ème tentative". Le cas passe en statut <strong>"Inaccessible"</strong>. Aucune autre tentative de votre part. Le superviseur gère la suite.</div></div></div>
+
+        <div class="info-box orange">
+          <div class="info-box-title">⏳ Cas Numéro Invalide ou Erreur de numéro</div>
+          <ul>
+            <li>Sélectionner "Numéro invalide / Erreur" dans le formulaire</li>
+            <li>Le cas est automatiquement transmis au Back Office pour correction</li>
+            <li>Ne pas tenter d'autres numéros sans autorisation</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S4 : Passer un appel -->
+    <div id="s4" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">CONNECTEL · SECTION 04</div>
+          <div class="module-title">Passer un Appel dans Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">📞 Appel intégré</span>
+            <span class="module-chip">🔴 Enregistrement auto</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir initier un appel correctement depuis Connectel</li>
+            <li>Comprendre ce qui se passe techniquement pendant l'appel</li>
+            <li>Maîtriser les actions disponibles pendant et après l'appel</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📞 Procédure d'Appel Étape par Étape</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Sélectionner le cas dans la file d'attente</div><div class="step-desc">Cliquer sur la carte du marchand. Lire attentivement les informations (nom, adresse, secteur, type d'appel) avant d'appeler.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Cliquer sur "Appeler"</div><div class="step-desc">Le bouton vert "Appeler" lance l'appel depuis Connectel. L'enregistrement démarre automatiquement. Le formulaire s'ouvre en parallèle.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Pendant l'appel : suivre le script</div><div class="step-desc">Respecter les 5 étapes (pré-visite) ou 6 étapes (post-visite) dans l'ordre. Remplir le formulaire en parallèle pendant la conversation.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Fin de l'appel : cliquer sur "Raccrocher"</div><div class="step-desc">Ne jamais quitter l'appel sans avoir raccroché dans Connectel (même si le marchand a déjà raccroché). L'enregistrement s'arrête à ce moment.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Compléter et soumettre le formulaire</div><div class="step-desc">Vous avez 5 minutes après le raccroché pour compléter et soumettre le formulaire. Après 5 minutes, un rappel apparaît.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ Commandes Disponibles Pendant un Appel</div>
+        <div class="interface-mockup">
+          <div class="mockup-bar">
+            <span class="status-pill status-red">● Appel en cours — 02:34</span>
+            <span class="mockup-title" style="margin-left:auto">KONAN Kouamé · 0701234567</span>
+          </div>
+          <div class="mockup-body">
+            <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+              <button class="mockup-btn inactive-btn">🔇 Couper le micro</button>
+              <button class="mockup-btn inactive-btn">🔊 Haut-parleur</button>
+              <button class="mockup-btn inactive-btn">⏸ Mettre en attente</button>
+              <button class="mockup-btn inactive-btn">📝 Note rapide</button>
+              <button class="mockup-btn" style="background:#ef4444;color:white;">📵 Raccrocher</button>
+            </div>
+            <div class="mockup-panel">
+              <p>Formulaire en cours de remplissage — Pré-Visite</p>
+              <div class="mockup-field">Étape actuelle : 3 / 5 — Confirmation disponibilité</div>
+              <div class="mockup-field">RDV confirmé : ⬜ Oui  ⬜ Non  ⬜ Report demandé</div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Commande</th><th>Utilisation</th><th>Important</th></tr></thead>
+            <tbody>
+              <tr><td>🔇 <strong>Couper le micro</strong></td><td>Mettre votre micro en sourdine sans couper l'appel</td><td>Le marchand vous entend toujours parler avant</td></tr>
+              <tr><td>⏸ <strong>Mettre en attente</strong></td><td>Pause pour consulter une information ou parler au superviseur</td><td>Avertir le marchand avant de le mettre en attente</td></tr>
+              <tr><td>📝 <strong>Note rapide</strong></td><td>Ajouter une note pendant l'appel sans quitter le formulaire</td><td>Notes visibles dans le rapport IA</td></tr>
+              <tr><td>📵 <strong>Raccrocher</strong></td><td>Terminer l'appel officiellement</td><td>Obligatoire pour stopper l'enregistrement IA</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- S5 : Formulaire Pré-Visite -->
+    <div id="s5" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">CONNECTEL · SECTION 05</div>
+          <div class="module-title">Formulaire Pré-Visite dans Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">📝 5 Étapes</span>
+            <span class="module-chip">⚡ Remplissage en temps réel</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir remplir le formulaire pré-visite pendant l'appel</li>
+            <li>Connaître chaque champ et sa signification</li>
+            <li>Éviter les erreurs de saisie qui invalident la conformité</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box orange">
+        <div class="info-box-title">💡 Conseil Pratique</div>
+        <ul><li>Remplissez le formulaire <strong>pendant l'appel</strong>, pas après. L'IA compare votre saisie avec l'enregistrement. Si vous saisissez des informations différentes de ce qui a été dit, un écart est détecté.</li></ul>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Champs du Formulaire Pré-Visite</div>
+
+        <div class="interface-mockup">
+          <div class="mockup-bar">
+            <span class="mockup-title">Formulaire Pré-Visite — KONAN Kouamé</span>
+            <span class="status-pill status-red" style="margin-left:auto">● Appel en cours</span>
+          </div>
+          <div class="mockup-body" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+            <div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>Statut de l'appel *</p>
+                <div class="mockup-field">▼ Sélectionner...</div>
+              </div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>RDV Confirmé *</p>
+                <div class="mockup-field">● Oui  ○ Non  ○ Report</div>
+              </div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>Date/Heure RDV *</p>
+                <div class="mockup-field">📅 --/--/---- ⏰ --:--</div>
+              </div>
+            </div>
+            <div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>Business toujours actif ? *</p>
+                <div class="mockup-field">○ Oui  ○ Non  ○ Inconnu</div>
+              </div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>Changements depuis enrôlement ?</p>
+                <div class="mockup-field">○ Aucun  ○ Déménagement  ○ Autre</div>
+              </div>
+              <div class="mockup-panel" style="margin-bottom:10px;">
+                <p>Observations libres</p>
+                <div class="mockup-field">Taper ici...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tbl-wrap" style="margin-top:14px;">
+          <table>
+            <thead><tr><th>Champ</th><th>Options disponibles</th><th>Obligatoire</th><th>Conseil</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Statut de l'appel</strong></td><td>Répondu / Messagerie / Sonnerie sans réponse / Numéro invalide</td><td>✅ Oui</td><td>Sélectionner dès le début de l'appel</td></tr>
+              <tr><td><strong>RDV Confirmé</strong></td><td>Oui / Non / Report demandé</td><td>✅ Oui</td><td>Mettre "Report" si nouveau créneau proposé</td></tr>
+              <tr><td><strong>Date/Heure RDV</strong></td><td>Saisie manuelle (date + heure)</td><td>✅ Si RDV Oui</td><td>Confirmer la date exacte avec le marchand</td></tr>
+              <tr><td><strong>Business actif ?</strong></td><td>Oui / Non / Inconnu</td><td>✅ Oui</td><td>Question obligatoire du script étape 4</td></tr>
+              <tr><td><strong>Changements ?</strong></td><td>Aucun / Déménagement / Incendie / Embauche / Changement activité / Autre</td><td>Non</td><td>Cocher tout ce qui est mentionné</td></tr>
+              <tr><td><strong>Nouvelle adresse</strong></td><td>Saisie libre</td><td>Si déménagement</td><td>Saisir l'adresse exacte dictée par le marchand</td></tr>
+              <tr><td><strong>Observations</strong></td><td>Texte libre</td><td>Non</td><td>Ajouter tout contexte utile pour l'agent terrain</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚠️ Erreurs à Éviter dans le Formulaire</div>
+        <div class="info-box red">
+          <div class="info-box-title">Erreurs fréquentes qui causent "Script Conforme : NON"</div>
+          <ul>
+            <li>Saisir "RDV : OUI" alors que le marchand a refusé dans l'enregistrement</li>
+            <li>Oublier de cocher "Business actif" — l'IA vérifie que cette question a été posée</li>
+            <li>Soumettre le formulaire sans avoir raccroché dans Connectel</li>
+            <li>Laisser le champ "Statut de l'appel" vide (bouton Soumettre bloqué)</li>
+            <li>Saisir une date de RDV dans le passé (le système refuse)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S6 : Formulaire Post-Visite -->
+    <div id="s6" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">CONNECTEL · SECTION 06</div>
+          <div class="module-title">Formulaire Post-Visite dans Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">✅ 6 Étapes</span>
+            <span class="module-chip">⭐ Satisfaction 1-5</span>
+            <span class="module-chip">⏱ 30 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir remplir le formulaire post-visite correctement</li>
+            <li>Maîtriser la saisie des notes de satisfaction</li>
+            <li>Enregistrer les corrections demandées sans erreur</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Champs du Formulaire Post-Visite</div>
+        <div class="tbl-wrap">
+          <table class="tbl-teal">
+            <thead><tr><th>Champ</th><th>Options</th><th>Obligatoire</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Statut de l'appel</strong></td><td>Répondu / Messagerie / Sans réponse / Invalide</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Satisfaction globale</strong></td><td>1 (très insatisfait) à 5 (très satisfait)</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Type de visite</strong></td><td>Nouvel entrepreneur / Mise à jour</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Ponctualité agent</strong></td><td>À l'heure / En retard / En avance</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Professionnalisme agent</strong></td><td>Score 1 à 5</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Clarté des explications</strong></td><td>Oui / Non / Moyen</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Durée de la visite</strong></td><td>Acceptable / Trop longue / Trop courte</td><td>✅ Si répondu</td></tr>
+              <tr><td><strong>Correction demandée</strong></td><td>Oui / Non</td><td>✅ Oui</td></tr>
+              <tr><td><strong>Type de correction</strong></td><td>Adresse / Secteur / Nom / Téléphone / Autre</td><td>✅ Si correction Oui</td></tr>
+              <tr><td><strong>Information incorrecte</strong></td><td>Texte libre (valeur actuelle)</td><td>✅ Si correction Oui</td></tr>
+              <tr><td><strong>Information correcte</strong></td><td>Texte libre (nouvelle valeur)</td><td>✅ Si correction Oui</td></tr>
+              <tr><td><strong>Observations</strong></td><td>Texte libre</td><td>Non</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">✏️ Comment Saisir une Correction dans Connectel</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Champ "Correction demandée" → Sélectionner OUI</div><div class="step-desc">Cette sélection ouvre automatiquement les champs de correction supplémentaires.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Sélectionner le type de correction</div><div class="step-desc">Menu déroulant : Adresse / Secteur d'activité / Nom / Téléphone / Autre.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Saisir l'information incorrecte</div><div class="step-desc">Écrire exactement ce qui est actuellement dans le système (ancienne valeur).</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Saisir l'information correcte</div><div class="step-desc">Écrire la nouvelle valeur telle que dictée par le marchand. Relire pour confirmer.</div></div></div>
+        <div class="step-item"><div class="step-num">5</div><div class="step-content"><div class="step-title">Soumettre — le statut "CORRECTION DEMANDÉE" s'applique automatiquement</div><div class="step-desc">Le Back Office reçoit une alerte immédiate pour traiter la correction.</div></div></div>
+      </div>
+    </div>
+
+    <!-- S7 : Rapport IA -->
+    <div id="s7" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">CONNECTEL · SECTION 07</div>
+          <div class="module-title">Rapport IA &amp; Conformité du Script</div>
+          <div class="module-meta">
+            <span class="module-chip">🤖 Résultat immédiat</span>
+            <span class="module-chip">📊 Analyse détaillée</span>
+            <span class="module-chip">⏱ 25 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir lire et interpréter le rapport IA après chaque appel</li>
+            <li>Comprendre pourquoi un appel peut être marqué "Non-Conforme"</li>
+            <li>Utiliser le rapport pour s'améliorer</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🤖 Le Rapport IA — Affiché Après Chaque Appel</div>
+        <div class="interface-mockup">
+          <div class="mockup-bar">
+            <span class="mockup-title">Rapport IA — KONAN Kouamé — Appel Pré-Visite · 03:47</span>
+          </div>
+          <div class="mockup-body">
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+              <div style="background:rgba(74,222,128,.15);border:1px solid rgba(74,222,128,.3);border-radius:10px;padding:12px 18px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:#4ade80;">OUI</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px;">Script Conforme</div>
+              </div>
+              <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px 18px;flex:1;">
+                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-bottom:8px;">ÉTAPES VÉRIFIÉES</div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 1 : Salutation + identification ID30</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 2 : Objet de l'appel (visite)</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 3 : Confirmation disponibilité</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 4 : Vérification adresse + activité + changements</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 5 : Clôture avec durée 15 min</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="mockup-panel">
+              <p>ANALYSE TONALITÉ</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;">
+                <span class="status-pill status-green">Ton professionnel</span>
+                <span class="status-pill status-green">Vouvoiement respecté</span>
+                <span class="status-pill status-green">Langage approprié</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">❌ Exemple de Rapport "Non-Conforme"</div>
+        <div class="interface-mockup">
+          <div class="mockup-bar">
+            <span class="mockup-title">Rapport IA — BAMBA Fatoumata — Appel Pré-Visite · 01:52</span>
+          </div>
+          <div class="mockup-body">
+            <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+              <div style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:12px 18px;text-align:center;">
+                <div style="font-size:22px;font-weight:800;color:#f87171;">NON</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;margin-top:3px;">Script Non-Conforme</div>
+              </div>
+              <div style="background:rgba(255,255,255,.05);border-radius:10px;padding:12px 18px;flex:1;">
+                <div style="color:rgba(255,255,255,.6);font-size:11px;margin-bottom:8px;">ÉTAPES MANQUANTES</div>
+                <div style="display:flex;flex-direction:column;gap:4px;">
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 1 : Salutation + identification ID30</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 2 : Objet de l'appel</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#4ade80;">✅</span><span style="color:rgba(255,255,255,.8);font-size:12px;">Étape 3 : Confirmation disponibilité</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#f87171;">❌</span><span style="color:#f87171;font-size:12px;font-weight:700;">Étape 4 : Questions "changements" non posées</span></div>
+                  <div style="display:flex;align-items:center;gap:8px;"><span style="color:#fbbf24;">⚠</span><span style="color:#fbbf24;font-size:12px;">Étape 5 : Durée 15 min non mentionnée</span></div>
+                </div>
+              </div>
+            </div>
+            <div style="background:rgba(239,68,68,.1);border-radius:8px;padding:12px;border:1px solid rgba(239,68,68,.2);">
+              <div style="color:#f87171;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:6px;">Action requise du superviseur</div>
+              <div style="color:rgba(255,255,255,.7);font-size:12px;">Cet appel sera revu par votre superviseur. Un feedback vous sera donné.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📈 Comment Utiliser le Rapport pour Progresser</div>
+        <div class="info-box teal">
+          <div class="info-box-title">Après chaque appel non-conforme</div>
+          <ul>
+            <li>Identifier précisément l'étape manquante dans le rapport IA</li>
+            <li>Relire le script correspondant à cette étape (Module 2)</li>
+            <li>Sur l'appel suivant, être particulièrement attentif à cette étape</li>
+            <li>En cas de doute, demander un feedback au superviseur</li>
+          </ul>
+        </div>
+        <div class="info-box blue">
+          <div class="info-box-title">Consulter votre historique de conformité</div>
+          <ul>
+            <li>Menu "Mon Rapport" → Onglet "Conformité"</li>
+            <li>Voir votre taux sur les 7 derniers jours</li>
+            <li>Identifier les étapes que vous manquez le plus souvent</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S8 : Statuts et Workflows -->
+    <div id="s8" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#584B26,#CF9E41)">
+          <div class="module-num">CONNECTEL · SECTION 08</div>
+          <div class="module-title">Statuts &amp; Workflows dans Connectel</div>
+          <div class="module-meta">
+            <span class="module-chip">🔄 Statuts d'appel</span>
+            <span class="module-chip">⚡ Automatisations</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser tous les statuts disponibles dans les formulaires</li>
+            <li>Comprendre les automatisations déclenchées par chaque statut</li>
+            <li>Éviter les erreurs de statut qui bloquent le workflow</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">🔄 Tous les Statuts d'Appel et leurs Effets</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Statut sélectionné</th><th>Signification</th><th>Action automatique déclenchée</th></tr></thead>
+            <tbody>
+              <tr><td><span class="badge-stat green">RDV Confirmé</span></td><td>Marchand disponible, visite confirmée</td><td>RDV enregistré, agent terrain notifié</td></tr>
+              <tr><td><span class="badge-stat yellow">Report Demandé</span></td><td>Nouveau créneau négocié avec le marchand</td><td>Nouveau RDV créé, superviseur alerté pour validation</td></tr>
+              <tr><td><span class="badge-stat red">Refus de visite</span></td><td>Marchand refuse catégoriquement</td><td>Superviseur alerté, cas mis en attente</td></tr>
+              <tr><td><span class="badge-stat yellow">Messagerie vocale</span></td><td>Appel redirigé vers messagerie</td><td>Rappel automatique planifié dans 1h</td></tr>
+              <tr><td><span class="badge-stat red">Sonnerie sans réponse</span></td><td>Personne n'a répondu</td><td>1ère tentative notée, rappel planifié 1h</td></tr>
+              <tr><td><span class="badge-stat red">Numéro invalide</span></td><td>Numéro incorrect ou désactivé</td><td>Transmis au Back Office pour correction immédiate</td></tr>
+              <tr><td><span class="badge-stat green">Satisfaction collectée</span></td><td>Appel post-visite complété avec succès</td><td>Notes envoyées au rapport, cas clôturé</td></tr>
+              <tr><td><span class="badge-stat yellow">Correction demandée</span></td><td>Marchand signale une erreur de données</td><td>Alerte Back Office, statut "CORRECTION DEMANDÉE"</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚡ Automatisations Connectel que vous Devez Connaître</div>
+        <div class="info-box blue">
+          <div class="info-box-title">Ce que Connectel fait automatiquement selon vos actions</div>
+          <ul>
+            <li>Sélectionner "Sans réponse" → cas replanifié automatiquement dans 1h sans action de votre part</li>
+            <li>Sélectionner "Numéro invalide" → alerte Back Office automatique + case retirée de votre file</li>
+            <li>Sélectionner "Correction demandée" → notification Back Office + case taggée "CORRECTION"</li>
+            <li>Soumettre un formulaire post-visite → notes de satisfaction ajoutées au rapport global automatiquement</li>
+            <li>Statut "Déconnecté" après 17h30 → votre rapport journalier est gelé et envoyé</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S9 : Mon Tableau de Bord -->
+    <div id="s9" class="page">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">CONNECTEL · SECTION 09</div>
+          <div class="module-title">Mon Tableau de Bord Personnel</div>
+          <div class="module-meta">
+            <span class="module-chip">📊 Stats personnelles</span>
+            <span class="module-chip">📈 Suivi progression</span>
+            <span class="module-chip">⏱ 20 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Savoir lire ses statistiques personnelles dans Connectel</li>
+            <li>Comprendre chaque indicateur et son objectif</li>
+            <li>Utiliser son tableau de bord pour s'améliorer</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📊 Tableau de Bord Agent — Vue d'ensemble</div>
+        <div class="interface-mockup">
+          <div class="mockup-bar">
+            <span class="mockup-title">Mon Rapport — Diallo Aminata — Aujourd'hui</span>
+          </div>
+          <div class="mockup-body">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;">
+              <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:26px;font-weight:800;color:#4ade80;">53</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Cas traités</div>
+              </div>
+              <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:26px;font-weight:800;color:#fbbf24;">47</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">En attente</div>
+              </div>
+              <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:26px;font-weight:800;color:#4ade80;">87%</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Conformité IA</div>
+              </div>
+              <div style="background:rgba(255,255,255,.08);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:26px;font-weight:800;color:#93c5fd;">4.2</div>
+                <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;">Satisfaction /5</div>
+              </div>
+            </div>
+            <div class="mockup-panel">
+              <p>Progression de la journée</p>
+              <div style="background:rgba(255,255,255,.1);border-radius:6px;height:8px;margin-top:8px;overflow:hidden;">
+                <div style="background:#4ade80;width:53%;height:100%;border-radius:6px;"></div>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-top:4px;">
+                <span style="font-size:10px;color:rgba(255,255,255,.4)">0 cas</span>
+                <span style="font-size:10px;color:#4ade80;font-weight:700;">53 / 100 traités</span>
+                <span style="font-size:10px;color:rgba(255,255,255,.4)">100 cas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📈 Comprendre Chaque Indicateur</div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Indicateur</th><th>Ce qu'il mesure</th><th>Objectif à atteindre</th><th>Que faire si en-dessous ?</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Cas traités</strong></td><td>Nombre de cas complétés (formulaire soumis)</td><td>~100/jour</td><td>Accélérer le rythme, éviter les longues pauses</td></tr>
+              <tr><td><strong>Taux de joignabilité</strong></td><td>% de marchands qui ont décroché</td><td>&gt; 70%</td><td>Signaler au superviseur (problème de données)</td></tr>
+              <tr><td><strong>Conformité IA</strong></td><td>% d'appels validés "Script Conforme : OUI"</td><td>&gt; 80%</td><td>Relire le script, demander coaching superviseur</td></tr>
+              <tr><td><strong>Satisfaction /5</strong></td><td>Note moyenne des post-visite collectées</td><td>&gt; 4/5</td><td>Signaler problèmes récurrents au superviseur</td></tr>
+              <tr><td><strong>Durée moyenne / appel</strong></td><td>Temps moyen par appel</td><td>2 à 4 minutes</td><td>Si trop court : script incomplet. Si trop long : optimiser.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📅 Mon Historique Hebdomadaire</div>
+        <div class="info-box teal">
+          <div class="info-box-title">Accéder à votre historique dans Connectel</div>
+          <ul>
+            <li>Menu "Mon Rapport" → Onglet "Semaine"</li>
+            <li>Voir l'évolution de votre conformité jour par jour</li>
+            <li>Identifier vos jours de meilleure performance</li>
+            <li>Consulter la liste de vos appels non-conformes avec le détail de chaque écart</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- S10 : Clôture de journée -->
+    <div id="s10" class="page">
+      <div class="module-header">
+        <div class="module-header-bg" style="background:linear-gradient(135deg,#150206,#8D0C23)">
+          <div class="module-num">CONNECTEL · SECTION 10</div>
+          <div class="module-title">Clôture de Journée</div>
+          <div class="module-meta">
+            <span class="module-chip">🔚 Procédure de fin</span>
+            <span class="module-chip">📊 Rapport 17h30</span>
+            <span class="module-chip">⏱ 15 min</span>
+          </div>
+        </div>
+        <div class="module-objectives"><p>Objectifs</p>
+          <ul class="obj-list">
+            <li>Maîtriser la procédure complète de clôture de journée</li>
+            <li>Savoir ce qui est généré automatiquement à 17h30</li>
+            <li>Comprendre les actions à effectuer avant de se déconnecter</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">📋 Checklist de Fin de Journée dans Connectel</div>
+        <div class="step-item"><div class="step-num">1</div><div class="step-content"><div class="step-title">Vérifier les cas encore ouverts</div><div class="step-desc">Menu "Ma File d'Attente" → s'assurer qu'il n'y a plus de cas en statut "En cours" ou formulaire non-soumis.</div></div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-content"><div class="step-title">Soumettre tous les formulaires en attente</div><div class="step-desc">Tout appel réalisé doit avoir son formulaire soumis avant 17h30. Après 17h30, le rapport est gelé.</div></div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-content"><div class="step-title">Consulter son rapport du jour</div><div class="step-desc">Menu "Mon Rapport" → prendre note de son taux de conformité et des cas non-conformes.</div></div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-content"><div class="step-title">Passer en statut "Déconnecté"</div><div class="step-desc">Cliquer sur son profil → "Se déconnecter". Ne jamais fermer le navigateur sans se déconnecter officiellement.</div></div></div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚙️ Ce qui se Passe Automatiquement à 17h30</div>
+        <div class="info-box orange">
+          <div class="info-box-title">Actions automatiques du système à 17h30</div>
+          <ul>
+            <li>Gel de la liste de présence avec le volume traité de chaque agent</li>
+            <li>Génération du rapport IA journalier (conformité, satisfaction, volume)</li>
+            <li>Transmission du rapport au superviseur et aux managers</li>
+            <li>Archivage automatique de tous les enregistrements d'appels</li>
+            <li>Calcul du taux de conformité global de l'équipe</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">⚠️ Erreurs à Éviter en Fin de Journée</div>
+        <div class="info-box red">
+          <div class="info-box-title">Erreurs fréquentes</div>
+          <ul>
+            <li>Fermer le navigateur sans se déconnecter → vous restez marqué "Connecté" jusqu'au lendemain</li>
+            <li>Laisser un formulaire non-soumis → le cas reste "En cours" et fausse les statistiques</li>
+            <li>Ne pas vérifier la file avant de partir → des cas urgents peuvent être bloqués</li>
+            <li>Se déconnecter avant 17h30 sans autorisation → absence de fin de journée signalée</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="info-box teal">
+        <div class="info-box-title">✅ Félicitations — Module Connectel Complété !</div>
+        <ul>
+          <li>Vous maîtrisez maintenant l'interface, les appels, les formulaires et les rapports IA</li>
+          <li>Pratiquez sur la plateforme avant votre première journée opérationnelle</li>
+          <li>En cas de doute : consultez votre superviseur ou ce module de formation</li>
+          <li>Passez au <strong>Module 4</strong> pour les exercices pratiques d'évaluation finale</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</main>
+</div>
+<script>
+const secs=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+let vis=new Set(['s1']);
+function go(id,btn){
+  secs.forEach(s=>document.getElementById(s).classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  vis.add(id);
+  const p=Math.round((vis.size/secs.length)*100);
+  document.getElementById('pb').style.width=p+'%';
+  document.getElementById('pp').textContent='Section '+vis.size+' / '+secs.length;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>

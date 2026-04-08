@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Module 4 — Exercices Pratiques | Formation Connectel</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#8D0C23;--blue-light:#B5112C;--blue-pale:#F9E8EC;--orange:#CF9E41;--orange-light:#DDB55A;--orange-pale:#FAF3E0;--teal:#584B26;--teal-pale:#F3EDD8;--red:#6A091A;--red-pale:#F2D6DC;--grey:#455A64;--grey-light:#ECEFF1;--bg:#FCFBF8;--white:#FFFFFF;--shadow:0 4px 24px rgba(141,12,35,0.12);--radius:14px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Sora',sans-serif;background:var(--bg);color:#1a2332;min-height:100vh;}
+.app{display:flex;min-height:100vh;}
+.sidebar{width:280px;min-height:100vh;background:var(--blue);position:fixed;top:0;left:0;bottom:0;display:flex;flex-direction:column;z-index:100;overflow-y:auto;}
+.sidebar-logo{padding:22px 18px 14px;border-bottom:1px solid rgba(255,255,255,.12);}
+.sidebar-logo .badge{display:inline-block;background:var(--orange-light);color:white;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em;text-transform:uppercase;margin-bottom:7px;}
+.sidebar-logo h1{color:white;font-size:16px;font-weight:800;line-height:1.2;}
+.sidebar-logo p{color:rgba(255,255,255,.55);font-size:11px;margin-top:3px;}
+.nav-section{padding:10px 8px 4px;}
+.nav-label{font-size:10px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.1em;padding:0 10px 6px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;cursor:pointer;color:rgba(255,255,255,.75);font-size:12px;font-weight:500;transition:all .2s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+.nav-item:hover{background:rgba(255,255,255,.1);color:white;}
+.nav-item.active{background:rgba(255,255,255,.18);color:white;font-weight:700;}
+.nav-item .icon{font-size:14px;min-width:18px;}
+.candidate-field{padding:10px 14px;border-top:1px solid rgba(255,255,255,.15);border-bottom:1px solid rgba(255,255,255,.12);}
+.candidate-field label{display:block;font-size:10px;font-weight:700;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+.candidate-field input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:7px 10px;color:white;font-size:12px;font-family:inherit;outline:none;}
+.candidate-field input::placeholder{color:rgba(255,255,255,.35);}
+.main{margin-left:280px;flex:1;}
+.topbar{background:white;border-bottom:1px solid #e2e8f0;padding:13px 30px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+.topbar-title{font-size:16px;font-weight:700;color:var(--blue);}
+.topbar-subtitle{font-size:11px;color:var(--grey);margin-top:2px;}
+.topbar-badge{background:var(--blue-pale);color:var(--blue);font-size:11px;font-weight:700;padding:4px 12px;border-radius:20px;}
+.content{padding:26px 30px;max-width:980px;}
+.page{display:none;}.page.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.module-header{border-radius:var(--radius);overflow:hidden;margin-bottom:26px;}
+.module-header-bg{padding:30px 34px;background:linear-gradient(135deg,var(--blue) 0%,var(--blue-light) 100%);}
+.module-num{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.65);font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.module-title{font-size:24px;font-weight:800;color:white;line-height:1.2;margin-bottom:5px;}
+.module-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:10px;}
+.module-chip{background:rgba(255,255,255,.18);color:white;font-size:11px;padding:4px 11px;border-radius:20px;}
+/* QUIZ */
+.quiz-wrap{background:white;border-radius:var(--radius);box-shadow:0 1px 8px rgba(0,0,0,.06);overflow:hidden;margin-bottom:20px;}
+.quiz-head{background:linear-gradient(135deg,#1a2332,#2d3748);padding:20px 26px;}
+.quiz-head h2{color:white;font-size:18px;font-weight:800;}
+.quiz-head p{color:rgba(255,255,255,.6);font-size:13px;margin-top:4px;}
+.quiz-meta{display:flex;gap:12px;margin-top:12px;flex-wrap:wrap;}
+.quiz-chip{background:rgba(255,255,255,.15);color:white;font-size:11px;padding:3px 10px;border-radius:20px;}
+.quiz-body{padding:26px;}
+.quiz-progress-bar{height:4px;background:#e2e8f0;border-radius:4px;margin-bottom:24px;}
+.quiz-progress-fill{height:100%;border-radius:4px;background:var(--orange-light);transition:width .3s;}
+.q-block{display:none;}
+.q-block.active{display:block;animation:fadeUp .25s ease;}
+.q-num{font-size:10px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;margin-bottom:6px;}
+.q-text{font-size:15px;font-weight:700;color:#1a2332;margin-bottom:16px;line-height:1.5;}
+.q-context{background:var(--orange-pale);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:#2d3748;line-height:1.6;border-left:3px solid var(--orange);}
+.opt{display:flex;align-items:flex-start;gap:12px;padding:11px 14px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;margin-bottom:8px;transition:all .2s;font-size:13px;color:#2d3748;background:white;width:100%;text-align:left;font-family:'Sora',sans-serif;-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-appearance:none;appearance:none;}
+.opt:hover{border-color:var(--blue-light);background:var(--blue-pale);}
+.opt.selected{border-color:var(--blue);background:var(--blue-pale);font-weight:600;}
+.opt.correct{border-color:var(--teal);background:var(--teal-pale);color:var(--teal);}
+.opt.wrong{border-color:var(--red);background:var(--red-pale);color:var(--red);}
+.opt-letter{width:26px;height:26px;border-radius:50%;background:var(--grey-light);color:var(--grey);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.opt.correct .opt-letter{background:var(--teal);color:white;}
+.opt.wrong .opt-letter{background:var(--red);color:white;}
+.opt.selected .opt-letter{background:var(--blue);color:white;}
+.feedback{padding:12px 14px;border-radius:8px;margin-top:10px;font-size:13px;display:none;line-height:1.5;}
+.feedback.show{display:block;}
+.feedback.ok{background:var(--teal-pale);color:var(--teal);}
+.feedback.nok{background:var(--red-pale);color:var(--red);}
+.quiz-nav{display:flex;justify-content:space-between;align-items:center;margin-top:20px;padding-top:16px;border-top:1px solid #e2e8f0;}
+.btn{padding:10px 20px;border-radius:10px;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:'Sora',sans-serif;transition:all .2s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+.btn-primary{background:var(--blue);color:white;}
+.btn-primary:hover{background:var(--blue-light);}
+.btn-orange{background:var(--orange);color:white;}
+.btn-orange:hover{background:var(--orange-light);}
+.btn-grey{background:var(--grey-light);color:var(--grey);}
+.score-display{text-align:center;}
+.score-big{font-size:28px;font-weight:800;color:var(--blue);}
+.score-sub{font-size:12px;color:var(--grey);}
+/* Result modal */
+.modal-overlay{display:none;position:fixed;top:0;right:0;bottom:0;left:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.modal-overlay.open{display:flex;}
+.modal{background:white;border-radius:20px;padding:32px 36px;max-width:440px;width:90%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:modalIn .3s cubic-bezier(.34,1.56,.64,1);}
+@keyframes modalIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal .trophy{font-size:48px;margin-bottom:10px;}
+.modal h2{font-size:20px;color:#1a2332;margin-bottom:6px;}
+.modal .score-final{font-size:44px;font-weight:900;color:var(--teal);margin:10px 0 4px;}
+.modal .score-final.fail{color:var(--red);}
+.modal .score-desc{font-size:13px;color:var(--grey);margin-bottom:18px;}
+.modal .badge-result{display:inline-block;padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;margin-bottom:18px;}
+.badge-excellent{background:var(--teal-pale);color:var(--teal);}
+.badge-bien{background:var(--blue-pale);color:var(--blue);}
+.badge-moyen{background:var(--orange-pale);color:var(--orange);}
+.badge-echec{background:var(--red-pale);color:var(--red);}
+.modal-close{display:block;width:100%;background:#f0f4f8;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;color:var(--grey);cursor:pointer;margin-top:6px;}
+.home-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px;}
+.home-card{background:white;border-radius:var(--radius);padding:22px;cursor:pointer;border:2px solid transparent;transition:all .25s;box-shadow:0 1px 8px rgba(0,0,0,.06);text-align:left;-webkit-tap-highlight-color:transparent;touch-action:manipulation;font-family:'Sora',sans-serif;color:inherit;width:100%;display:block;}
+.home-card:hover{border-color:var(--blue);transform:translateY(-3px);box-shadow:var(--shadow);}
+.home-card .hc-icon{font-size:28px;margin-bottom:10px;}
+.home-card .hc-num{font-size:11px;font-weight:700;color:var(--grey);text-transform:uppercase;letter-spacing:.1em;font-family:'JetBrains Mono',monospace;}
+.home-card .hc-title{font-size:15px;font-weight:700;color:#1a2332;margin:5px 0 3px;}
+.home-card .hc-sub{font-size:12px;color:var(--grey);}
+.home-card .hc-level{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;margin-top:10px;}
+.level-inter{background:#e0f2fe;color:#0369a1;}
+.level-expert{background:var(--red-pale);color:var(--red);}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .home-grid{grid-template-columns:1fr;}
+  .mobile-nav{display:flex !important;}
+  .content{padding:16px 14px;}
+  .topbar{padding:10px 14px;}
+  .quiz-body{padding:16px 14px;}
+  .modal{padding:24px 20px;margin:0 12px;}
+  .modal .score-final{font-size:36px;}
+  .quiz-nav{flex-direction:column;gap:10px;align-items:stretch;}
+  .quiz-nav>div:last-child{display:flex;gap:8px;flex-wrap:wrap;}
+  .btn{padding:12px 16px;font-size:14px;-webkit-tap-highlight-color:transparent;}
+  .opt{padding:12px 14px;font-size:14px;-webkit-tap-highlight-color:transparent;}
+}
+.mobile-nav{display:none;background:var(--blue);padding:8px 10px;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;border-bottom:2px solid var(--orange);position:sticky;top:57px;z-index:49;scrollbar-width:none;}
+.mobile-nav::-webkit-scrollbar{display:none;}
+.mobile-nav-btn{background:rgba(255,255,255,.15);border:none;color:white;font-size:11px;font-weight:700;padding:8px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;font-family:'Sora',sans-serif;-webkit-tap-highlight-color:transparent;flex-shrink:0;}
+.mobile-nav-btn.active{background:var(--orange);}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <span class="badge">Évaluation</span>
+    <h1>Exercices Pratiques</h1>
+    <p>Module 4 — Tests ID30</p>
+  </div>
+  <div class="candidate-field">
+    <label>Nom du candidat</label>
+    <input type="text" id="cname" placeholder="Votre nom complet...">
+  </div>
+  <nav class="nav-section">
+    <div class="nav-label">Tests disponibles</div>
+    <button class="nav-item active" onclick="showP('home',this)"><span class="icon">🏠</span>Accueil des tests</button>
+    <button class="nav-item" onclick="showP('cc-inter',this)"><span class="icon">📞</span>Call Center — Intermédiaire</button>
+    <button class="nav-item" onclick="showP('cc-expert',this)"><span class="icon">🔥</span>Call Center — Expert</button>
+    <button class="nav-item" onclick="showP('bo-inter',this)"><span class="icon">📂</span>Back Office — Intermédiaire</button>
+    <button class="nav-item" onclick="showP('bo-expert',this)"><span class="icon">⚡</span>Back Office — Expert</button>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Module 4 — Exercices Pratiques</div>
+      <div class="topbar-subtitle">Évaluation Call Center &amp; Back Office · Projet ID30</div>
+    </div>
+    <span class="topbar-badge">M4 · Évaluation</span>
+  </div>
+  <div class="mobile-nav" id="mobileNav">
+    <button class="mobile-nav-btn active" id="mnav-home" onclick="showP('home',document.querySelector('.nav-item'));mobileActive('mnav-home')">🏠 Accueil</button>
+    <button class="mobile-nav-btn" id="mnav-cc-inter" onclick="showP('cc-inter',document.querySelector('.nav-item:nth-child(2)'));mobileActive('mnav-cc-inter')">📞 CC Intermédiaire</button>
+    <button class="mobile-nav-btn" id="mnav-cc-expert" onclick="showP('cc-expert',document.querySelector('.nav-item:nth-child(3)'));mobileActive('mnav-cc-expert')">🔥 CC Expert</button>
+    <button class="mobile-nav-btn" id="mnav-bo-inter" onclick="showP('bo-inter',document.querySelector('.nav-item:nth-child(4)'));mobileActive('mnav-bo-inter')">📂 BO Intermédiaire</button>
+    <button class="mobile-nav-btn" id="mnav-bo-expert" onclick="showP('bo-expert',document.querySelector('.nav-item:nth-child(5)'));mobileActive('mnav-bo-expert')">⚡ BO Expert</button>
+  </div>
+  <div class="content">
+
+    <!-- HOME -->
+    <div id="home" class="page active">
+      <div class="module-header">
+        <div class="module-header-bg">
+          <div class="module-num">MODULE 04 · ÉVALUATION</div>
+          <div class="module-title">Exercices Pratiques — ID30</div>
+          <div class="module-meta">
+            <span class="module-chip">📞 Call Center · 60 questions</span>
+            <span class="module-chip">📂 Back Office · 60 questions</span>
+            <span class="module-chip">🎯 2 Niveaux par entité</span>
+          </div>
+        </div>
+      </div>
+      <div style="background:white;border-radius:var(--radius);padding:20px 24px;margin-bottom:20px;box-shadow:0 1px 8px rgba(0,0,0,.06);">
+        <div style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:10px;">📋 Instructions</div>
+        <ul style="list-style:none;font-size:13px;color:#4a5568;line-height:2;">
+          <li>→ Choisissez votre test selon votre entité (Call Center ou Back Office)</li>
+          <li>→ Deux niveaux disponibles : <strong>Intermédiaire</strong> (compréhension) et <strong>Expert</strong> (analyse &amp; cas pratiques)</li>
+          <li>→ 30 questions par test · Une seule bonne réponse par question</li>
+          <li>→ Score minimum requis : <strong>70%</strong> (21/30) pour valider le niveau</li>
+          <li>→ Saisissez votre nom avant de commencer</li>
+        </ul>
+      </div>
+      <div class="home-grid">
+        <button class="home-card" type="button" onclick="showP('cc-inter',document.querySelector('.nav-item:nth-child(2)'));mobileActive('mnav-cc-inter')">
+          <div class="hc-icon">📞</div>
+          <div class="hc-num">Test 1 · 30 Questions</div>
+          <div class="hc-title">Call Center</div>
+          <div class="hc-sub">Scripts, objections, conformité IA, planification</div>
+          <span class="hc-level level-inter">Niveau Intermédiaire</span>
+        </button>
+        <button class="home-card" type="button" onclick="showP('cc-expert',document.querySelector('.nav-item:nth-child(3)'));mobileActive('mnav-cc-expert')">
+          <div class="hc-icon">🔥</div>
+          <div class="hc-num">Test 2 · 30 Questions</div>
+          <div class="hc-title">Call Center — Expert</div>
+          <div class="hc-sub">Cas pratiques, analyse de situations, décisions complexes</div>
+          <span class="hc-level level-expert">Niveau Expert</span>
+        </button>
+        <button class="home-card" type="button" onclick="showP('bo-inter',document.querySelector('.nav-item:nth-child(4)'));mobileActive('mnav-bo-inter')">
+          <div class="hc-icon">📂</div>
+          <div class="hc-num">Test 3 · 30 Questions</div>
+          <div class="hc-title">Back Office</div>
+          <div class="hc-sub">KYC, données terrain, accès, tableau de bord</div>
+          <span class="hc-level level-inter">Niveau Intermédiaire</span>
+        </button>
+        <button class="home-card" type="button" onclick="showP('bo-expert',document.querySelector('.nav-item:nth-child(5)'));mobileActive('mnav-bo-expert')">
+          <div class="hc-icon">⚡</div>
+          <div class="hc-num">Test 4 · 30 Questions</div>
+          <div class="hc-title">Back Office — Expert</div>
+          <div class="hc-sub">Anomalies complexes, intégrations, décisions KYC avancées</div>
+          <span class="hc-level level-expert">Niveau Expert</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- CALL CENTER INTERMÉDIAIRE -->
+    <div id="cc-inter" class="page">
+      <div id="quiz-cc-inter"></div>
+    </div>
+
+    <!-- CALL CENTER EXPERT -->
+    <div id="cc-expert" class="page">
+      <div id="quiz-cc-expert"></div>
+    </div>
+
+    <!-- BACK OFFICE INTERMÉDIAIRE -->
+    <div id="bo-inter" class="page">
+      <div id="quiz-bo-inter"></div>
+    </div>
+
+    <!-- BACK OFFICE EXPERT -->
+    <div id="bo-expert" class="page">
+      <div id="quiz-bo-expert"></div>
+    </div>
+
+  </div>
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="resultModal">
+  <div class="modal">
+    <div class="trophy" id="modalTrophy">🏆</div>
+    <h2 id="modalTitle">Résultat</h2>
+    <div class="score-final" id="modalScore">0/30</div>
+    <div class="score-desc" id="modalDesc"></div>
+    <div class="badge-result" id="modalBadge"></div>
+    <button class="modal-close" onclick="document.getElementById('resultModal').classList.remove('open')">Fermer et revoir les questions</button>
+  </div>
+</div>
+
+<script>
+// ── Data ──
+const quizzes = {
+  'cc-inter': {
+    title: 'Call Center — Niveau Intermédiaire',
+    subtitle: '30 questions · Compréhension des fondamentaux',
+    level: 'Intermédiaire',
+    questions: [
+      {q:"À quelle heure la distribution automatique des cas a-t-elle lieu dans Connectel ?",opts:["8h00","9h00","10h00","7h30"],ans:1,fb:"La distribution automatique des cas aux agents Call Center se déclenche chaque jour à 9h00."},
+      {q:"Combien d'étapes comporte le script d'appel pré-visite ?",opts:["3 étapes","4 étapes","5 étapes","6 étapes"],ans:2,fb:"Le script pré-visite comporte exactement 5 étapes obligatoires, toutes vérifiées par l'IA."},
+      {q:"Quelle est la première chose à dire lors d'un appel pré-visite ?",opts:["Annoncer directement la date de visite","Se présenter avec son nom et le projet ID30","Demander l'adresse du marchand","Expliquer l'objet de la visite"],ans:1,fb:"L'étape 1 est la salutation avec identification : votre nom + projet ID30 de MAFA HOLDING."},
+      {q:"Combien de temps dure une visite terrain selon les informations à communiquer au marchand ?",opts:["5 minutes","10 minutes","15 minutes","30 minutes"],ans:2,fb:"L'agent doit systématiquement mentionner que la visite durera environ 15 minutes (étape 5 du script)."},
+      {q:"Quel est le timing idéal pour l'appel post-visite ?",opts:["Le lendemain matin","30 minutes après la visite","2 à 4 heures après la visite","1 semaine après"],ans:2,fb:"L'appel post-visite doit être passé 2 à 4 heures après la visite terrain."},
+      {q:"Quelle réponse donner à l'objection 'Vous allez me demander de l'argent ?' ?",opts:["Oui, il y a des frais de traitement","Non, c'est totalement gratuit, il s'agit de collecter vos informations","Il faut payer 500 FCFA","Cela dépend de votre profil"],ans:1,fb:"Il faut rassurer fermement : c'est TOTALEMENT GRATUIT. Aucun frais n'est demandé."},
+      {q:"Que signifie 'Script Conforme : NON' dans Connectel ?",opts:["L'appel a été réussi","L'IA n'a pas pu enregistrer l'appel","L'IA a détecté qu'une étape obligatoire du script n'a pas été respectée","Le marchand a raccroché"],ans:2,fb:"'Script Conforme : NON' signifie que l'IA a analysé l'enregistrement et détecté une ou plusieurs étapes manquantes."},
+      {q:"Combien de tentatives maximum avant de marquer un marchand 'Inaccessible' ?",opts:["1 tentative","2 tentatives","3 tentatives","5 tentatives"],ans:2,fb:"3 tentatives maximum. Après la 3ème sans réponse, le cas passe en statut 'Inaccessible'."},
+      {q:"Qu'est-ce que l'IA Connectel enregistre automatiquement ?",opts:["Seulement les appels pré-visite","Seulement les appels où le marchand répond","100% de tous les appels sans exception","Seulement les appels marqués non-conformes"],ans:2,fb:"L'IA enregistre automatiquement 100% de tous les appels, sans exception et sans action de l'agent."},
+      {q:"Quelle question est OBLIGATOIRE à l'étape 4 du script pré-visite ?",opts:["Le numéro RCCM du marchand","Si le business existe toujours et s'il y a eu des changements depuis l'enrôlement","Le chiffre d'affaires du marchand","Le nombre d'employés"],ans:1,fb:"L'étape 4 impose de demander si le business existe toujours ET s'il y a eu des changements depuis l'enrôlement."},
+      {q:"Combien de cas en moyenne sont assignés à chaque agent Call Center par jour ?",opts:["50 cas","~100 cas","200 cas","30 cas"],ans:1,fb:"Environ 100 cas par agent, ce chiffre variant selon le volume total et le nombre d'agents actifs."},
+      {q:"Que doit faire l'agent si un marchand demande à reporter le RDV ?",opts:["Refuser catégoriquement","Raccrocher","Proposer 2 créneaux alternatifs et enregistrer le nouveau dans le système","Transférer l'appel au superviseur"],ans:2,fb:"Il faut proposer 2 créneaux alternatifs (ne pas imposer) et enregistrer le nouveau créneau immédiatement dans Connectel."},
+      {q:"Quel champ est obligatoire dans le formulaire lorsqu'un marchand demande une correction ?",opts:["Le nom du superviseur","Le champ 'CORRECTION DEMANDÉE'","La date de la visite","Le score de satisfaction"],ans:1,fb:"Le champ 'CORRECTION DEMANDÉE' est absolument obligatoire. Sans lui, le Back Office ne traitera pas la correction."},
+      {q:"À quelle heure est générée la consolidation journalière automatique ?",opts:["16h00","17h00","17h30","18h00"],ans:2,fb:"La consolidation journalière est générée automatiquement à 17h30 par le système Connectel."},
+      {q:"Combien d'étapes comporte le script post-visite ?",opts:["4 étapes","5 étapes","6 étapes","7 étapes"],ans:2,fb:"Le script post-visite comporte 6 étapes : salutation de rappel, satisfaction, type visite, feedback, notes, clôture."},
+      {q:"Sur quelle échelle est mesuré le professionnalisme de l'agent terrain dans l'appel post-visite ?",opts:["1 à 3","1 à 5","1 à 10","Oui / Non"],ans:1,fb:"Le professionnalisme est noté sur une échelle de 1 (mauvais) à 5 (excellent)."},
+      {q:"Que signifie 'TCE' dans le contexte du projet ID30 ?",opts:["Très Courte Entreprise","Taux de Conformité Estimé","Tableau de Contrôle des Entrepreneurs","Traitement des Cas Exceptionnels"],ans:0,fb:"TCE signifie Très Courte Entreprise — terme désignant les micro-entreprises du secteur informel ciblées par ID30."},
+      {q:"Que doit faire l'agent si le marchand dit 'J'ai déjà reçu une visite récemment' ?",opts:["Insister pour confirmer un nouveau RDV","Raccrocher immédiatement","Demander la date approximative et signaler au superviseur","Proposer une réduction"],ans:2,fb:"Il faut demander la date, ne pas insister, et signaler au superviseur pour vérification dans le système."},
+      {q:"Quel document est la source des cas distribués au Call Center ?",opts:["Un fichier Word","Un fichier Excel chargé par le Back Office","Une base de données CRM externe","Un formulaire Google"],ans:1,fb:"Le fichier Excel des entrepreneurs collectés par les agents terrain est chargé par le Back Office dans Connectel."},
+      {q:"Comment s'appelle le projet dans lequel s'inscrit cette formation ?",opts:["Projet Orange Business","Projet MAFA Connect","Projet ID30","Projet Connectel"],ans:2,fb:"Le projet s'appelle ID30 (Identification dans 30 villes) — projet de MAFA Holding mandaté par le Ministère du Commerce."},
+      {q:"Quel est l'objectif de l'appel pré-visite ?",opts:["Vendre un produit Orange Money","Confirmer le RDV, vérifier les informations et confirmer l'activité","Collecter le paiement de la visite","Effectuer l'enrôlement par téléphone"],ans:1,fb:"L'appel pré-visite vise à confirmer le RDV, vérifier l'adresse/activité, et s'assurer de la disponibilité du marchand."},
+      {q:"Que doit inclure l'étape 2 du script pré-visite ?",opts:["Les questions sur les changements","L'annonce de la visite avec la date et l'heure prévue","La demande du numéro RCCM","La confirmation de l'adresse GPS"],ans:1,fb:"L'étape 2 est l'objet de l'appel : annoncer qu'un agent passera à une date et heure précises."},
+      {q:"Que fait l'IA Connectel après chaque appel ?",opts:["Envoie un SMS au marchand","Appelle automatiquement le superviseur","Analyse l'enregistrement et vérifie la conformité du script","Facture l'appel au marchand"],ans:2,fb:"L'IA analyse automatiquement l'enregistrement, vérifie les étapes et affiche 'Script Conforme : OUI/NON'."},
+      {q:"Qu'est-ce que le 'taux de joignabilité' mesure ?",opts:["Le pourcentage d'appels conformes","Le pourcentage de marchands qui ont décroché","Le nombre d'appels par jour","La durée moyenne des appels"],ans:1,fb:"Le taux de joignabilité mesure le pourcentage de marchands effectivement contactés (qui ont répondu)."},
+      {q:"Quelle est la conséquence d'un taux de non-conformité > 20% sur une semaine ?",opts:["Aucune conséquence","Un entretien obligatoire + plan d'amélioration","Un licenciement immédiat","Un avertissement verbal simple"],ans:1,fb:"Un taux > 20% sur 1 semaine déclenche un entretien obligatoire avec le superviseur et un plan d'amélioration."},
+      {q:"Dans le rapport post-visite, que signifie 'Ponctualité : En retard' ?",opts:["Le marchand était en retard","L'agent terrain est arrivé après l'heure de RDV","L'appel a été passé trop tard","Le formulaire a été soumis en retard"],ans:1,fb:"'En retard' dans la section Ponctualité indique que l'agent terrain est arrivé après l'heure de RDV convenue."},
+      {q:"Combien de villes sont couvertes par le projet ID30 ?",opts:["10 villes","20 villes","30 villes","50 villes"],ans:2,fb:"Le projet ID30 couvre exactement 30 grandes villes de Côte d'Ivoire."},
+      {q:"L'IA Connectel peut-elle être désactivée pendant un appel ?",opts:["Oui, via un bouton dans l'interface","Oui, en demandant au superviseur","Non, elle enregistre tous les appels automatiquement","Oui, si le marchand refuse"],ans:2,fb:"Non. L'IA enregistre 100% des appels automatiquement. Il n'existe aucun moyen de la désactiver."},
+      {q:"Quel statut faut-il sélectionner quand le téléphone sonne mais que personne ne répond ?",opts:["Numéro invalide","Refus de visite","Sonnerie sans réponse","Business fermé"],ans:2,fb:"'Sonnerie sans réponse' est le statut correct. Le système planifiera automatiquement un rappel dans 1h."},
+      {q:"Qui est mandaté par le Ministère du Commerce pour le projet ID30 ?",opts:["Orange Money","Connectel","MAFA Holding","Le gouvernement directement"],ans:2,fb:"MAFA Holding est la société mandatée par le Ministère du Commerce et de l'Industrie pour le projet ID30."}
+    ]
+  },
+  'cc-expert': {
+    title: 'Call Center — Niveau Expert',
+    subtitle: '30 questions · Cas pratiques et analyse de situations',
+    level: 'Expert',
+    questions: [
+      {q:"Un marchand vous dit : 'Je n'ai pas de temps, mais je peux vous parler 2 minutes.' Quelle est la meilleure stratégie ?",opts:["Raccrocher et marquer 'Non-joignable'","Présenter rapidement l'objet en 1 min, demander un créneau pour un rappel court","Faire le script complet en 2 minutes quand même","Transférer au superviseur"],ans:1,fb:"Il faut respecter le temps disponible, présenter brièvement l'objet, et proposer un rappel dédié pour finaliser le script."},
+      {q:"L'IA marque votre appel 'Script Conforme : NON' mais vous êtes certain d'avoir fait toutes les étapes. Que faites-vous ?",opts:["Ignorer le résultat","Modifier le formulaire pour faire correspondre","Écouter l'enregistrement dans votre rapport et identifier l'étape manquée","Accuser l'IA d'être défaillante"],ans:2,fb:"Il faut consulter l'enregistrement dans votre rapport pour identifier précisément l'étape manquante et apprendre."},
+      {q:"Vous appelez un marchand. Une femme répond et dit 'Mon mari est parti pour 3 mois.' Que faites-vous ?",opts:["Faire le script avec la femme présente","Demander si elle est responsable du business et si elle peut confirmer les informations","Raccrocher et marquer 'Inaccessible'","Appeler le lendemain sans rien noter"],ans:1,fb:"Il faut vérifier si la personne présente peut valablement confirmer les informations. Si oui, continuer avec elle."},
+      {q:"Lors d'un appel post-visite, le marchand donne 1/5 à la satisfaction et dit que l'agent a demandé de l'argent. Quelle est la priorité ?",opts:["Excuser l'agent et passer à la suite","Raccrocher poliment","Documenter précisément les propos, noter 'INCIDENT GRAVE' et alerter immédiatement le superviseur","Dire que c'est impossible et minimiser"],ans:2,fb:"Tout signalement d'agent demandant de l'argent est un incident grave. Documenter précisément et alerter le superviseur immédiatement."},
+      {q:"Vous avez traité 40 cas à 15h00. Il vous reste 60 cas. Votre rythme est de 5 cas/heure. Aurez-vous terminé à 17h30 ?",opts:["Oui, en travaillant 2,5h supplémentaires","Non, à ce rythme il manquera 20 cas","Oui exactement","Non, il en manquera 40"],ans:1,fb:"2,5h × 5 cas/h = 12,5 cas → 40 + 12,5 = 52,5. Il vous manquera environ 7-8 cas. Il faut accélérer ou alerter."},
+      {q:"Un marchand dit 'Mon commerce a brûlé mais je suis en train de reconstruire.' Que cochez-vous dans le formulaire ?",opts:["Business actif : Oui","Business actif : Non — clôture du cas","Business actif : Oui + Changement : Sinistre (incendie) + Observer dans les notes","Passer directement à l'étape suivante sans noter"],ans:2,fb:"Cocher Oui (business en cours), Changement : Sinistre/Incendie, et noter la reconstruction dans les observations."},
+      {q:"Votre taux de conformité ce matin est de 55%. Quelle action immédiate s'impose ?",opts:["Attendre la fin de la journée pour voir la moyenne","Continuer normalement","Relire le script, identifier les étapes manquées et appliquer correctement dès l'appel suivant","Appeler le superviseur pour signaler un bug de l'IA"],ans:2,fb:"55% est très en dessous du seuil (80%). Il faut corriger immédiatement : relire le script et s'appliquer sur l'appel suivant."},
+      {q:"Un marchand accepte le RDV mais vous demande de venir à 6h du matin. Quelle est la bonne réaction ?",opts:["Confirmer 6h immédiatement","Expliquer que les visites se font aux horaires standard et proposer la première heure disponible","Raccrocher","Promettre de transmettre sans engagement"],ans:1,fb:"Les horaires standard du projet s'appliquent. Expliquer poliment et proposer le premier créneau disponible."},
+      {q:"Lors du script post-visite, le marchand dit 'L'agent n'a pas eu l'air de comprendre ce qu'il faisait.' Que notez-vous ?",opts:["Rien, c'est une opinion subjective","Professionnalisme : 1/5 et noter le commentaire précis dans les observations","Professionnalisme : 3/5 par défaut","Ignorer et continuer"],ans:1,fb:"Toute évaluation, même négative, doit être fidèlement documentée. Mettre 1/5 et noter le commentaire exact."},
+      {q:"Vous êtes à votre 3ème tentative sur un marchand. Un voisin décroche et dit qu'il connaît la personne. Que faites-vous ?",opts:["Donner les informations du marchand au voisin","Demander si le voisin peut transmettre un message de rappel et noter le contexte","Considérer que c'est une réponse valable et fermer le cas","Raccrocher sans rien noter"],ans:1,fb:"Demander poliment au voisin de transmettre un message, noter le contexte dans le formulaire, marquer '3ème tentative'."},
+      {q:"L'IA détecte un écart entre votre rapport (RDV confirmé) et l'enregistrement (marchand a refusé). Quelle est la gravité ?",opts:["Erreur mineure sans conséquence","C'est normal, les deux peuvent différer","C'est un écart délibéré = avertissement formel possible","L'IA se trompe forcément"],ans:2,fb:"Un écart délibéré entre le rapport et l'enregistrement est une fraude. Cela peut mener à un avertissement formel."},
+      {q:"Un marchand très âgé ne comprend pas bien le but de la visite et pose de nombreuses questions. Quelle approche ?",opts:["Raccrocher car l'appel prend trop de temps","Adapter son vocabulaire, parler lentement et simplement, prendre le temps nécessaire","Transférer directement au superviseur","Accélérer le script pour terminer vite"],ans:1,fb:"L'agent doit adapter son approche à chaque interlocuteur. Parler simplement et lentement si nécessaire."},
+      {q:"Vous finissez un appel post-visite. Le marchand a une note de satisfaction de 5/5 mais demande une correction d'adresse. Que cochez-vous ?",opts:["Correction demandée : NON (car satisfait)","Satisfaction 5/5 ET Correction demandée : OUI avec l'adresse exacte","Ignorer la correction car la satisfaction est bonne","Mettre satisfaction à 3/5 à cause de la correction"],ans:1,fb:"Les deux informations sont indépendantes. La satisfaction reste 5/5 ET la correction est documentée séparément."},
+      {q:"Votre superviseur vous dit que votre durée moyenne d'appel est de 45 secondes. Quel problème cela révèle-t-il ?",opts:["Vous êtes très efficace","Le script de 5 étapes ne peut pas être respecté en 45 secondes — conformité impossible","C'est dans la norme","Le marchand parle trop vite"],ans:1,fb:"45 secondes est trop court pour respecter les 5 étapes du script. Cela explique un faible taux de conformité IA."},
+      {q:"Un marchand dit avoir changé de secteur d'activité (avant : commerce général, maintenant : restauration). Que faire ?",opts:["Ignorer car ce n'est pas dans le script","Cocher 'Changement : Changement d'activité', noter 'Restauration' dans les observations","Fermer le cas car les données sont invalides","Changer directement dans le système Connectel"],ans:1,fb:"Documenter le changement d'activité dans le formulaire. Le Back Office mettra à jour les données officielles."},
+      {q:"Vous avez 15 cas non-joignables (3ème tentative). Quelle action ?",opts:["Retenter une 4ème fois","Marquer tous en 'Inaccessible' et ne plus y toucher — le superviseur gère","Les supprimer de la file","Appeler le Back Office directement"],ans:1,fb:"Après 3 tentatives, marquer 'Inaccessible'. C'est le superviseur qui décide de la suite (nouveau numéro, etc.)."},
+      {q:"Un marchand post-visite dit que la visite a duré 45 minutes au lieu de 15. Que notez-vous ?",opts:["Durée : Acceptable (l'agent a été consciencieux)","Durée : Trop longue + noter '45 minutes réelles' dans les observations","Durée : Acceptable (l'agent a peut-être eu des problèmes)","Ignorer et ne rien noter sur la durée"],ans:1,fb:"'Trop longue' est la bonne réponse. La durée de référence est 15 minutes. 45 minutes = 3x la durée prévue."},
+      {q:"Lors d'un appel pré-visite, le marchand dit qu'il a déménagé à Cocody alors que sa fiche indique Abobo. Que faites-vous ?",opts:["Dire qu'on ne peut pas changer l'adresse","Cocher 'Changement : Déménagement', saisir 'Cocody' comme nouvelle adresse, passer à l'étape 5","Fermer le cas et en parler au superviseur","Continuer sans noter"],ans:1,fb:"Documenter le déménagement dans le formulaire (nouvelle adresse). Cette info sera transmise au Back Office."},
+      {q:"Vous réalisez que vous avez soumis un formulaire avec 'RDV : OUI' alors que le marchand avait dit NON. Que faire ?",opts:["Rien, le formulaire est soumis","Contacter immédiatement le superviseur pour signaler l'erreur et corriger","Modifier l'enregistrement","Ignorer, l'IA détectera l'erreur"],ans:1,fb:"Toute erreur de saisie doit être signalée immédiatement au superviseur qui peut annuler et recréer la saisie."},
+      {q:"Un marchand accepte la visite mais dit 'Je ne veux pas qu'on me photographie.' Que notez-vous ?",opts:["Rien, c'est une demande privée","'Refus photo' dans les observations — l'agent terrain sera informé","Refus de visite : OUI","Pas de photo dans la fiche de présence"],ans:1,fb:"C'est une information importante pour l'agent terrain. La noter dans les observations du formulaire."},
+      {q:"Votre file d'attente montre 'Urgent' sur 5 cas. Quelle est votre priorité ?",opts:["Traiter dans l'ordre d'arrivée (d'abord les premiers de la file)","Traiter les urgents en premier, puis reprendre l'ordre normal","Demander au superviseur de les redistribuer","Traiter les cas normaux d'abord, puis les urgents"],ans:1,fb:"Les cas marqués 'Urgent' indiquent un RDV imminent. Ils passent en priorité absolue."},
+      {q:"Un marchand vous dit qu'il a payé 1000 FCFA lors de l'enrôlement initial. Que faites-vous ?",opts:["Lui dire que c'est normal","Confirmer le montant en acquiesçant","Expliquer clairement que le projet est gratuit et escalader l'incident au superviseur","Raccrocher sans commenter"],ans:2,fb:"Tout paiement lors de l'enrôlement est une anomalie grave. Rassurer le marchand (c'est gratuit) et escalader immédiatement."},
+      {q:"L'IA indique que votre taux de conformité hebdomadaire est 78%. Que pensez-vous de cette performance ?",opts:["Excellent, objectif dépassé","Dans la norme acceptable","Légèrement en-dessous du seuil de 80% — effort d'amélioration requis","Très mauvais, risque de licenciement"],ans:2,fb:"78% est légèrement sous le seuil de 80%. Pas d'alarme immédiate mais un effort est requis pour dépasser le seuil."},
+      {q:"Vous faites l'étape 4 et le marchand dit 'Mon commerce n'existe plus, j'ai tout vendu.' Que se passe-t-il ?",opts:["Continuer le script normalement","Cliquer 'Business actif : Non', noter 'Commerce fermé/vendu' et passer à la clôture — pas de RDV","Continuer avec le RDV quand même","Transférer l'appel au superviseur"],ans:1,fb:"Si le commerce n'existe plus, pas de visite. Cocher 'Business actif : Non', noter le contexte, et clôturer poliment."},
+      {q:"Lors de l'étape 3 (confirmation disponibilité), le marchand dit 'Je serai là mais appelez avant de venir.' Que faites-vous ?",opts:["Ignorer cette demande","Cocher RDV Confirmé et noter 'Appel préalable requis avant passage' dans les observations","Refuser le RDV car la condition est non-standard","Dire que ce n'est pas possible"],ans:1,fb:"Confirmer le RDV ET noter la demande spéciale dans les observations pour informer l'agent terrain."},
+      {q:"Vous avez 8 cas 'Non-joignables 2ème tentative' qui doivent être rappelés. Quelle est la procédure ?",opts:["Les rappeler tous en même temps","Le système replanifie automatiquement dans 1h — vous les retrouverez dans la file","Demander au superviseur de les redistribuer","Marquer tous en Inaccessible"],ans:1,fb:"Le système Connectel replanifie automatiquement les 2ème tentatives dans 1h. Ils réapparaissent dans votre file."},
+      {q:"Un agent call center peut-il modifier l'adresse d'un marchand directement dans le système ?",opts:["Oui, depuis la fiche marchand","Oui, depuis le formulaire d'appel","Non — il documente dans le formulaire et le Back Office effectue la modification","Oui, mais avec validation superviseur"],ans:2,fb:"L'agent Call Center ne peut pas modifier directement les fiches. Il documente dans le formulaire et le BO fait la mise à jour."},
+      {q:"Quelle est la différence principale entre un rapport agent et un rapport IA ?",opts:["Il n'y a pas de différence","Le rapport agent est automatique, le rapport IA est manuel","Le rapport agent est rempli manuellement, le rapport IA est généré automatiquement par analyse de l'enregistrement","Le rapport IA est envoyé aux marchands"],ans:2,fb:"Rapport agent = saisi manuellement par l'agent. Rapport IA = généré automatiquement par analyse de l'enregistrement audio."},
+      {q:"Un marchand post-visite refuse de donner une note de satisfaction ('Je ne veux pas noter'). Que faites-vous ?",opts:["Lui imposer de donner une note","Mettre 3/5 par défaut","Cocher 'Refus de notation' dans les observations et ne pas forcer — clôturer l'appel poliment","Raccrocher sans rien noter"],ans:2,fb:"Le droit de refus est respecté. Cocher le refus dans les observations et clôturer poliment sans insister."},
+      {q:"Lors d'un appel post-visite, vous réalisez que la visite n'a pas encore eu lieu (erreur de planification). Que faire ?",opts:["Faire quand même l'appel post-visite","Sélectionner 'Visite non effectuée — erreur planification' et alerter immédiatement le superviseur","Raccrocher sans documenter","Accuser l'agent terrain"],ans:1,fb:"Signaler immédiatement l'erreur de planification au superviseur et documenter précisément dans le formulaire."},
+      {q:"Votre superviseur vous dit que votre satisfaction moyenne est 3.1/5. Quel seuil doit-il dépasser ?",opts:["3.0/5","3.5/5","4.0/5","4.5/5"],ans:2,fb:"Le seuil acceptable de satisfaction post-visite est > 4/5. À 3.1/5, une analyse et coaching agent terrain sont requis."}
+    ]
+  },
+  'bo-inter': {
+    title: 'Back Office — Niveau Intermédiaire',
+    subtitle: '30 questions · Compréhension des fondamentaux',
+    level: 'Intermédiaire',
+    questions: [
+      {q:"Avant quelle heure le fichier Excel terrain doit-il être chargé dans Connectel ?",opts:["8h00","9h00","10h00","7h00"],ans:1,fb:"Le fichier doit être chargé avant 9h00 pour permettre la distribution automatique des cas au Call Center."},
+      {q:"Sous quel délai maximum une demande de validation KYC doit-elle être traitée ?",opts:["48 heures","72 heures","24 heures","1 semaine"],ans:2,fb:"Toute validation de compte (Essentiel→Classique ou Classique→Premium) doit être traitée sous 24 heures maximum."},
+      {q:"Quel document est requis pour la migration vers le profil Classique ?",opts:["Statuts notariés de la société","Extrait RCCM ou carte de commerçant ou autorisation d'exercice","Relevé bancaire 3 mois","DFE (Déclaration Fiscale d'Existence)"],ans:1,fb:"Pour le profil Classique : pièce d'identité + document commercial (RCCM OU carte de commerçant OU autorisation)."},
+      {q:"Quel est le taux de doublons acceptable dans un fichier terrain ?",opts:["< 2%","< 10%","< 20%","< 5%"],ans:0,fb:"Le taux de doublons acceptable est inférieur à 2%. Au-delà, un audit de zone est déclenché."},
+      {q:"Que signifie 'KYC' dans le contexte du projet ?",opts:["Key Yearly Control","Know Your Customer — vérification d'identité du client","Knowledge Yield Capture","Keep Your Credentials"],ans:1,fb:"KYC = Know Your Customer. C'est la procédure de vérification d'identité et de conformité des documents client."},
+      {q:"Quel pourcentage des fiches terrain sont vérifiées par contre-enquêtes hebdomadaires ?",opts:["5%","10%","25%","50%"],ans:1,fb:"10% des fiches terrain sont sélectionnées aléatoirement pour des contre-enquêtes chaque semaine."},
+      {q:"Que faire lorsqu'un doublon est détecté dans le fichier Excel ?",opts:["Le charger quand même","Supprimer automatiquement la deuxième ligne","Vérifier s'il s'agit d'une mise à jour ou d'une erreur, puis fusionner si nécessaire avec validation superviseur","Retourner l'intégralité du fichier au terrain"],ans:2,fb:"Il faut investiguer : mise à jour légitime ou erreur de saisie ? Fusionner les données correctes avec validation."},
+      {q:"Quelle est l'action immédiate si des coordonnées GPS d'une fiche sont hors de la Côte d'Ivoire ?",opts:["Charger la fiche quand même","Alerter le chef d'équipe et suspendre la fiche en attendant vérification","Supprimer la fiche définitivement","Corriger manuellement les coordonnées"],ans:1,fb:"Des GPS hors zone sont une anomalie sérieuse. Alerter le chef d'équipe et suspendre la fiche (ne pas charger)."},
+      {q:"Combien de tentatives de contact peut effectuer le Call Center avant qu'un cas soit marqué 'Inaccessible' ?",opts:["2 tentatives","3 tentatives","5 tentatives","1 tentative"],ans:1,fb:"3 tentatives maximum. Après la 3ème sans réponse, le cas passe en 'Inaccessible' géré par le superviseur."},
+      {q:"Qu'est-ce que le DFE et pour quel profil est-il obligatoire ?",opts:["Document de Formation des Employés — Essentiel","Déclaration Fiscale d'Existence — obligatoire pour le profil Premium","Dossier de Financement Externe — Classique","Déclaration de Frais Exceptionnels — tous profils"],ans:1,fb:"DFE = Déclaration Fiscale d'Existence. Document fiscal obligatoire uniquement pour la migration vers le profil Premium."},
+      {q:"Quelle est la signification du code couleur Rouge dans le tableau de bord Connectel ?",opts:["Indicateur au-dessus de l'objectif","Indicateur proche du seuil","Indicateur en-dessous du seuil — action corrective immédiate","Système en maintenance"],ans:2,fb:"Rouge = indicateur en-dessous du seuil. Une action corrective immédiate est requise sans délai."},
+      {q:"Quel est le taux de complétion des données terrain acceptable ?",opts:["> 80%","> 90%","> 95%","100%"],ans:2,fb:"Le taux de complétion des données terrain doit être supérieur à 95%. En dessous, un retour terrain urgent est requis."},
+      {q:"Que comprend le rapport mensuel que le rapport journalier ne contient pas ?",opts:["Le taux de conformité scripts","La satisfaction marchands","Les motifs d'absence/retard détaillés et le taux d'assiduité global","Le nombre de cas traités"],ans:2,fb:"Le rapport mensuel ajoute : motifs d'absence/retard, taux d'assiduité global, et tendances de performance sur le mois."},
+      {q:"Combien de niveaux d'accès sont définis dans Connectel pour les différents rôles ?",opts:["2 niveaux","3 niveaux","5 niveaux","10 niveaux"],ans:2,fb:"5 niveaux d'accès sont définis : Admin Back Office, Superviseur CC, Agent CC, Responsable Ville, Inspecteur."},
+      {q:"Quelle est la durée minimale d'un mot de passe Connectel ?",opts:["6 caractères","8 caractères","12 caractères","16 caractères"],ans:2,fb:"Le mot de passe Connectel doit comporter au minimum 12 caractères. Renouvellement mensuel obligatoire."},
+      {q:"Dans quel menu de Connectel peut-on accéder aux rapports téléchargeables ?",opts:["Menu Agents","Menu Administration","Menu Rapports → sélectionner la période et les filtres","Menu Paramètres"],ans:2,fb:"Dans Connectel : Menu Rapports → choisir la période → appliquer les filtres → exporter en CSV ou PDF."},
+      {q:"Qu'est-ce que le RCCM ?",opts:["Registre du Commerce et du Crédit Mobilier","Récépissé de Création de Commerce Marocain","Rapport de Contrôle du Commerce Mensuel","Relevé de Compte Commercial Mensuel"],ans:0,fb:"RCCM = Registre du Commerce et du Crédit Mobilier — document officiel d'enregistrement d'une activité commerciale."},
+      {q:"Que faire si un compte utilisateur Connectel n'est plus utilisé suite à un départ ?",opts:["Le laisser actif pour éviter les complications","Le mettre en pause","Le révoquer immédiatement","Attendre la fin du mois"],ans:2,fb:"En cas de départ, l'accès doit être révoqué immédiatement, même pour une absence temporaire."},
+      {q:"Quel format de fichier est utilisé pour charger les données terrain dans Connectel ?",opts:["CSV uniquement","PDF","Excel (.xlsx)","Google Sheets directement"],ans:2,fb:"Le fichier terrain est fourni en format Excel (.xlsx) selon le modèle standardisé du projet."},
+      {q:"Que doit faire le Back Office si des documents KYC sont incomplets ?",opts:["Valider quand même avec réserve","Rejeter avec motif précis et donner 48h au marchand pour compléter","Attendre sans rien faire","Appeler le marchand pour les récupérer verbalement"],ans:1,fb:"Documents incomplets = notification immédiate au marchand avec motif précis + délai de 48h pour compléter."},
+      {q:"Qu'est-ce que l'intégration 'iFrame' dans Connectel ?",opts:["Un système de paiement","L'affichage d'un système externe directement dans l'interface Connectel","Un rapport automatique","Un type de formulaire d'appel"],ans:1,fb:"L'iFrame intègre un système externe (CRM, ERP) directement dans l'interface Connectel sans changer d'application."},
+      {q:"Quel document supplémentaire est requis pour une société commerciale (SARL) en plus d'une entreprise individuelle Premium ?",opts:["Permis de conduire","Déclaration notariée de souscription et versement + statuts notariés","Carte grise du véhicule","Contrat de bail commercial"],ans:1,fb:"Pour une société commerciale Premium : documents entreprise individuelle + déclaration notariée + statuts notariés."},
+      {q:"Quand est générée la liste de présence dans Connectel ?",opts:["À 8h00 par le superviseur manuellement","Automatiquement à 9h00","À 7h30 par l'Admin","À la fin de la journée"],ans:1,fb:"La liste de présence est créée automatiquement à 9h00 avec le volume assigné et le statut de chaque agent."},
+      {q:"Quel type d'intégration Connectel nécessite des compétences développeur expert ?",opts:["iFrame","Open Browser Tab","REST Request","Cloud Functions"],ans:3,fb:"Les Cloud Functions requièrent des compétences développeur expert car elles impliquent d'écrire du code personnalisé."},
+      {q:"Quel est le rôle principal des inspecteurs dans la structure organisationnelle ?",opts:["Appeler les marchands","Charger les fichiers Excel","Contrôle terrain, contre-enquêtes et qualité des données","Valider les comptes KYC"],ans:2,fb:"Les inspecteurs effectuent le contrôle terrain, les contre-enquêtes et vérifient la qualité des données collectées."},
+      {q:"Quelle est la composition standard d'une équipe terrain par ville ?",opts:["1 RV + 1 chef d'équipe + 5 agents","1 RV + 3 chefs d'équipe + 9 agents par chef (27 agents min)","1 RV + 5 chefs d'équipe + 3 agents par chef","1 directeur + 10 agents"],ans:1,fb:"1 Responsable Ville + 3 chefs d'équipe + 9 agents par chef = minimum 27 agents par ville."},
+      {q:"Que faut-il vérifier concernant le relevé bancaire pour une validation Premium ?",opts:["Qu'il soit de moins de 12 mois","Qu'il soit de moins de 3 mois et au nom du demandeur","Qu'il soit de moins de 6 mois","N'importe quel relevé suffisait"],ans:1,fb:"Le relevé bancaire doit dater de moins de 3 mois ET être au nom du demandeur (pas d'un tiers)."},
+      {q:"Lors de l'export d'un rapport, quel format utiliser pour une présentation à la direction ?",opts:["CSV","Excel brut","PDF","JSON"],ans:2,fb:"Le format PDF est adapté aux présentations direction car il préserve la mise en forme et ne peut pas être modifié."},
+      {q:"Que doit comprendre le champ 'Information incorrecte' dans un formulaire de correction ?",opts:["La nouvelle valeur souhaitée","La valeur actuellement enregistrée dans le système (ancienne valeur)","Le nom de l'agent qui a fait l'erreur","La date de la visite"],ans:1,fb:"'Information incorrecte' = la valeur actuellement dans le système (ancienne). 'Information correcte' = la nouvelle valeur."},
+      {q:"Quel est le premier document vérifié dans le processus KYC pour tous les profils ?",opts:["Le relevé bancaire","La pièce d'identité valide du dirigeant","Le RCCM","Le DFE"],ans:1,fb:"La pièce d'identité valide du dirigeant est le premier document vérifié dans tout processus KYC, pour tous les profils."}
+    ]
+  },
+  'bo-expert': {
+    title: 'Back Office — Niveau Expert',
+    subtitle: '30 questions · Cas complexes et décisions avancées',
+    level: 'Expert',
+    questions: [
+      {q:"Un fichier Excel arrive à 8h45 avec 12% de doublons détectés. Vous devez charger avant 9h. Que faites-vous ?",opts:["Charger immédiatement malgré les doublons","Nettoyer les doublons en 15 min et charger à 9h00 en informant le superviseur CC","Retourner le fichier complet et ne rien charger","Charger uniquement les fiches sans doublons et ignorer les autres"],ans:1,fb:"Il faut travailler rapidement pour nettoyer et charger ce qui est possible, en informant le superviseur CC du délai et des anomalies."},
+      {q:"Un marchand Premium soumet des statuts de société mais le nom sur les statuts diffère du nom sur le RCCM. Décision ?",opts:["Valider car les documents sont présents","Valider avec une note","Rejeter avec motif 'Incohérence documentaire' + délai 48h pour correction","Demander un autre document en remplacement"],ans:2,fb:"L'incohérence entre les documents est un motif de rejet valide. Notifier précisément et donner 48h pour régulariser."},
+      {q:"Le tableau de bord montre 0 cas traités par l'agent Kouassi à 11h alors qu'il est connecté. Quelle est la première action ?",opts:["Attendre jusqu'à 14h avant d'agir","Contacter l'agent Kouassi directement ET alerter son superviseur pour vérification immédiate","Redistribuer ses cas sans le contacter","Marquer l'agent absent"],ans:1,fb:"0 cas à 11h sur un agent connecté = anomalie. Vérifier la connexion technique ET alerter le superviseur."},
+      {q:"Un marchand Premium (association civile) soumet uniquement des documents d'autorisation sans identification des responsables. Décision ?",opts:["Valider car l'autorisation officielle est présente","Rejeter partiel : documents d'autorisation OK mais identification des responsables manquante","Valider et demander les docs manquants plus tard","Déclasser en profil Classique"],ans:1,fb:"Le dossier est incomplet. Rejeter avec motif précis : identification des responsables manquante. 48h pour compléter."},
+      {q:"Un agent Call Center a un taux de conformité de 43% cette semaine. Quelles actions sont requises du Back Office/superviseur ?",opts:["Attendre la fin du mois pour voir la tendance","Entretien obligatoire + plan d'amélioration + suivi journalier","Licenciement immédiat","Lui envoyer un email de rappel"],ans:1,fb:"43% est très en-dessous du seuil de 80%. Un entretien obligatoire et un plan d'amélioration sont requis immédiatement."},
+      {q:"Lors d'une contre-enquête, vous découvrez qu'un commerce déclaré 'supermarché' est en réalité un petit kiosque. Quelle gravité ?",opts:["Erreur mineure sans conséquence","Erreur de catégorie — correction Back Office standard","Possible fraude — escalader à l'inspecteur + audit de l'agent concerné","Acceptable, les agents font des erreurs"],ans:2,fb:"Un écart significatif entre la description et la réalité peut indiquer une fraude. Escalader pour audit approfondi de l'agent."},
+      {q:"Vous devez valider 45 demandes KYC en retard (plus de 24h). Quelle est votre stratégie de priorisation ?",opts:["Traiter par ordre d'arrivée strictement","Prioriser : Classique d'abord (moins de docs), puis Premium, en informant les marchands en attente","Tout déléguer à un collègue","Traiter les Premium en premier car plus importants"],ans:1,fb:"Classique d'abord (vérification plus rapide) puis Premium, tout en notifiant les marchands des délais. Efficacité maximale."},
+      {q:"Un accès Connectel créé pour un Responsable Ville lui donne accès à toutes les villes. Est-ce correct ?",opts:["Oui, les RV doivent tout voir","Non — un RV doit avoir accès uniquement à sa ville selon le principe du moindre privilège","Oui, c'est nécessaire pour les réunions","Ça dépend du contrat"],ans:1,fb:"Non. Le principe du moindre privilège s'applique : un RV ne voit que sa ville. Corriger immédiatement l'accès."},
+      {q:"Le taux de satisfaction post-visite est à 2.8/5 sur 3 jours consécutifs dans la ville de Yamoussoukro. Que signifie cette tendance ?",opts:["Problème isolé sans action requise","Problème systémique probable avec les agents de Yamoussoukro — escalade au RV + analyse des enregistrements","Problème lié à la saison","Le Call Center a un problème"],ans:1,fb:"3 jours consécutifs de 2.8/5 = tendance systémique. Le RV de Yamoussoukro doit analyser les agents terrain concernés."},
+      {q:"Un marchand conteste sa migration en Essentiel Lite alors que son CA annuel est de 350 000 FCFA. Est-il correctement classifié ?",opts:["Oui, Essentiel Lite est correct","Non — 350k FCFA/an dépasse le seuil Essentiel (<150k). Il devrait être Classique","Non — il devrait être Premium","Oui si la demande est récente"],ans:1,fb:"Avec 350k FCFA/an, le marchand dépasse le seuil Essentiel (<150k). Il correspond au profil Classique. Correction nécessaire."},
+      {q:"Vous devez configurer une intégration qui ouvre automatiquement la fiche CRM d'un marchand dès le démarrage d'un appel. Quel type ?",opts:["iFrame","Cloud Functions","Open Browser Tab","REST Request"],ans:2,fb:"Open Browser Tab est l'intégration qui ouvre automatiquement une URL (la fiche CRM) selon une condition (démarrage d'appel)."},
+      {q:"Un fichier terrain de 500 fiches est chargé mais Connectel en affiche 487. Que s'est-il passé et quelle action ?",opts:["Erreur système — ne rien faire","13 fiches ont été rejetées automatiquement par le système (anomalies détectées) — les identifier et corriger","La connexion a coupé — recharger tout le fichier","Le fichier est corrompu"],ans:1,fb:"13 fiches rejetées = anomalies (champs invalides, doublons détectés par le système). Les identifier dans le log et corriger."},
+      {q:"Un agent Back Office part en congé maladie non planifié. Que doit faire immédiatement l'Admin ?",opts:["Attendre son retour","Révoquer temporairement son accès ET redistribuer ses tâches urgentes KYC","Donner son mot de passe à un collègue temporairement","Laisser l'accès actif pour faciliter son retour"],ans:1,fb:"Toute absence = révocation de l'accès (même temporaire). Redistribuer les tâches urgentes pour ne pas dépasser les 24h KYC."},
+      {q:"Lors d'une vérification KYC, la photo de la pièce d'identité est lisible mais le document expire dans 10 jours. Décision ?",opts:["Valider car le document est encore valide","Valider avec note 'Expiration proche — renouvellement requis'","Rejeter car expirera avant la fin de la visite terrain","Demander un nouveau document immédiatement"],ans:1,fb:"Le document est encore valide. Valider mais noter l'expiration imminente pour un suivi. Un renouvellement sera requis sous peu."},
+      {q:"Le rapport IA du mois montre que 30% des non-conformités viennent de l'étape 4 (questions changements). Que conclure ?",opts:["C'est une coïncidence","L'étape 4 est trop difficile — la supprimer","Il existe un problème systémique de formation sur l'étape 4 — session de remise à niveau ciblée requise","Le script doit être raccourci"],ans:2,fb:"30% de non-conformités sur une étape précise = gap de formation systémique. Une session de remise à niveau ciblée est requise."},
+      {q:"Un marchand envoie un relevé bancaire de 4 mois (le plus récent disponible). Décision pour une demande Premium ?",opts:["Valider par exception","Rejeter — le relevé doit être de moins de 3 mois","Valider si le reste du dossier est complet","Demander un relevé provisoire à la banque"],ans:1,fb:"La règle est stricte : relevé bancaire < 3 mois. 4 mois = non-conforme. Rejeter et demander un relevé plus récent."},
+      {q:"Vous recevez 3 demandes de création de compte le même jour pour le même numéro de téléphone avec des noms différents. Que faire ?",opts:["Traiter les 3 indépendamment","Valider le premier et rejeter les autres","Suspendre les 3, alerter le superviseur — possible tentative de fraude","Valider le dossier le plus complet"],ans:2,fb:"3 demandes sur le même numéro avec des noms différents est une anomalie grave. Suspendre et escalader pour investigation."},
+      {q:"Le tableau de bord indique un taux de joignabilité Call Center de 48% depuis 3 jours. Quelle est la cause la plus probable ?",opts:["Les agents appellent trop vite","Problème dans les données de contact (numéros invalides/incorrects dans le fichier Excel)","La connexion Internet est lente","Les marchands dorment pendant les appels"],ans:1,fb:"48% de joignabilité = problème de données. Les numéros dans le fichier Excel sont probablement incorrects ou obsolètes."},
+      {q:"Pour une Association Civile demandant le profil Premium, les documents d'autorisation sont valides mais datent de 8 ans. Valider ?",opts:["Oui, si l'association existe toujours","Non — les documents d'autorisation doivent être récents pour être valides","Oui, les associations ne changent pas souvent","Demander un renouvellement mais valider quand même"],ans:1,fb:"Des autorisations de 8 ans peuvent être périmées. Demander une confirmation de l'existence actuelle ou un document récent."},
+      {q:"Un rapport mensuel montre que le Responsable Ville de Bouaké a 35% de taux d'absentéisme chez ses agents. Quelle action directe ?",opts:["Attendre le mois suivant","Signaler à la Direction Opérations pour enquête + entretien avec le RV de Bouaké","Supprimer les agents absents","Redistribuer les zones de Bouaké à d'autres villes"],ans:1,fb:"35% d'absentéisme est un taux critique. Escalader à la Direction + entretien avec le RV pour identifier les causes racines."},
+      {q:"Vous devez envoyer des identifiants Connectel à un nouvel agent. Quel canal est approprié ?",opts:["SMS en clair avec le mot de passe","Email professionnel sécurisé — jamais le mot de passe en clair dans le même message","WhatsApp","Afficher dans la salle de réunion"],ans:1,fb:"Email professionnel sécurisé. Le mot de passe temporaire ne doit jamais être envoyé en clair. L'agent le change à la première connexion."},
+      {q:"Un marchand dit que son agent n'a pas pris de photo lors de la visite mais le rapport de l'agent indique qu'il l'a prise. Quelle action ?",opts:["Croire l'agent — son rapport fait foi","Croire le marchand — il n'a pas intérêt à mentir","Lancer une contre-enquête spécifique + comparer les données dans le système","Ignorer l'incohérence"],ans:2,fb:"Incohérence rapport agent vs déclaration marchand = contre-enquête nécessaire pour établir la vérité et éviter la fraude."},
+      {q:"Le tableau de bord montre 23 comptes KYC en attente depuis plus de 24h. Quelle est la conséquence si non-traités ?",opts:["Aucune conséquence directe","Les marchands perdent leur compte définitivement","Violation du SLA de 24h — insatisfaction marchands + alertes Direction","Les comptes sont automatiquement rejetés"],ans:2,fb:"Dépasser 24h viole le SLA et mécontente les marchands. La Direction est alertée automatiquement par le système."},
+      {q:"Quelle est la différence entre une intégration REST Request et l'API Connectel ?",opts:["Aucune différence","REST Request envoie des données vers un système externe depuis Connectel. L'API Connectel permet à des systèmes externes d'initier des actions dans Connectel","REST Request est plus sécurisée","L'API est plus lente"],ans:1,fb:"REST Request = Connectel envoie vers l'extérieur. API Connectel = l'extérieur interagit avec Connectel. Directions inverses."},
+      {q:"Un agent terrain a collecté 47 fiches en une journée dans une zone de 50 commerces. Quel est le taux de couverture ?",opts:["94%","90%","100%","47%"],ans:0,fb:"47/50 = 94% de couverture. Légèrement en dessous de 100% mais acceptable. 3 commerces manquants à identifier."},
+      {q:"Pour créer un accès Superviseur Call Center dans Connectel, à quelle information devez-vous avoir accès ?",opts:["Son numéro de téléphone","Sa ville d'affectation (pour limiter l'accès à cette ville uniquement)","Son salaire","Le nombre d'agents sous sa supervision"],ans:1,fb:"La ville d'affectation est essentielle pour configurer l'accès en respectant le périmètre données (sa ville uniquement)."},
+      {q:"Lors du chargement d'un fichier, 8 fiches ont des photos illisibles. Quelle est la procédure correcte ?",opts:["Charger quand même toutes les fiches","Rejeter uniquement les 8 fiches concernées, charger le reste, demander retour urgent pour les 8","Rejeter l'intégralité du fichier","Accepter et noter dans le rapport"],ans:1,fb:"Charger les fiches valides (ne pas bloquer 492 fiches pour 8 problèmes) + retourner les 8 concernées pour correction urgente."},
+      {q:"Un rapport IA montre qu'un agent Call Center a 15 appels où le rapport indique 'RDV confirmé' mais l'enregistrement montre 'pas de réponse'. Que concluez-vous ?",opts:["L'IA se trompe souvent","Erreur humaine ponctuelle","Fraude systémique probable — fausse saisie délibérée — escalader immédiatement à la Direction","L'agent avait des problèmes techniques"],ans:2,fb:"15 cas = systématique, pas une erreur isolée. C'est une fraude probable (fausses déclarations). Escalade Direction immédiate."},
+      {q:"Vous souhaitez vérifier les performances de toutes les villes sur le mois de mars. Quels filtres appliquez-vous dans Connectel ?",opts:["Filtrer par agent uniquement","Période : mars → Filtrer par ville (toutes) → type : tous les appels → exporter CSV","Télécharger le rapport journalier du 31 mars uniquement","Contacter chaque RV individuellement"],ans:1,fb:"Rapport mensuel → Période mars → toutes villes → tous types d'appels → export CSV pour analyse Excel comparative."},
+      {q:"Un Responsable Ville demande à avoir accès à 2 villes car il couvre les deux temporairement. Que faire ?",opts:["Refuser catégoriquement — 1 RV = 1 ville","Créer un accès spécial avec les deux villes après validation de la Direction + documenter dans le registre des accès","Donner les identifiants d'un autre RV","Valider sans validation de la Direction"],ans:1,fb:"L'accès élargi est possible mais nécessite une validation Direction + documentation dans le registre. Pas de partage d'identifiants."},
+      {q:"Le Back Office reçoit 3 demandes Premium en même temps pour des entreprises du BTP. Les dossiers sont identiques à 95%. Décision ?",opts:["Valider les 3 groupées rapidement","Traiter chaque dossier individuellement — même similaires, chaque validation est indépendante","Valider le premier et approuver les autres par référence","Rejeter car trop similaires"],ans:1,fb:"Chaque dossier est une entité indépendante. La similarité ne justifie pas un traitement groupé. Chaque validation est individuelle."}
+    ]
+  }
+};
+
+// ── State ──
+const state = {};
+
+function showP(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  try { window.scrollTo({ top: 0, behavior: 'smooth' }); } catch(e) { window.scrollTo(0, 0); }
+  if (id !== 'home' && quizzes[id] && !state[id]) initQuiz(id);
+}
+
+function mobileActive(btnId) {
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  var el = document.getElementById(btnId);
+  if (el) el.classList.add('active');
+}
+
+function initQuiz(id) {
+  const data = quizzes[id];
+  const container = document.getElementById('quiz-' + id);
+  state[id] = { answers: {}, current: 0, submitted: false };
+
+  let html = '<div class="quiz-wrap">'
+    + '<div class="quiz-head">'
+    + '<h2>' + data.title + '</h2>'
+    + '<p>' + data.subtitle + '</p>'
+    + '<div class="quiz-meta">'
+    + '<span class="quiz-chip">\u{1F4CB} ' + data.questions.length + ' questions</span>'
+    + '<span class="quiz-chip">\u2705 70% requis</span>'
+    + '<span class="quiz-chip">' + data.level + '</span>'
+    + '</div></div>'
+    + '<div class="quiz-body">'
+    + '<div class="quiz-progress-bar"><div class="quiz-progress-fill" id="qpf-' + id + '" style="width:' + (100/data.questions.length) + '%"></div></div>';
+
+  for (var qi = 0; qi < data.questions.length; qi++) {
+    var q = data.questions[qi];
+    html += '<div class="q-block ' + (qi === 0 ? 'active' : '') + '" id="q-' + id + '-' + qi + '">'
+      + '<div class="q-num">Question ' + (qi+1) + ' / ' + data.questions.length + '</div>'
+      + '<div class="q-text">' + q.q + '</div>'
+      + (q.ctx ? '<div class="q-context">' + q.ctx + '</div>' : '')
+      + '<div class="opts-wrap">';
+    for (var oi = 0; oi < q.opts.length; oi++) {
+      html += '<button class="opt" id="opt-' + id + '-' + qi + '-' + oi + '" data-id="' + id + '" data-qi="' + qi + '" data-oi="' + oi + '" type="button">'
+        + '<span class="opt-letter">' + ['A','B','C','D'][oi] + '</span>' + q.opts[oi]
+        + '</button>';
+    }
+    html += '</div><div class="feedback" id="fb-' + id + '-' + qi + '"></div></div>';
+  }
+
+  html += '<div class="quiz-nav">'
+    + '<div class="score-display"><div class="score-big" id="sc-' + id + '">0</div><div class="score-sub">/ ' + data.questions.length + ' correct</div></div>'
+    + '<div style="display:flex;gap:10px;">'
+    + '<button class="btn btn-grey" id="prev-' + id + '" data-id="' + id + '" data-action="prev" type="button">\u2190 Pr\u00e9c\u00e9dent</button>'
+    + '<button class="btn btn-primary" id="next-' + id + '" data-id="' + id + '" data-action="next" type="button">Suivant \u2192</button>'
+    + '<button class="btn btn-orange" id="submit-' + id + '" data-id="' + id + '" data-action="submit" type="button" style="display:none">Voir mon r\u00e9sultat \u{1F3AF}</button>'
+    + '</div></div></div></div>';
+
+  container.innerHTML = html;
+
+  // Délégation d'événements — compatible iOS Safari
+  function handleInteraction(e) {
+    var target = e.target;
+    // Remonter jusqu'au bouton si on a cliqué sur un enfant (ex: opt-letter span)
+    while (target && target !== container) {
+      if (target.tagName === 'BUTTON') break;
+      target = target.parentNode;
+    }
+    if (!target || target.tagName !== 'BUTTON') return;
+
+    var action = target.getAttribute('data-action');
+    var btnId  = target.getAttribute('data-id');
+
+    if (target.classList.contains('opt')) {
+      selectOpt(target.getAttribute('data-id'),
+                parseInt(target.getAttribute('data-qi')),
+                parseInt(target.getAttribute('data-oi')));
+    } else if (action === 'prev')   { navQ(btnId, -1); }
+    else if (action === 'next')     { navQ(btnId,  1); }
+    else if (action === 'submit')   { submitQuiz(btnId); }
+  }
+
+  container.addEventListener('touchend', function(e) {
+    e.preventDefault();
+    handleInteraction(e);
+  }, { passive: false });
+
+  container.addEventListener('click', function(e) {
+    handleInteraction(e);
+  });
+
+  updateNav(id);
+}
+
+function selectOpt(id, qi, oi) {
+  const s = state[id];
+  if (s.submitted || s.answers[qi] !== undefined) return;
+  s.answers[qi] = oi;
+  const data = quizzes[id];
+  const correct = data.questions[qi].ans;
+  const fb = document.getElementById(`fb-${id}-${qi}`);
+
+  ['A','B','C','D'].forEach((_, i) => {
+    const el = document.getElementById(`opt-${id}-${qi}-${i}`);
+    if (i === oi && i === correct) el.classList.add('correct');
+    else if (i === oi) el.classList.add('wrong');
+    else if (i === correct) el.classList.add('correct');
+  });
+
+  fb.className = 'feedback show ' + (oi === correct ? 'ok' : 'nok');
+  fb.innerHTML = (oi === correct ? '✅ ' : '❌ ') + data.questions[qi].fb;
+
+  // update score
+  let score = 0;
+  Object.entries(s.answers).forEach(([q, a]) => { if (parseInt(a) === data.questions[q].ans) score++; });
+  document.getElementById(`sc-${id}`).textContent = score;
+
+  // check if all answered
+  if (Object.keys(s.answers).length === data.questions.length) {
+    document.getElementById(`submit-${id}`).style.display = 'block';
+    document.getElementById(`next-${id}`).style.display = 'none';
+  }
+}
+
+function navQ(id, dir) {
+  const s = state[id];
+  const total = quizzes[id].questions.length;
+  const cur = s.current;
+  const next = cur + dir;
+  if (next < 0 || next >= total) return;
+  document.getElementById(`q-${id}-${cur}`).classList.remove('active');
+  document.getElementById(`q-${id}-${next}`).classList.add('active');
+  s.current = next;
+  document.getElementById(`qpf-${id}`).style.width = ((next + 1) / total * 100) + '%';
+  updateNav(id);
+}
+
+function updateNav(id) {
+  const s = state[id];
+  const total = quizzes[id].questions.length;
+  document.getElementById(`prev-${id}`).disabled = s.current === 0;
+  const isLast = s.current === total - 1;
+  document.getElementById(`next-${id}`).style.display = isLast ? 'none' : 'block';
+  if (isLast && Object.keys(s.answers).length === total) {
+    document.getElementById(`submit-${id}`).style.display = 'block';
+  }
+}
+
+function submitQuiz(id) {
+  const s = state[id]; s.submitted = true;
+  const data = quizzes[id];
+  let score = 0;
+  Object.entries(s.answers).forEach(([q, a]) => { if (parseInt(a) === data.questions[q].ans) score++; });
+  const pct = Math.round(score / data.questions.length * 100);
+  const name = document.getElementById('cname').value || 'Candidat';
+  const modal = document.getElementById('resultModal');
+  document.getElementById('modalTitle').textContent = name + ' — ' + data.title;
+  document.getElementById('modalScore').textContent = score + '/' + data.questions.length;
+  document.getElementById('modalScore').className = 'score-final ' + (pct >= 70 ? '' : 'fail');
+  document.getElementById('modalDesc').textContent = pct + '% de bonnes réponses · Seuil : 70%';
+  let badge, trophy;
+  if (pct >= 90) { badge = 'badge-excellent'; trophy = '🏆'; document.getElementById('modalBadge').textContent = 'Excellent — Maîtrise parfaite'; }
+  else if (pct >= 70) { badge = 'badge-bien'; trophy = '✅'; document.getElementById('modalBadge').textContent = 'Validé — Bonne maîtrise'; }
+  else if (pct >= 50) { badge = 'badge-moyen'; trophy = '📚'; document.getElementById('modalBadge').textContent = 'À améliorer — Relire les modules'; }
+  else { badge = 'badge-echec'; trophy = '❌'; document.getElementById('modalBadge').textContent = 'Non validé — Formation à reprendre'; }
+  document.getElementById('modalTrophy').textContent = trophy;
+  document.getElementById('modalBadge').className = 'badge-result ' + badge;
+  modal.classList.add('open');
+}
+</script>
+</body>
+</html>

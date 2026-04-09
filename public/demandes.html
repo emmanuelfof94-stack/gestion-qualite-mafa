@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande de Permission / Absence — Crystal Solutions</title>
+<style>
+  :root { --bleu:#1A5676; --bleu2:#2c7da0; --vert:#27ae60; --rouge:#e74c3c; --orange:#e67e22; --gris:#f0f4f8; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--gris); color:#1e2d3d; min-height:100vh; }
+
+  header {
+    background:linear-gradient(135deg,var(--bleu),var(--bleu2));
+    color:white; padding:20px 24px; text-align:center;
+    box-shadow:0 4px 16px rgba(0,0,0,0.18);
+  }
+  header .logo { font-size:2rem; margin-bottom:6px; }
+  header h1 { font-size:1.2rem; font-weight:700; letter-spacing:0.4px; }
+  header p { font-size:0.78rem; opacity:0.65; margin-top:4px; }
+
+  .container { max-width:600px; margin:30px auto; padding:0 16px 60px; }
+
+  .card {
+    background:white; border-radius:16px; padding:28px 28px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.08); margin-bottom:20px;
+  }
+  .card-title {
+    font-size:0.88rem; font-weight:700; color:var(--bleu);
+    text-transform:uppercase; letter-spacing:0.5px;
+    margin-bottom:22px; padding-bottom:12px;
+    border-bottom:2px solid #edf2f7;
+    display:flex; align-items:center; gap:8px;
+  }
+
+  .type-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:24px; }
+  .type-btn {
+    padding:16px 12px; border:2px solid #dde6ef; border-radius:12px;
+    text-align:center; cursor:pointer; transition:all 0.2s; background:white;
+    font-size:0.88rem; font-weight:600; color:#555;
+  }
+  .type-btn .icon { font-size:1.6rem; display:block; margin-bottom:6px; }
+  .type-btn:hover { border-color:var(--bleu); color:var(--bleu); background:#f0f8ff; }
+  .type-btn.selected { border-color:var(--bleu); background:var(--bleu); color:white; }
+
+  .form-group { margin-bottom:18px; }
+  .form-group label {
+    display:block; font-size:0.76rem; font-weight:700; color:#666;
+    text-transform:uppercase; letter-spacing:0.3px; margin-bottom:7px;
+  }
+  .form-group input, .form-group select, .form-group textarea {
+    width:100%; padding:11px 14px; border:1.5px solid #dde6ef;
+    border-radius:10px; font-size:0.92rem; font-family:inherit;
+    transition:border 0.2s; background:white; color:#1e2d3d;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline:none; border-color:var(--bleu); box-shadow:0 0 0 3px rgba(26,86,118,0.1);
+  }
+  .form-group textarea { min-height:100px; resize:vertical; }
+
+  .date-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+
+  .btn-submit {
+    width:100%; padding:15px; background:var(--bleu); color:white;
+    border:none; border-radius:12px; font-size:1rem; font-weight:700;
+    cursor:pointer; transition:all 0.2s; letter-spacing:0.3px;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+  }
+  .btn-submit:hover { background:var(--bleu2); transform:translateY(-1px); box-shadow:0 6px 16px rgba(26,86,118,0.3); }
+  .btn-submit:disabled { background:#aaa; transform:none; box-shadow:none; cursor:not-allowed; }
+
+  /* Message de confirmation */
+  .success-box {
+    display:none; background:#d5f5e3; border:1.5px solid #82e0aa;
+    border-radius:14px; padding:24px; text-align:center;
+  }
+  .success-box.visible { display:block; }
+  .success-box .check { font-size:2.5rem; }
+  .success-box h3 { color:#1e8449; font-size:1.1rem; margin:10px 0 6px; }
+  .success-box p { color:#27ae60; font-size:0.88rem; }
+  .btn-new { margin-top:14px; padding:10px 20px; background:var(--bleu); color:white;
+             border:none; border-radius:8px; cursor:pointer; font-weight:600; font-size:0.88rem; }
+
+  /* Message d'erreur */
+  .error-box {
+    display:none; background:#fde8e8; border:1.5px solid #f5b7b1;
+    border-radius:10px; padding:14px 18px; margin-bottom:16px;
+    font-size:0.88rem; color:var(--rouge);
+  }
+  .error-box.visible { display:block; }
+
+  /* Indicateur chargement */
+  .spinner {
+    width:18px; height:18px; border:2.5px solid rgba(255,255,255,0.4);
+    border-top-color:white; border-radius:50%;
+    display:none; animation:spin 0.7s linear infinite;
+  }
+  .spinner.active { display:inline-block; }
+  @keyframes spin { to { transform:rotate(360deg); } }
+
+  .info-note {
+    background:#eaf4fb; border:1px solid #bee3f8; border-radius:10px;
+    padding:12px 16px; font-size:0.82rem; color:var(--bleu); margin-bottom:20px;
+    display:flex; gap:10px; align-items:flex-start;
+  }
+
+  #dropzone:hover { border-color:var(--bleu); background:#f0f8ff; }
+  #dropzone.drag-over { border-color:var(--bleu); background:#eaf4fb; }
+
+  .fichier-tag {
+    display:inline-flex; align-items:center; gap:6px;
+    background:#eaf4fb; border:1px solid #bee3f8; border-radius:8px;
+    padding:5px 10px; font-size:0.78rem; color:var(--bleu);
+    max-width:200px;
+  }
+  .fichier-tag span { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .fichier-tag button {
+    background:none; border:none; color:#aaa; cursor:pointer;
+    font-size:0.9rem; padding:0; line-height:1; flex-shrink:0;
+  }
+  .fichier-tag button:hover { color:var(--rouge); }
+
+  @media(max-width:480px) {
+    .type-grid { grid-template-columns:1fr; }
+    .date-row { grid-template-columns:1fr; }
+    .card { padding:20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">📋</div>
+  <h1>CRYSTAL SOLUTIONS — DEMANDE RH</h1>
+  <p>Permission de sortie · Absence · Congé</p>
+</header>
+
+<div class="container">
+
+  <!-- Succès -->
+  <div class="success-box" id="success-box">
+    <div class="check">✅</div>
+    <h3>Demande envoyée avec succès !</h3>
+    <p>Votre demande a été transmise à l'administration.<br>Vous serez notifié de la décision.</p>
+    <button class="btn-new" onclick="nouvelledemande()">Faire une autre demande</button>
+  </div>
+
+  <!-- Formulaire -->
+  <div id="form-section">
+
+    <div class="info-note">
+      <span>ℹ️</span>
+      <span>Remplissez ce formulaire pour signaler votre absence ou demander une permission. L'administration recevra votre demande en temps réel.</span>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Type de demande</div>
+      <div class="type-grid">
+        <div class="type-btn selected" id="btn-type-permission" onclick="selectType('permission')">
+          <span class="icon">🚪</span>
+          Permission de sortie
+        </div>
+        <div class="type-btn" id="btn-type-absence" onclick="selectType('absence')">
+          <span class="icon">🤒</span>
+          Absence / Maladie
+        </div>
+        <div class="type-btn" id="btn-type-conge" onclick="selectType('conge')">
+          <span class="icon">🏖️</span>
+          Congé
+        </div>
+        <div class="type-btn" id="btn-type-retard" onclick="selectType('retard')">
+          <span class="icon">⏰</span>
+          Retard prévu
+        </div>
+      </div>
+
+      <div class="error-box" id="error-box"></div>
+
+      <div class="form-group">
+        <label>Votre ID Agent</label>
+        <input type="text" id="f-agentId" placeholder="ex: AGT001" style="text-transform:uppercase;" />
+      </div>
+
+      <div class="form-group">
+        <label>Votre Nom complet</label>
+        <input type="text" id="f-nom" placeholder="ex: KONAN Ama" />
+      </div>
+
+      <div class="form-group">
+        <label>Service</label>
+        <select id="f-service">
+          <option value="">-- Sélectionner --</option>
+          <option value="Back Office">Back Office (BO)</option>
+          <option value="Call Center">Call Center</option>
+          <option value="Superviseur">Superviseur</option>
+          <option value="Autre">Autre</option>
+        </select>
+      </div>
+
+      <div class="date-row">
+        <div class="form-group">
+          <label>Date de début</label>
+          <input type="date" id="f-date-debut" />
+        </div>
+        <div class="form-group" id="group-date-fin">
+          <label>Date de fin</label>
+          <input type="date" id="f-date-fin" />
+        </div>
+      </div>
+
+      <div class="form-group" id="group-heure" style="display:none;">
+        <label>Heure de sortie souhaitée</label>
+        <input type="time" id="f-heure" />
+      </div>
+
+      <div class="form-group">
+        <label>Motif / Raison</label>
+        <textarea id="f-motif" placeholder="Décrivez brièvement la raison de votre demande..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Téléphone de contact</label>
+        <input type="tel" id="f-tel" placeholder="ex: 07 00 00 00 00" />
+      </div>
+
+      <div class="form-group" id="group-pieces-jointes">
+        <label>Pièces jointes <span style="font-weight:400;text-transform:none;color:#aaa;">(facultatif)</span></label>
+        <div id="dropzone" onclick="document.getElementById('f-fichiers').click()"
+          style="border:2px dashed #dde6ef;border-radius:10px;padding:20px;text-align:center;
+                 cursor:pointer;transition:all 0.2s;background:#fafcfe;">
+          <div style="font-size:1.8rem;margin-bottom:6px;">📎</div>
+          <div style="font-size:0.85rem;color:#888;">Cliquez ou glissez vos fichiers ici</div>
+          <div style="font-size:0.74rem;color:#bbb;margin-top:4px;">PDF, image, Word — max 5 Mo par fichier</div>
+        </div>
+        <input type="file" id="f-fichiers" multiple accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+               style="display:none;" onchange="afficherFichiers()" />
+        <div id="fichiers-liste" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+      </div>
+
+      <button class="btn-submit" id="btn-submit" onclick="soumettreDemande()">
+        <span class="spinner" id="spinner"></span>
+        <span id="btn-text">Envoyer la demande</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+let typeActuel = 'permission';
+let fichiersList = [];   // fichiers sélectionnés
+
+// ── Drag & Drop ──
+document.addEventListener('DOMContentLoaded', () => {
+  const dz = document.getElementById('dropzone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('drag-over');
+    ajouterFichiers(Array.from(e.dataTransfer.files));
+  });
+});
+
+function afficherFichiers() {
+  const input = document.getElementById('f-fichiers');
+  ajouterFichiers(Array.from(input.files));
+  input.value = '';
+}
+
+function ajouterFichiers(newFiles) {
+  const MAX = 5 * 1024 * 1024;
+  for (const f of newFiles) {
+    if (fichiersList.find(x => x.name === f.name && x.size === f.size)) continue;
+    if (f.size > MAX) { showError(`"${f.name}" dépasse 5 Mo.`); continue; }
+    fichiersList.push(f);
+  }
+  renderFichiers();
+}
+
+function renderFichiers() {
+  const div = document.getElementById('fichiers-liste');
+  div.innerHTML = '';
+  fichiersList.forEach((f, i) => {
+    const ext = f.name.split('.').pop().toLowerCase();
+    const icon = ext === 'pdf' ? '📄' : ['jpg','jpeg','png'].includes(ext) ? '🖼️' : '📝';
+    const tag = document.createElement('div');
+    tag.className = 'fichier-tag';
+    tag.innerHTML = `${icon} <span title="${f.name}">${f.name}</span>
+      <button onclick="supprimerFichier(${i})" title="Supprimer">✕</button>`;
+    div.appendChild(tag);
+  });
+}
+
+function supprimerFichier(i) {
+  fichiersList.splice(i, 1);
+  renderFichiers();
+}
+
+async function lireFichiersBase64() {
+  return Promise.all(fichiersList.map(f => new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = e => res({ nom: f.name, type: f.type, data: e.target.result });
+    r.onerror = rej;
+    r.readAsDataURL(f);
+  })));
+}
+
+function selectType(type) {
+  typeActuel = type;
+  ['permission','absence','conge','retard'].forEach(t => {
+    document.getElementById('btn-type-' + t).classList.toggle('selected', t === type);
+  });
+  // Afficher heure uniquement pour permission/retard
+  const showHeure = (type === 'permission' || type === 'retard');
+  document.getElementById('group-heure').style.display = showHeure ? 'block' : 'none';
+  // Masquer date fin pour permission/retard
+  document.getElementById('group-date-fin').style.display =
+    (type === 'conge' || type === 'absence') ? 'block' : 'none';
+}
+
+// Init
+selectType('permission');
+document.getElementById('f-date-debut').value = new Date().toISOString().split('T')[0];
+
+function showError(msg) {
+  const el = document.getElementById('error-box');
+  el.textContent = msg;
+  el.classList.add('visible');
+  setTimeout(() => el.classList.remove('visible'), 5000);
+}
+
+async function soumettreDemande() {
+  const agentId = document.getElementById('f-agentId').value.trim().toUpperCase();
+  const nom     = document.getElementById('f-nom').value.trim();
+  const service = document.getElementById('f-service').value;
+  const dateDebut = document.getElementById('f-date-debut').value;
+  const dateFin   = document.getElementById('f-date-fin').value;
+  const heure     = document.getElementById('f-heure').value;
+  const motif     = document.getElementById('f-motif').value.trim();
+  const tel       = document.getElementById('f-tel').value.trim();
+
+  if (!agentId || !nom) { showError('Veuillez renseigner votre ID agent et votre nom.'); return; }
+  if (!service) { showError('Veuillez sélectionner votre service.'); return; }
+  if (!dateDebut) { showError('Veuillez indiquer la date.'); return; }
+  if (!motif) { showError('Veuillez indiquer le motif de votre demande.'); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  document.getElementById('spinner').classList.add('active');
+  document.getElementById('btn-text').textContent = 'Envoi en cours...';
+
+  try {
+    const piecesJointes = fichiersList.length > 0 ? await lireFichiersBase64() : [];
+    const payload = {
+      agentId, nom, service, type: typeActuel,
+      dateDebut, dateFin, heure, motif, tel, piecesJointes
+    };
+    const resp = await fetch('/api/demandes', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success-box').classList.add('visible');
+    } else {
+      showError(data.erreur || 'Erreur lors de l\'envoi. Réessayez.');
+    }
+  } catch (e) {
+    showError('Impossible de contacter le serveur. Vérifiez votre connexion.');
+  } finally {
+    btn.disabled = false;
+    document.getElementById('spinner').classList.remove('active');
+    document.getElementById('btn-text').textContent = 'Envoyer la demande';
+  }
+}
+
+function nouvelledemande() {
+  document.getElementById('success-box').classList.remove('visible');
+  document.getElementById('form-section').style.display = 'block';
+  document.getElementById('f-agentId').value = '';
+  document.getElementById('f-nom').value = '';
+  document.getElementById('f-motif').value = '';
+  document.getElementById('f-tel').value = '';
+  fichiersList = [];
+  renderFichiers();
+  selectType('permission');
+}
+</script>
+</body>
+</html>

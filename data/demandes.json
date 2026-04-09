@@ -1,0 +1,35 @@
+[
+  {
+    "id": "1775736449859",
+    "agentId": "AGT001",
+    "nom": "KONAN Ama",
+    "service": "Back Office",
+    "type": "permission",
+    "dateDebut": "2026-04-09",
+    "dateFin": null,
+    "heure": null,
+    "motif": "Rendez-vous m�dical",
+    "tel": "07 00 00 00",
+    "statut": "approuve",
+    "commentaire": "OK",
+    "createdAt": "2026-04-09T12:07:29.859Z",
+    "traitePar": "Administrateur",
+    "traiteAt": "2026-04-09T12:12:09.622Z"
+  },
+  {
+    "id": "1775751050702",
+    "agentId": "0001",
+    "nom": "ESSI ATTAOUA ANGE PATRICIA",
+    "service": "Call Center",
+    "type": "absence",
+    "dateDebut": "2026-04-10",
+    "dateFin": "2026-04-11",
+    "heure": null,
+    "motif": "Composition pour le concours du CAFOP",
+    "tel": "0778844684",
+    "statut": "en_attente",
+    "commentaire": "",
+    "source": "mobile",
+    "createdAt": "2026-04-09T16:10:50.702Z"
+  }
+]

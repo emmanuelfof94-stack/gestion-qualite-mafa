@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suivi Activités — Superviseur</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+  :root {
+    --bleu:#1A5676; --bleu2:#2c7da0;
+    --vert:#27ae60; --rouge:#e74c3c; --orange:#e67e22;
+    --gris:#f0f4f8; --blanc:#fff; --texte:#1e2d3d;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Segoe UI',system-ui,sans-serif; background:var(--gris); color:var(--texte); }
+
+  /* ── HEADER ── */
+  header {
+    background:linear-gradient(135deg,var(--bleu),var(--bleu2));
+    color:white; padding:0 24px; height:60px;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2); position:sticky; top:0; z-index:100;
+  }
+  .header-left { display:flex; align-items:center; gap:12px; }
+  .header-title { font-size:1rem; font-weight:700; }
+  .header-sub { font-size:0.68rem; opacity:0.6; }
+  .live-dot { display:flex; align-items:center; gap:6px; font-size:0.76rem;
+              background:rgba(255,255,255,0.15); padding:4px 12px; border-radius:20px; }
+  .dot { width:7px; height:7px; border-radius:50%; background:#2ecc71; animation:blink 1.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .header-heure { font-size:1.1rem; font-weight:700; font-variant-numeric:tabular-nums; }
+
+  /* ── NAV TABS ── */
+  nav {
+    background:white; border-bottom:1px solid #dde6ef;
+    display:flex; padding:0 16px; overflow-x:auto;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+  nav button {
+    padding:13px 18px; border:none; background:transparent;
+    font-weight:600; font-size:0.84rem; color:#888; cursor:pointer;
+    border-bottom:3px solid transparent; margin-bottom:-1px;
+    white-space:nowrap; transition:all 0.2s;
+  }
+  nav button.active { color:var(--bleu); border-bottom-color:var(--bleu); }
+  nav button:hover  { color:var(--bleu); background:#f5fafd; }
+
+  main { max-width:1200px; margin:20px auto; padding:0 16px 40px; }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; animation:fadeIn 0.2s ease; }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
+
+  /* ── KPI ── */
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:20px; }
+  .kpi {
+    background:white; border-radius:14px; padding:18px 20px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06); border-left:5px solid var(--bleu);
+  }
+  .kpi.vert   { border-left-color:var(--vert); }
+  .kpi.rouge  { border-left-color:var(--rouge); }
+  .kpi.orange { border-left-color:var(--orange); }
+  .kpi-label  { font-size:0.72rem; color:#999; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:5px; }
+  .kpi-val    { font-size:2.2rem; font-weight:800; color:var(--texte); line-height:1; }
+  .kpi-sub    { font-size:0.72rem; color:#bbb; margin-top:3px; }
+
+  /* ── CARD ── */
+  .card {
+    background:white; border-radius:14px; padding:20px 22px;
+    box-shadow:0 2px 10px rgba(0,0,0,0.06); margin-bottom:18px;
+  }
+  .card-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:16px; padding-bottom:12px; border-bottom:1px solid #edf2f7;
+  }
+  .card-header h2 { font-size:0.88rem; color:var(--bleu); text-transform:uppercase; letter-spacing:0.5px; font-weight:700; }
+
+  /* ── TABLE ── */
+  .table-wrap { overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; font-size:0.82rem; }
+  thead th {
+    background:#f0f7fc; color:#4a6fa5; font-weight:700; padding:9px 12px;
+    text-align:left; font-size:0.74rem; text-transform:uppercase; letter-spacing:0.4px;
+  }
+  tbody tr { border-bottom:1px solid #f0f4f8; transition:background 0.1s; }
+  tbody tr:hover { background:#f8fbfe; }
+  tbody td { padding:10px 12px; }
+
+  /* ── BADGES ── */
+  .badge {
+    display:inline-flex; align-items:center; gap:4px;
+    padding:3px 9px; border-radius:20px; font-size:0.72rem; font-weight:600;
+  }
+  .badge.present  { background:#d5f5e3; color:#1e8449; }
+  .badge.absent   { background:#fde8e8; color:#c0392b; }
+  .badge.retard   { background:#fef3cd; color:#d68910; }
+  .badge.entree   { background:#d5f5e3; color:#1e8449; }
+  .badge.sortie   { background:#fde8e8; color:#c0392b; }
+  .badge.attente  { background:#fef3cd; color:#d68910; }
+  .badge.approuve { background:#d5f5e3; color:#1e8449; }
+  .badge.refuse   { background:#fde8e8; color:#c0392b; }
+
+  /* ── FLUX ── */
+  .flux-item {
+    display:flex; align-items:center; gap:12px; padding:10px 14px;
+    border-radius:10px; background:#f8fbfd; border:1px solid #e8f0f8;
+    margin-bottom:7px; animation:slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+  .flux-item.entree { border-left:4px solid var(--vert); }
+  .flux-item.sortie { border-left:4px solid var(--rouge); }
+  .flux-icon   { font-size:1.2rem; flex-shrink:0; }
+  .flux-info   { flex:1; }
+  .flux-nom    { font-weight:700; font-size:0.86rem; }
+  .flux-detail { font-size:0.73rem; color:#999; margin-top:1px; }
+  .flux-heure  { font-size:0.95rem; font-weight:700; color:var(--bleu); }
+
+  /* ── PRÉSENCE CARDS ── */
+  .presence-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+  .presence-card {
+    background:white; border-radius:12px; padding:14px 16px;
+    display:flex; align-items:center; gap:12px;
+    box-shadow:0 1px 6px rgba(0,0,0,0.06); border:2px solid #f0f4f8;
+  }
+  .presence-card.present { border-color:#b7ecd0; }
+  .presence-card.absent  { border-color:#fad2d2; }
+  .presence-card.retard  { border-color:#fde8b7; }
+  .avatar {
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,var(--bleu2),var(--bleu));
+    display:flex; align-items:center; justify-content:center;
+    color:white; font-size:0.78rem; font-weight:700;
+  }
+  .presence-info { flex:1; min-width:0; }
+  .presence-nom   { font-weight:700; font-size:0.84rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .presence-poste { font-size:0.72rem; color:#999; }
+  .presence-heure { font-size:0.72rem; color:var(--bleu); font-weight:600; margin-top:2px; }
+
+  /* ── FILTRES ── */
+  .filtres { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+  .filtres input, .filtres select {
+    padding:7px 10px; border:1.5px solid #dde6ef; border-radius:8px;
+    font-size:0.8rem; background:white;
+  }
+
+  /* ── DEMANDES ── */
+  .demande-card {
+    border:1px solid #edf2f7; border-radius:12px; padding:14px 16px;
+    margin-bottom:10px; transition:background 0.1s;
+  }
+  .demande-card:hover { background:#f8fbfe; }
+  .demande-card.en_attente { border-left:4px solid var(--orange); }
+  .demande-card.approuve   { border-left:4px solid var(--vert); }
+  .demande-card.refuse     { border-left:4px solid var(--rouge); }
+  .demande-header { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .demande-nom    { font-weight:700; font-size:0.9rem; }
+  .demande-meta   { font-size:0.76rem; color:#999; margin-top:4px; }
+  .demande-motif  { font-size:0.82rem; color:#555; margin-top:6px; font-style:italic; }
+
+  /* ── ACCÈS REFUSÉ ── */
+  .acces-refuse {
+    display:flex; flex-direction:column; align-items:center;
+    justify-content:center; min-height:80vh; text-align:center; gap:12px;
+  }
+  .acces-refuse .icon { font-size:4rem; }
+  .acces-refuse h2 { color:var(--rouge); font-size:1.2rem; }
+  .acces-refuse p  { color:#888; font-size:0.88rem; }
+
+  @media(max-width:600px) { main { padding:0 10px 40px; } .kpi-val { font-size:1.8rem; } }
+</style>
+</head>
+<body>
+
+<!-- Accès refusé (si token invalide) -->
+<div class="acces-refuse" id="acces-refuse" style="display:none;">
+  <div class="icon">🔒</div>
+  <h2>Accès refusé</h2>
+  <p>Lien invalide ou expiré.<br>Contactez l'administrateur.</p>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" style="display:none;">
+
+<header>
+  <div class="header-left">
+    <div>
+      <div class="header-title">SUIVI ACTIVITÉS — SUPERVISEUR</div>
+      <div class="header-sub">Vue lecture seule · Crystal Solutions</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="live-dot"><div class="dot"></div>Temps réel</div>
+    <div class="header-heure" id="heure-header"></div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showTab('tab-live')">En direct</button>
+  <button onclick="showTab('tab-presences')">Présences</button>
+  <button onclick="showTab('tab-historique')">Historique</button>
+  <button onclick="showTab('tab-demandes')">Demandes <span id="badge-dem" style="display:none;background:#e74c3c;color:white;border-radius:10px;padding:1px 6px;font-size:0.7rem;margin-left:3px;"></span></button>
+</nav>
+
+<main>
+
+<!-- ═══ TAB EN DIRECT ═══ -->
+<div class="tab-content active" id="tab-live">
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi-label">Total agents</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub">Inscrits</div></div>
+    <div class="kpi vert"><div class="kpi-label">Présents</div><div class="kpi-val" id="kpi-presents">—</div><div class="kpi-sub">Badgés aujourd'hui</div></div>
+    <div class="kpi rouge"><div class="kpi-label">Absents</div><div class="kpi-val" id="kpi-absents">—</div><div class="kpi-sub">Non badgés</div></div>
+    <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 8h00</div></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-header">
+        <h2>Flux en temps réel</h2>
+        <span style="font-size:0.72rem;color:#aaa;" id="date-today"></span>
+      </div>
+      <div id="flux-liste">
+        <div style="text-align:center;color:#ccc;padding:20px;font-size:0.84rem;">En attente de badgeages...</div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h2>Demandes en attente</h2></div>
+      <div id="dem-live-liste">
+        <div style="text-align:center;color:#ccc;padding:20px;font-size:0.84rem;">Aucune demande en attente</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB PRÉSENCES ═══ -->
+<div class="tab-content" id="tab-presences">
+  <div class="filtres">
+    <input type="text" id="search-presence" placeholder="🔍 Rechercher un agent..." oninput="filtrerPresences()" style="min-width:200px;" />
+    <select id="filtre-service-p" onchange="filtrerPresences()">
+      <option value="">Tous les services</option>
+      <option value="Back Office">Back Office</option>
+      <option value="Call Center">Call Center</option>
+    </select>
+    <select id="filtre-statut-p" onchange="filtrerPresences()">
+      <option value="">Tous</option>
+      <option value="present">Présents</option>
+      <option value="absent">Absents</option>
+      <option value="retard">En retard</option>
+    </select>
+  </div>
+  <div class="presence-grid" id="presence-grid">
+    <div style="color:#ccc;padding:20px;font-size:0.84rem;">Chargement...</div>
+  </div>
+</div>
+
+<!-- ═══ TAB HISTORIQUE ═══ -->
+<div class="tab-content" id="tab-historique">
+  <div class="filtres">
+    <input type="date" id="filtre-date-h" onchange="chargerHistorique()" />
+    <input type="text" id="search-histo" placeholder="🔍 Nom agent..." oninput="chargerHistorique()" style="min-width:160px;" />
+    <select id="filtre-service-h" onchange="chargerHistorique()">
+      <option value="">Tous les services</option>
+      <option value="Back Office">Back Office</option>
+      <option value="Call Center">Call Center</option>
+    </select>
+  </div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th>Agent</th><th>Service</th><th>Date</th>
+          <th>Heure</th><th>Type</th><th>Retard</th>
+        </tr></thead>
+        <tbody id="tb-histo">
+          <tr><td colspan="6" style="text-align:center;color:#ccc;padding:20px;">Sélectionnez une date</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TAB DEMANDES ═══ -->
+<div class="tab-content" id="tab-demandes">
+  <div class="filtres">
+    <select id="filtre-statut-d" onchange="chargerDemandes()">
+      <option value="">Toutes</option>
+      <option value="en_attente">En attente</option>
+      <option value="approuve">Approuvées</option>
+      <option value="refuse">Refusées</option>
+    </select>
+    <select id="filtre-service-d" onchange="chargerDemandes()">
+      <option value="">Tous les services</option>
+      <option value="Back Office">Back Office</option>
+      <option value="Call Center">Call Center</option>
+    </select>
+    <button onclick="chargerDemandes()" style="padding:7px 14px;border:1.5px solid #dde6ef;border-radius:8px;font-size:0.8rem;background:white;cursor:pointer;">↻ Actualiser</button>
+  </div>
+  <div id="demandes-liste">
+    <div style="text-align:center;color:#ccc;padding:30px;">Chargement...</div>
+  </div>
+</div>
+
+</main>
+</div><!-- /#dashboard -->
+
+<script>
+// ── Token depuis l'URL ──
+const params = new URLSearchParams(window.location.search);
+const TOKEN  = params.get('token') || '';
+
+// ── Horloge ──
+function majHeure() {
+  document.getElementById('heure-header').textContent =
+    new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
+}
+setInterval(majHeure, 1000); majHeure();
+
+// ── Headers avec token ──
+function hdrs() {
+  return { 'Content-Type':'application/json', 'x-superviseur-token': TOKEN };
+}
+
+// ── Fetch sécurisé ──
+async function apiFetch(url) {
+  const r = await fetch(url, { headers: hdrs() });
+  if (r.status === 403) { afficherAccesRefuse(); throw new Error('Accès refusé'); }
+  return r.json();
+}
+
+function afficherAccesRefuse() {
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('acces-refuse').style.display = 'flex';
+}
+
+// ── Tabs ──
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (id === 'tab-presences')  chargerPresences();
+  if (id === 'tab-historique') {
+    if (!document.getElementById('filtre-date-h').value)
+      document.getElementById('filtre-date-h').value = new Date().toISOString().split('T')[0];
+    chargerHistorique();
+  }
+  if (id === 'tab-demandes') chargerDemandes();
+}
+
+// ══ TAB EN DIRECT ══
+async function chargerStats() {
+  try {
+    const s = await apiFetch('/api/superviseur/stats?token=' + TOKEN);
+    document.getElementById('kpi-total').textContent    = s.totalAgents;
+    document.getElementById('kpi-presents').textContent = s.presents;
+    document.getElementById('kpi-absents').textContent  = s.absents;
+    document.getElementById('kpi-retards').textContent  = s.retards;
+    const jours = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    const mois  = ['jan','fév','mar','avr','mai','juin','juil','août','sep','oct','nov','déc'];
+    const now = new Date();
+    document.getElementById('date-today').textContent =
+      `${jours[now.getDay()]} ${now.getDate()} ${mois[now.getMonth()]}`;
+  } catch(e) {}
+}
+
+async function chargerFlux() {
+  try {
+    const pts = await apiFetch('/api/superviseur/pointages-today?token=' + TOKEN);
+    const div = document.getElementById('flux-liste');
+    if (!pts.length) { div.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;font-size:0.84rem;">Aucun badgeage aujourd\'hui</div>'; return; }
+    div.innerHTML = '';
+    pts.slice(0, 8).forEach(p => {
+      div.innerHTML += `
+        <div class="flux-item ${p.type}">
+          <div class="flux-icon">${p.type === 'entree' ? '🟢' : '🔴'}</div>
+          <div class="flux-info">
+            <div class="flux-nom">${p.nom_complet || p.nom + ' ' + p.prenom}</div>
+            <div class="flux-detail">${p.poste} · ${p.service || ''} ${p.retard ? '· <span style="color:#e67e22;">⚠️ Retard</span>' : ''}</div>
+          </div>
+          <div class="flux-heure">${p.heure}</div>
+        </div>`;
+    });
+  } catch(e) {}
+}
+
+async function chargerDemandesLive() {
+  try {
+    const dem = await apiFetch('/api/superviseur/demandes?token=' + TOKEN + '&statut=en_attente');
+    const div = document.getElementById('dem-live-liste');
+    const badge = document.getElementById('badge-dem');
+    if (!dem.length) {
+      div.innerHTML = '<div style="text-align:center;color:#ccc;padding:20px;font-size:0.84rem;">Aucune demande en attente</div>';
+      badge.style.display = 'none'; return;
+    }
+    badge.style.display = 'inline'; badge.textContent = dem.length;
+    div.innerHTML = '';
+    const types = { permission:'🚪 Permission', absence:'🤒 Absence', conge:'🏖️ Congé', retard:'⏰ Retard' };
+    dem.slice(0, 5).forEach(d => {
+      div.innerHTML += `
+        <div class="demande-card en_attente" style="padding:10px 12px;margin-bottom:7px;">
+          <div style="font-weight:700;font-size:0.86rem;">${d.nom} <span style="font-weight:400;color:#999;font-size:0.75rem;">${d.agentId}</span></div>
+          <div style="font-size:0.76rem;color:#e67e22;margin-top:2px;">${types[d.type]||d.type} · ${d.service||''} · ${d.dateDebut}</div>
+          <div style="font-size:0.78rem;color:#666;margin-top:3px;font-style:italic;">${d.motif}</div>
+        </div>`;
+    });
+  } catch(e) {}
+}
+
+// ══ TAB PRÉSENCES ══
+let tousAgents = [], tousPointages = [];
+async function chargerPresences() {
+  try {
+    const [agents, pointages] = await Promise.all([
+      apiFetch('/api/superviseur/agents?token=' + TOKEN),
+      apiFetch('/api/superviseur/pointages-today?token=' + TOKEN)
+    ]);
+    tousAgents = agents; tousPointages = pointages;
+    filtrerPresences();
+  } catch(e) {}
+}
+
+function filtrerPresences() {
+  const q       = (document.getElementById('search-presence').value || '').toLowerCase();
+  const service = document.getElementById('filtre-service-p').value;
+  const statut  = document.getElementById('filtre-statut-p').value;
+  const today   = new Date().toLocaleDateString('fr-FR');
+
+  let liste = tousAgents.filter(a => {
+    if (service && a.service !== service) return false;
+    const nom = (a.nom_complet || a.nom + ' ' + a.prenom).toLowerCase();
+    if (q && !nom.includes(q)) return false;
+    return true;
+  });
+
+  const grid = document.getElementById('presence-grid');
+  grid.innerHTML = '';
+  if (!liste.length) { grid.innerHTML = '<div style="color:#ccc;padding:20px;font-size:0.84rem;">Aucun agent trouvé</div>'; return; }
+
+  liste.forEach(agent => {
+    const ptsAgent = tousPointages.filter(p => p.agentId === agent.id);
+    const entree   = ptsAgent.find(p => p.type === 'entree');
+    const sortie   = ptsAgent.find(p => p.type === 'sortie');
+    const present  = !!entree;
+    const retard   = entree && entree.retard;
+
+    let etat = present ? (retard ? 'retard' : 'present') : 'absent';
+    if (statut && etat !== statut) return;
+
+    const nom = agent.nom_complet || `${agent.prenom} ${agent.nom}`;
+    const init = nom.split(' ').filter(w=>w).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+
+    const el = document.createElement('div');
+    el.className = `presence-card ${etat}`;
+    el.innerHTML = `
+      <div class="avatar">${init}</div>
+      <div class="presence-info">
+        <div class="presence-nom">${nom}</div>
+        <div class="presence-poste">${agent.poste||''} · ${agent.service||''}</div>
+        <div class="presence-heure">
+          ${entree ? '🟢 ' + entree.heure : ''}
+          ${sortie ? ' · 🔴 ' + sortie.heure : ''}
+          ${!entree ? '<span style="color:#e74c3c;font-size:0.7rem;">Absent</span>' : ''}
+          ${retard  ? ' <span style="color:#e67e22;font-size:0.68rem;">⚠️ Retard</span>' : ''}
+        </div>
+      </div>`;
+    grid.appendChild(el);
+  });
+}
+
+// ══ TAB HISTORIQUE ══
+async function chargerHistorique() {
+  const date    = document.getElementById('filtre-date-h').value;
+  const search  = (document.getElementById('search-histo').value || '').toLowerCase();
+  const service = document.getElementById('filtre-service-h').value;
+  if (!date) return;
+
+  try {
+    let pts = await apiFetch(`/api/superviseur/pointages?token=${TOKEN}&date=${date.split('-').reverse().join('/')}`);
+    if (search)  pts = pts.filter(p => (p.nom_complet||p.nom+' '+p.prenom).toLowerCase().includes(search));
+    if (service) pts = pts.filter(p => p.service === service);
+
+    const tbody = document.getElementById('tb-histo');
+    if (!pts.length) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#ccc;padding:20px;">Aucun pointage</td></tr>'; return; }
+    tbody.innerHTML = '';
+    pts.forEach(p => {
+      tbody.innerHTML += `<tr>
+        <td><strong>${p.nom_complet||p.nom+' '+p.prenom}</strong></td>
+        <td style="font-size:0.78rem;color:#888;">${p.service||'—'}</td>
+        <td style="font-size:0.78rem;">${p.date}</td>
+        <td style="font-weight:700;color:var(--bleu);">${p.heure}</td>
+        <td><span class="badge ${p.type}">${p.type === 'entree' ? '🟢 Arrivée' : '🔴 Départ'}</span></td>
+        <td>${p.retard ? '<span class="badge retard">⚠️ Retard</span>' : '<span style="color:#ccc;font-size:0.76rem;">—</span>'}</td>
+      </tr>`;
+    });
+  } catch(e) {}
+}
+
+// ══ TAB DEMANDES ══
+const TYPE_LABELS_S = { permission:'🚪 Permission', absence:'🤒 Absence', conge:'🏖️ Congé', retard:'⏰ Retard prévu' };
+async function chargerDemandes() {
+  const statut  = document.getElementById('filtre-statut-d').value;
+  const service = document.getElementById('filtre-service-d').value;
+  let url = `/api/superviseur/demandes?token=${TOKEN}`;
+  if (statut)  url += `&statut=${statut}`;
+  if (service) url += `&service=${encodeURIComponent(service)}`;
+
+  try {
+    const dem = await apiFetch(url);
+    const div = document.getElementById('demandes-liste');
+    if (!dem.length) { div.innerHTML = '<div style="text-align:center;color:#ccc;padding:30px;">Aucune demande</div>'; return; }
+
+    div.innerHTML = '';
+    const statutLabel = { en_attente:'⏳ En attente', approuve:'✅ Approuvé', refuse:'❌ Refusé' };
+    const statutCls   = { en_attente:'attente', approuve:'approuve', refuse:'refuse' };
+    dem.forEach(d => {
+      const periode = d.dateFin ? `${d.dateDebut} → ${d.dateFin}` : (d.heure ? `${d.dateDebut} à ${d.heure}` : d.dateDebut);
+      const pj = d.piecesJointes && d.piecesJointes.length
+        ? `<div style="margin-top:6px;">${d.piecesJointes.map(p=>`<a href="${p.chemin}" target="_blank" style="font-size:0.72rem;background:#eaf4fb;color:#1A5676;border:1px solid #bee3f8;border-radius:6px;padding:2px 7px;text-decoration:none;margin-right:4px;">📎 ${p.nom}</a>`).join('')}</div>` : '';
+
+      div.innerHTML += `
+        <div class="demande-card ${d.statut}">
+          <div class="demande-header">
+            <div>
+              <div class="demande-nom">${d.nom} <span style="font-weight:400;font-size:0.76rem;color:#aaa;">${d.agentId}</span></div>
+              <div class="demande-meta">${TYPE_LABELS_S[d.type]||d.type} · ${d.service||'—'} · ${periode}</div>
+            </div>
+            <span class="badge ${statutCls[d.statut]}">${statutLabel[d.statut]||d.statut}</span>
+          </div>
+          <div class="demande-motif">"${d.motif}"</div>
+          ${d.commentaire ? `<div style="font-size:0.76rem;color:var(--bleu);margin-top:4px;">💬 ${d.commentaire}</div>` : ''}
+          ${pj}
+          <div style="font-size:0.7rem;color:#ccc;margin-top:5px;">${new Date(d.createdAt).toLocaleString('fr-FR')}</div>
+        </div>`;
+    });
+  } catch(e) {}
+}
+
+// ── Socket.io ──
+const socket = io();
+socket.on('nouveau-pointage', () => { chargerStats(); chargerFlux(); chargerPresences(); });
+socket.on('stats-update',    () => { chargerStats(); });
+socket.on('nouvelle-demande', () => { chargerDemandesLive(); chargerDemandes(); });
+socket.on('demande-mise-a-jour', () => { chargerDemandes(); chargerDemandesLive(); });
+
+// ── Init ──
+async function init() {
+  try {
+    const check = await fetch('/api/superviseur/stats?token=' + TOKEN, { headers: hdrs() });
+    if (check.status === 403) { afficherAccesRefuse(); return; }
+    document.getElementById('dashboard').style.display = 'block';
+    chargerStats();
+    chargerFlux();
+    chargerDemandesLive();
+    document.getElementById('filtre-date-h').value = new Date().toISOString().split('T')[0];
+    setInterval(() => { chargerStats(); chargerFlux(); chargerDemandesLive(); }, 30000);
+  } catch(e) { afficherAccesRefuse(); }
+}
+init();
+</script>
+</body>
+</html>

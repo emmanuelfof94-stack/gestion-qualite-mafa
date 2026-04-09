@@ -268,8 +268,38 @@
     </div>
   </div>
 
-  <!-- ═══ ÉTAPE 2 : Photo ═══ -->
+  <!-- ═══ ÉTAPE 2 : Arrivée ou Départ ═══ -->
   <div class="step" id="step-2">
+    <div class="confirm-layout" style="margin-bottom:24px;">
+      <div class="confirm-photo" id="conf-photo-circle">
+        <span id="conf-initiales"></span>
+      </div>
+      <div class="confirm-info">
+        <div class="confirm-nom" id="conf-nom"></div>
+        <div class="confirm-poste" id="conf-poste"></div>
+        <div class="confirm-heure" id="conf-heure"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:0.88rem;opacity:0.65;margin-bottom:16px;">
+      Sélectionnez votre action
+    </div>
+
+    <div class="type-buttons">
+      <button class="btn-type btn-entree" onclick="choisirType('entree')">
+        <span class="btn-icon">🟢</span>
+        Arrivée
+      </button>
+      <button class="btn-type btn-sortie" onclick="choisirType('sortie')">
+        <span class="btn-icon">🔴</span>
+        Départ
+      </button>
+    </div>
+    <button class="btn-back" onclick="allerStep(1)" style="margin-top:16px;">← Changer de nom</button>
+  </div>
+
+  <!-- ═══ ÉTAPE 3 : Photo ═══ -->
+  <div class="step" id="step-3">
     <div class="photo-header">
       <div class="agent-name-mini" id="photo-agent-nom"></div>
       <div class="instruction">Placez votre visage dans le cadre et prenez votre photo</div>
@@ -302,38 +332,11 @@
       <button class="btn-retake" id="btn-retake" onclick="reprendrPhoto()">🔄 Reprendre</button>
     </div>
     <button class="btn-valider-photo" id="btn-valider-photo" onclick="validerPhoto()">
-      ✓ Continuer avec cette photo
+      ✓ Valider et badger
     </button>
     <div style="margin-top:10px;">
-      <button class="btn-back" onclick="allerStep(1)">← Changer de nom</button>
+      <button class="btn-back" onclick="allerStep(2)">← Changer d'action</button>
     </div>
-  </div>
-
-  <!-- ═══ ÉTAPE 3 : Entrée ou Sortie ═══ -->
-  <div class="step" id="step-3">
-    <div class="confirm-layout">
-      <div class="confirm-photo" id="conf-photo-circle">
-        <img id="conf-photo-img" src="" alt="" style="display:none;" />
-        <span id="conf-initiales"></span>
-      </div>
-      <div class="confirm-info">
-        <div class="confirm-nom" id="conf-nom"></div>
-        <div class="confirm-poste" id="conf-poste"></div>
-        <div class="confirm-heure" id="conf-heure"></div>
-      </div>
-    </div>
-
-    <div class="type-buttons">
-      <button class="btn-type btn-entree" onclick="badger('entree')">
-        <span class="btn-icon">🟢</span>
-        Arrivée
-      </button>
-      <button class="btn-type btn-sortie" onclick="badger('sortie')">
-        <span class="btn-icon">🔴</span>
-        Départ
-      </button>
-    </div>
-    <button class="btn-back" onclick="allerStep(2)">← Reprendre la photo</button>
   </div>
 
   <!-- ═══ ÉTAPE 4 : Résultat ═══ -->
@@ -359,6 +362,7 @@
 // ══════════════════════════════════════════
 let agents = [];
 let agentSelectionne = null;
+let typeSelectionne  = null;   // 'entree' ou 'sortie'
 let photoBase64 = null;        // photo capturée
 let cameraStream = null;       // flux caméra
 
@@ -394,7 +398,7 @@ function allerStep(n) {
   document.getElementById(`step-${n}`).classList.add('active');
   majIndicateur(n);
 
-  if (n === 2) demarrerCamera();
+  if (n === 3) demarrerCamera();
   else         arreterCamera();
 }
 
@@ -461,9 +465,28 @@ function filtrerAgents() {
 
 function selectionnerAgent(agent) {
   agentSelectionne = agent;
+  typeSelectionne  = null;
+  photoBase64      = null;
   const nomAffiche = agent.nom_complet || `${agent.prenom} ${agent.nom}`;
+  const initiales  = nomAffiche.split(' ').filter(w=>w).map(w=>w[0]).slice(0,2).join('').toUpperCase();
+  // Pré-remplir step 2 (choix type)
+  document.getElementById('conf-nom').textContent    = nomAffiche;
+  document.getElementById('conf-poste').textContent  = agent.poste + ' — ' + (agent.service || '');
+  document.getElementById('conf-initiales').textContent = initiales;
   document.getElementById('photo-agent-nom').textContent = nomAffiche;
   allerStep(2);
+}
+
+function choisirType(type) {
+  typeSelectionne = type;
+  // Feedback visuel sur les boutons
+  document.querySelectorAll('.btn-type').forEach(b => b.style.opacity = '0.5');
+  event.currentTarget.style.opacity = '1';
+  event.currentTarget.style.transform = 'scale(1.04)';
+  setTimeout(() => {
+    document.querySelectorAll('.btn-type').forEach(b => { b.style.opacity = '1'; b.style.transform = ''; });
+    allerStep(3);
+  }, 300);
 }
 
 // ══════════════════════════════════════════
@@ -541,25 +564,8 @@ function reprendrPhoto() {
 
 function validerPhoto() {
   arreterCamera();
-
-  // Préparer step 3
-  const nomAffiche = agentSelectionne.nom_complet || `${agentSelectionne.prenom} ${agentSelectionne.nom}`;
-  const initiales  = nomAffiche.split(' ').filter(w=>w).map(w=>w[0]).slice(0,2).join('').toUpperCase();
-
-  document.getElementById('conf-nom').textContent   = nomAffiche;
-  document.getElementById('conf-poste').textContent = agentSelectionne.poste + ' — ' + (agentSelectionne.service||'');
-  document.getElementById('conf-heure').textContent = '⏰ ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'});
-  document.getElementById('conf-initiales').textContent = initiales;
-
-  if (photoBase64) {
-    document.getElementById('conf-photo-img').src = photoBase64;
-    document.getElementById('conf-photo-img').style.display = 'block';
-    document.getElementById('conf-initiales').style.display = 'none';
-  } else {
-    document.getElementById('conf-photo-img').style.display = 'none';
-    document.getElementById('conf-initiales').style.display = 'block';
-  }
-  allerStep(3);
+  // Soumettre directement le badgeage avec le type déjà choisi
+  badger(typeSelectionne);
 }
 
 function passerSansPhoto() {
@@ -571,7 +577,7 @@ function passerSansPhoto() {
 // STEP 3 — BADGEAGE
 // ══════════════════════════════════════════
 async function badger(type) {
-  if (!agentSelectionne) return;
+  if (!agentSelectionne || !type) return;
 
   // Feedback visuel immédiat
   document.querySelectorAll('.btn-type').forEach(b => b.style.opacity = '0.5');
@@ -647,7 +653,8 @@ function afficherResultat(icon, nom, message, heure, retard) {
 
 function recommencer() {
   agentSelectionne = null;
-  photoBase64 = null;
+  typeSelectionne  = null;
+  photoBase64      = null;
   document.getElementById('search').value = '';
   afficherAgents(agents);
   arreterCamera();

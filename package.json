@@ -7,7 +7,10 @@
     "start": "node server.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
+    "localtunnel": "^2.0.2",
     "node-forge": "^1.4.0",
     "selfsigned": "^5.5.0",
     "socket.io": "^4.8.3"

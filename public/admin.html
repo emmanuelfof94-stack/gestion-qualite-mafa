@@ -240,6 +240,7 @@
   <button onclick="showTab('tab-historique')">Historique</button>
   <button onclick="showTab('tab-agents')">Agents</button>
   <button onclick="showTab('tab-rapports')">Rapports & Export</button>
+  <button onclick="showTab('tab-demandes')" id="nav-demandes">Demandes <span id="badge-demandes" style="display:none;background:#e74c3c;color:white;border-radius:10px;padding:1px 7px;font-size:0.72rem;margin-left:4px;"></span></button>
   <button onclick="showTab('tab-acces')" id="nav-acces" style="display:none;">Accès & Comptes</button>
 </nav>
 
@@ -452,6 +453,89 @@
 </div>
 
 </main>
+
+<!-- ══════════════════════════════════ -->
+<!-- TAB — DEMANDES AGENTS            -->
+<!-- ══════════════════════════════════ -->
+<div class="tab-content" id="tab-demandes">
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Demandes de permissions / absences</h2>
+      <div class="card-actions">
+        <select id="filtre-statut-demandes" onchange="chargerDemandes()" style="padding:7px 10px;border:1.5px solid #dde6ef;border-radius:8px;font-size:0.83rem;">
+          <option value="">Toutes</option>
+          <option value="en_attente">En attente</option>
+          <option value="approuve">Approuvées</option>
+          <option value="refuse">Refusées</option>
+        </select>
+        <button class="btn btn-outline btn-sm" onclick="chargerDemandes()">Actualiser</button>
+      </div>
+    </div>
+
+    <!-- Liens à partager -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px;">
+
+      <!-- WiFi -->
+      <div style="background:#eaf4fb;border:1px solid #bee3f8;border-radius:10px;padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.1rem;">📶</span>
+          <span style="font-size:0.76rem;font-weight:700;color:#1A5676;text-transform:uppercase;letter-spacing:0.3px;">Lien WiFi (réseau local)</span>
+        </div>
+        <code id="lien-wifi" style="font-size:0.82rem;color:#2c7da0;word-break:break-all;display:block;margin-bottom:10px;">Chargement...</code>
+        <button class="btn btn-primary btn-sm" onclick="copierLien('wifi')" style="width:100%;justify-content:center;">Copier</button>
+      </div>
+
+      <!-- Données mobiles -->
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:14px 16px;" id="bloc-mobile">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.1rem;">📱</span>
+          <span style="font-size:0.76rem;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.3px;">Lien Données mobiles</span>
+          <span id="tunnel-statut" style="font-size:0.68rem;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:8px;margin-left:auto;">Connexion...</span>
+        </div>
+        <code id="lien-mobile" style="font-size:0.82rem;color:#15803d;word-break:break-all;display:block;margin-bottom:10px;">En attente du tunnel...</code>
+        <button class="btn btn-sm" onclick="copierLien('mobile')" style="width:100%;justify-content:center;background:#15803d;color:white;">Copier</button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Agent</th>
+            <th>Service</th>
+            <th>Type</th>
+            <th>Période</th>
+            <th>Motif</th>
+            <th>Statut</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="tb-demandes">
+          <tr><td colspan="8" style="text-align:center;color:#ccc;padding:30px;">Chargement...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal traitement -->
+  <div id="modal-demande" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;align-items:center;justify-content:center;">
+    <div style="background:white;border-radius:16px;padding:28px;max-width:480px;width:92%;box-shadow:0 12px 40px rgba(0,0,0,0.2);">
+      <h3 style="color:var(--bleu);margin-bottom:6px;" id="modal-d-titre">Traiter la demande</h3>
+      <p style="font-size:0.83rem;color:#888;margin-bottom:18px;" id="modal-d-info"></p>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:0.76rem;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:0.3px;display:block;margin-bottom:6px;">Commentaire (optionnel)</label>
+        <textarea id="modal-d-commentaire" rows="3" style="width:100%;padding:10px 12px;border:1.5px solid #dde6ef;border-radius:8px;font-family:inherit;font-size:0.88rem;resize:vertical;" placeholder="Raison de l'approbation ou du refus..."></textarea>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;">
+        <button class="btn" style="background:#eee;color:#444;" onclick="fermerModalDemande()">Annuler</button>
+        <button class="btn btn-danger" onclick="traiterDemande('refuse')">Refuser</button>
+        <button class="btn btn-success" onclick="traiterDemande('approuve')">Approuver</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ══════════════════════════════════ -->
 <!-- TAB 6 — ACCÈS & COMPTES          -->
@@ -1003,11 +1087,171 @@ function showTab(id) {
   if (id === 'tab-agents')     chargerAgents();
   if (id === 'tab-rapports')   chargerRecap();
   if (id === 'tab-acces')      chargerUsers();
+  if (id === 'tab-demandes')   chargerDemandes();
 }
+
+// ── Demandes agents ──
+let _demandeEnCours = null;
+
+const TYPE_LABELS = {
+  permission: '🚪 Permission',
+  absence:    '🤒 Absence',
+  conge:      '🏖️ Congé',
+  retard:     '⏰ Retard prévu'
+};
+const STATUT_LABELS = {
+  en_attente: '<span class="badge" style="background:#fff3e0;color:#e67e22;">⏳ En attente</span>',
+  approuve:   '<span class="badge" style="background:#d5f5e3;color:#1e8449;">✅ Approuvé</span>',
+  refuse:     '<span class="badge" style="background:#fde8e8;color:#c0392b;">❌ Refusé</span>'
+};
+
+async function chargerDemandes() {
+  const filtre = document.getElementById('filtre-statut-demandes').value;
+  const url = '/api/demandes' + (filtre ? '?statut=' + filtre : '');
+  const demandes = await fetch(url).then(r => r.json()).catch(() => []);
+
+  // Badge de notification
+  const enAttente = demandes.filter(d => d.statut === 'en_attente').length;
+  const badge = document.getElementById('badge-demandes');
+  if (enAttente > 0) { badge.style.display = 'inline'; badge.textContent = enAttente; }
+  else badge.style.display = 'none';
+
+  // Liens à partager (WiFi + Mobile)
+  chargerUrlsPartage();
+
+  const tbody = document.getElementById('tb-demandes');
+  if (!demandes.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#ccc;padding:30px;">Aucune demande</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  demandes.forEach(d => {
+    const periode = d.dateFin ? `${d.dateDebut} → ${d.dateFin}` : (d.heure ? `${d.dateDebut} à ${d.heure}` : d.dateDebut);
+    tbody.innerHTML += `<tr>
+      <td style="font-size:0.8rem;color:#aaa;">${new Date(d.createdAt).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</td>
+      <td><div style="font-weight:700;font-size:0.88rem;">${d.nom}</div><div style="font-size:0.74rem;color:#aaa;">${d.agentId}</div></td>
+      <td style="font-size:0.83rem;">${d.service || '—'}</td>
+      <td style="font-size:0.83rem;">${TYPE_LABELS[d.type] || d.type}</td>
+      <td style="font-size:0.82rem;color:#555;">${periode}</td>
+      <td style="max-width:180px;">
+        <div style="font-size:0.82rem;color:#444;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${d.motif}">${d.motif}</div>
+        ${d.piecesJointes && d.piecesJointes.length ? `
+          <div style="margin-top:5px;display:flex;flex-wrap:wrap;gap:4px;">
+            ${d.piecesJointes.map(pj => `
+              <a href="${pj.chemin}" target="_blank"
+                style="display:inline-flex;align-items:center;gap:3px;font-size:0.72rem;
+                       background:#eaf4fb;color:#1A5676;border:1px solid #bee3f8;
+                       border-radius:6px;padding:2px 7px;text-decoration:none;"
+                title="${pj.nom}">
+                📎 ${pj.nom.length > 15 ? pj.nom.substring(0,15)+'…' : pj.nom}
+              </a>`).join('')}
+          </div>` : ''}
+      </td>
+      <td>${STATUT_LABELS[d.statut] || d.statut}</td>
+      <td style="white-space:nowrap;">
+        ${d.statut === 'en_attente'
+          ? `<button class="btn btn-primary btn-sm" onclick="ouvrirModalDemande('${d.id}','${d.nom.replace(/'/g,"\\'")}')" style="font-size:0.76rem;">Traiter</button>`
+          : `<span style="font-size:0.75rem;color:#aaa;">Par ${d.traitePar||'—'}</span>`}
+        <button class="btn btn-danger btn-sm" onclick="supprimerDemande('${d.id}')" style="margin-left:4px;">🗑️</button>
+      </td>
+    </tr>`;
+  });
+}
+
+function ouvrirModalDemande(id, nom) {
+  _demandeEnCours = id;
+  document.getElementById('modal-d-titre').textContent = 'Traiter : ' + nom;
+  document.getElementById('modal-d-info').textContent = 'Approuvez ou refusez cette demande.';
+  document.getElementById('modal-d-commentaire').value = '';
+  document.getElementById('modal-demande').style.display = 'flex';
+}
+function fermerModalDemande() {
+  document.getElementById('modal-demande').style.display = 'none';
+  _demandeEnCours = null;
+}
+async function traiterDemande(statut) {
+  if (!_demandeEnCours) return;
+  const commentaire = document.getElementById('modal-d-commentaire').value;
+  await fetch('/api/demandes/' + _demandeEnCours, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ statut, commentaire })
+  });
+  fermerModalDemande();
+  chargerDemandes();
+}
+async function supprimerDemande(id) {
+  if (!confirm('Supprimer cette demande ?')) return;
+  await fetch('/api/demandes/' + id, { method: 'DELETE' });
+  chargerDemandes();
+}
+
+async function chargerUrlsPartage() {
+  try {
+    const data = await fetch('/api/public-url').then(r => r.json());
+    if (data.urlLocale) document.getElementById('lien-wifi').textContent = data.urlLocale;
+    mettreAJourTunnel(data.urlPublique);
+  } catch(e) {
+    document.getElementById('lien-wifi').textContent = window.location.origin + '/demandes';
+  }
+}
+
+function mettreAJourTunnel(urlPublique) {
+  const el = document.getElementById('lien-mobile');
+  const st = document.getElementById('tunnel-statut');
+  if (urlPublique) {
+    el.textContent = urlPublique;
+    st.textContent = 'Actif';
+    st.style.cssText = 'font-size:0.68rem;background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:8px;margin-left:auto;';
+  } else {
+    el.textContent = 'Connexion au tunnel en cours...';
+    st.textContent = 'Hors ligne';
+    st.style.cssText = 'font-size:0.68rem;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:8px;margin-left:auto;';
+  }
+}
+
+function copierLien(type) {
+  const id = type === 'mobile' ? 'lien-mobile' : 'lien-wifi';
+  const lien = document.getElementById(id).textContent.trim();
+  if (!lien || lien.includes('...') || lien.includes('Connexion')) return;
+  navigator.clipboard.writeText(lien).then(() => {
+    const btn = event.currentTarget;
+    const old = btn.textContent;
+    btn.textContent = 'Copié !';
+    setTimeout(() => btn.textContent = old, 2000);
+  });
+}
+
+// Mise à jour temps réel du tunnel
+socket.on('tunnel-url-update', (d) => {
+  mettreAJourTunnel(d.url ? d.url + '/demandes' : null);
+});
+
+// Notifier en temps réel quand une demande arrive
+socket.on('nouvelle-demande', (d) => {
+  // Mettre à jour le badge dans la nav
+  const badge = document.getElementById('badge-demandes');
+  const n = parseInt(badge.textContent || '0') + 1;
+  badge.style.display = 'inline';
+  badge.textContent = n;
+  // Actualiser si l'onglet est ouvert
+  if (document.getElementById('tab-demandes').classList.contains('active')) chargerDemandes();
+  // Notification visuelle
+  afficherNotif({
+    type: 'entree',
+    nom: d.nom,
+    detail: (TYPE_LABELS[d.type] || d.type) + ' — ' + d.service,
+    heure: new Date(d.createdAt).toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})
+  });
+});
 
 chargerStats();
 chargerFlux();
 initSession();
+// Pré-charger le badge demandes dès le démarrage
+fetch('/api/demandes?statut=en_attente').then(r=>r.json()).then(d=>{
+  if(d.length){ const b=document.getElementById('badge-demandes'); b.style.display='inline'; b.textContent=d.length; }
+}).catch(()=>{});
 setInterval(() => { chargerStats(); chargerFlux(); }, 30000);
 </script>
 </body>

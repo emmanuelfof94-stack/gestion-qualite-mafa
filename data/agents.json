@@ -1,55 +1,5 @@
 [
   {
-    "id": "BO001",
-    "nom": "BOMIN",
-    "prenom": "Deuh Flora",
-    "nom_complet": "DEUH FLORA BOMIN",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "758587756",
-    "email": "florabomin15@gmail.com"
-  },
-  {
-    "id": "BO002",
-    "nom": "DIARRASSOUBA",
-    "prenom": "Yacouba",
-    "nom_complet": "YACOUBA DIARRASSOUBA",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "00225 07 11 70 07 56",
-    "email": "yacdiarrassouba21@gmail.com"
-  },
-  {
-    "id": "BO003",
-    "nom": "DOUMBIA",
-    "prenom": "Frank Herman",
-    "nom_complet": "Frank Herman Doumbia",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "2250000000000",
-    "email": "doumbinhosgd@gmail.com"
-  },
-  {
-    "id": "BO004",
-    "nom": "EHOUMAN",
-    "prenom": "Dan Cedric",
-    "nom_complet": "Dan Cedric Ehouman",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "777020597",
-    "email": "ehouman31@gmail.com"
-  },
-  {
-    "id": "BO005",
-    "nom": "EKOUÉ",
-    "prenom": "Inès Alika Josée",
-    "nom_complet": "Inès Alika Josée Ekoué",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "758047058",
-    "email": "inesalika29@gmail.com"
-  },
-  {
     "id": "BO006",
     "nom": "FOTIENHORO",
     "prenom": "Kaonaman Victoria Candide",
@@ -68,26 +18,6 @@
     "service": "Back Office",
     "telephone": "2250000000000",
     "email": "cedricniamkey01@gmail.com"
-  },
-  {
-    "id": "BO008",
-    "nom": "GNAVAFO",
-    "prenom": "Bisse Ingrid Orlane Elfege",
-    "nom_complet": "BISSE INGRID ORLANE ELFEGE GNAVAFO",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "767556569",
-    "email": "orlgnavafo@gmail.com"
-  },
-  {
-    "id": "BO009",
-    "nom": "KOFFI",
-    "prenom": "Kouamé Emil",
-    "nom_complet": "Kouamé Emil KOFFI",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "777238113",
-    "email": "koffikouameemil@gmail.com"
   },
   {
     "id": "BO010",
@@ -120,16 +50,6 @@
     "email": "kouamefaustin@gmail.com"
   },
   {
-    "id": "BO013",
-    "nom": "ATCHIN",
-    "prenom": "Amoin Edwige Kra Epse",
-    "nom_complet": "AMOIN EDWIGE Kra Epse ATCHIN",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "504983904",
-    "email": "edkra1985@gmail.com"
-  },
-  {
     "id": "BO014",
     "nom": "NDJORE",
     "prenom": "Amenan Doris Ornela",
@@ -138,16 +58,6 @@
     "service": "Back Office",
     "telephone": "769751588",
     "email": "Orneladoris02@gmail.com"
-  },
-  {
-    "id": "BO015",
-    "nom": "ONÉ",
-    "prenom": "Logbo Thierry",
-    "nom_complet": "Logbo Thierry Oné",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "150750844",
-    "email": "tiescoroy789@gmail.com"
   },
   {
     "id": "BO016",
@@ -160,16 +70,6 @@
     "email": "ouathawaaugustine@gmail.com"
   },
   {
-    "id": "BO017",
-    "nom": "SORO",
-    "prenom": "Chonkpelefolo Cyrille",
-    "nom_complet": "CHONKPELEFOLO CYRILLE SORO",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "757461768",
-    "email": "sorocyrille013@gmail.com"
-  },
-  {
     "id": "BO018",
     "nom": "TANOH",
     "prenom": "Kouassi Eugène Armel",
@@ -178,16 +78,6 @@
     "service": "Back Office",
     "telephone": "758451084",
     "email": "eugenearmel@gmail.com"
-  },
-  {
-    "id": "BO019",
-    "nom": "TAPE",
-    "prenom": "Gnoleba Evariste",
-    "nom_complet": "GNOLEBA EVARISTE TAPE",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
-    "telephone": "707567217",
-    "email": "evaristetape040@gmail.com"
   },
   {
     "id": "BO020",
@@ -200,12 +90,82 @@
     "email": "yabresarmata@gmail.com"
   },
   {
+    "id": "CC008",
+    "nom": "KOFFI",
+    "prenom": "Marie Jose",
+    "nom_complet": "Marie Jose Koffi",
+    "poste": "Agent Back Office",
+    "service": "Back Office",
+    "telephone": "707527857",
+    "email": "mariejokoffi87@gmail.com"
+  },
+  {
+    "id": "BO001",
+    "nom": "BOMIN",
+    "prenom": "Deuh Flora",
+    "nom_complet": "DEUH FLORA BOMIN",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "758587756",
+    "email": "florabomin15@gmail.com"
+  },
+  {
+    "id": "BO002",
+    "nom": "DIARRASSOUBA",
+    "prenom": "Yacouba",
+    "nom_complet": "YACOUBA DIARRASSOUBA",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "00225 07 11 70 07 56",
+    "email": "yacdiarrassouba21@gmail.com"
+  },
+  {
+    "id": "BO005",
+    "nom": "EKOUÉ",
+    "prenom": "Inès Alika Josée",
+    "nom_complet": "Inès Alika Josée Ekoué",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "758047058",
+    "email": "inesalika29@gmail.com"
+  },
+  {
+    "id": "BO008",
+    "nom": "GNAVAFO",
+    "prenom": "Bisse Ingrid Orlane Elfege",
+    "nom_complet": "BISSE INGRID ORLANE ELFEGE GNAVAFO",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "767556569",
+    "email": "orlgnavafo@gmail.com"
+  },
+  {
+    "id": "BO017",
+    "nom": "SORO",
+    "prenom": "Chonkpelefolo Cyrille",
+    "nom_complet": "CHONKPELEFOLO CYRILLE SORO",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "757461768",
+    "email": "sorocyrille013@gmail.com"
+  },
+  {
+    "id": "BO019",
+    "nom": "TAPE",
+    "prenom": "Gnoleba Evariste",
+    "nom_complet": "GNOLEBA EVARISTE TAPE",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
+    "telephone": "707567217",
+    "email": "evaristetape040@gmail.com"
+  },
+  {
     "id": "BO021",
     "nom": "DJAH",
     "prenom": "Lucie Marie Henriette Carmelie Yao",
     "nom_complet": "LUCIE MARIE HENRIETTE CARMELIE YAO DJAH",
-    "poste": "Agent Back Office",
-    "service": "Back Office",
+    "poste": "Agent Call Center",
+    "service": "Call Center",
     "telephone": "778631446",
     "email": "carmeyao@gmail.com"
   },
@@ -270,46 +230,6 @@
     "email": "ivoire13@icloud.com"
   },
   {
-    "id": "CC007",
-    "nom": "KOFFI",
-    "prenom": "Adjoua",
-    "nom_complet": "Adjoua Koffi",
-    "poste": "Agent Call Center",
-    "service": "Call Center",
-    "telephone": "+225 07 11 29 71",
-    "email": "adjoua.koffi102@email.com"
-  },
-  {
-    "id": "CC008",
-    "nom": "KOFFI",
-    "prenom": "Marie Jose",
-    "nom_complet": "Marie Jose Koffi",
-    "poste": "Agent Call Center",
-    "service": "Call Center",
-    "telephone": "707527857",
-    "email": "mariejokoffi87@gmail.com"
-  },
-  {
-    "id": "CC009",
-    "nom": "KONAN",
-    "prenom": "Affoue Irene",
-    "nom_complet": "AFFOUE IRENE KONAN",
-    "poste": "Agent Call Center",
-    "service": "Call Center",
-    "telephone": "2250000000000",
-    "email": "konanirene92@gmail.com"
-  },
-  {
-    "id": "CC010",
-    "nom": "KOUADIO",
-    "prenom": "Christine Djela",
-    "nom_complet": "Christine Djela Kouadio",
-    "poste": "Agent Call Center",
-    "service": "Call Center",
-    "telephone": "759261887",
-    "email": "christinekouadio01@gmail.com"
-  },
-  {
     "id": "CC011",
     "nom": "KPAHI",
     "prenom": "Ashley",
@@ -318,16 +238,6 @@
     "service": "Call Center",
     "telephone": "2250748017788",
     "email": "am2609022@gmail.com"
-  },
-  {
-    "id": "CC012",
-    "nom": "MANGO",
-    "prenom": "Lasme Akpa Paul Brown",
-    "nom_complet": "Lasme akpa paul brown Mango",
-    "poste": "Agent Call Center",
-    "service": "Call Center",
-    "telephone": "2250000000000",
-    "email": "mangopaulbrown@gmail.com"
   },
   {
     "id": "CC013",

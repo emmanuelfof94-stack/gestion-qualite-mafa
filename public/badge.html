@@ -233,6 +233,42 @@
              border-top-color:white; border-radius:50%; animation:spin 0.8s linear infinite;
              margin:0 auto 10px; }
   @keyframes spin { to{transform:rotate(360deg)} }
+
+  /* ── Modal motif retard ── */
+  .modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
+    display:flex; align-items:center; justify-content:center; z-index:9999;
+    padding:20px;
+  }
+  .modal-overlay.hidden { display:none; }
+  .modal-box {
+    background:linear-gradient(160deg,#0d2d42,#1a4f6e);
+    border:1px solid rgba(255,255,255,0.15); border-radius:20px;
+    padding:28px 24px; width:100%; max-width:380px; color:white;
+  }
+  .modal-box .modal-icon { font-size:2.5rem; text-align:center; margin-bottom:10px; }
+  .modal-box h3 { font-size:1.1rem; font-weight:800; text-align:center; margin-bottom:6px; }
+  .modal-box .modal-sub { font-size:0.82rem; opacity:0.6; text-align:center; margin-bottom:20px; line-height:1.5; }
+  .modal-box textarea {
+    width:100%; padding:12px 14px; border-radius:12px;
+    border:1.5px solid rgba(255,255,255,0.25);
+    background:rgba(255,255,255,0.1); color:white;
+    font-size:0.92rem; font-family:inherit; resize:none; min-height:90px;
+    outline:none; transition:border-color 0.2s;
+  }
+  .modal-box textarea::placeholder { color:rgba(255,255,255,0.35); }
+  .modal-box textarea:focus { border-color:rgba(126,200,227,0.7); }
+  .modal-actions { display:flex; gap:10px; margin-top:14px; }
+  .btn-modal-skip {
+    flex:1; padding:12px; border-radius:10px; border:1.5px solid rgba(255,255,255,0.2);
+    background:transparent; color:rgba(255,255,255,0.6); font-size:0.85rem;
+    font-weight:600; cursor:pointer;
+  }
+  .btn-modal-ok {
+    flex:2; padding:12px; border-radius:10px; border:none;
+    background:linear-gradient(135deg,#e67e22,#f39c12); color:white;
+    font-size:0.9rem; font-weight:700; cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -354,6 +390,20 @@
     </div>
   </div>
 
+</div>
+
+<!-- ── Modal : motif de retard ── -->
+<div class="modal-overlay hidden" id="modal-retard">
+  <div class="modal-box">
+    <div class="modal-icon">⏰</div>
+    <h3>Arrivée après 9h00</h3>
+    <div class="modal-sub">Veuillez préciser le motif de votre retard.<br>Cette information sera transmise à l'administration.</div>
+    <textarea id="motif-retard-input" maxlength="300" placeholder="Ex : Embouteillages, problème de transport, rendez-vous médical..."></textarea>
+    <div class="modal-actions">
+      <button class="btn-modal-skip" onclick="validerAvecMotif('')">Passer</button>
+      <button class="btn-modal-ok" onclick="validerAvecMotif(document.getElementById('motif-retard-input').value)">Confirmer</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -564,8 +614,24 @@ function reprendrPhoto() {
 
 function validerPhoto() {
   arreterCamera();
-  // Soumettre directement le badgeage avec le type déjà choisi
+  // Vérifier si l'agent est en retard (arrivée après 9h00)
+  if (typeSelectionne === 'entree') {
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    if (h > 9 || (h === 9 && m > 0)) {
+      // Afficher le modal pour le motif de retard
+      document.getElementById('motif-retard-input').value = '';
+      document.getElementById('modal-retard').classList.remove('hidden');
+      return;
+    }
+  }
   badger(typeSelectionne);
+}
+
+function validerAvecMotif(motif) {
+  document.getElementById('modal-retard').classList.add('hidden');
+  badger(typeSelectionne, motif.trim());
 }
 
 function passerSansPhoto() {
@@ -576,21 +642,19 @@ function passerSansPhoto() {
 // ══════════════════════════════════════════
 // STEP 3 — BADGEAGE
 // ══════════════════════════════════════════
-async function badger(type) {
+async function badger(type, motifRetard) {
   if (!agentSelectionne || !type) return;
 
   // Feedback visuel immédiat
   document.querySelectorAll('.btn-type').forEach(b => b.style.opacity = '0.5');
 
   try {
+    const payload = { agentId: agentSelectionne.id, type, photo: photoBase64 };
+    if (motifRetard) payload.motifRetard = motifRetard;
     const resp = await fetch('/api/badger', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        agentId: agentSelectionne.id,
-        type,
-        photo: photoBase64
-      })
+      body: JSON.stringify(payload)
     });
     const data = await resp.json();
     document.querySelectorAll('.btn-type').forEach(b => b.style.opacity = '1');
@@ -598,7 +662,7 @@ async function badger(type) {
     const nomAffiche = agentSelectionne.nom_complet || `${agentSelectionne.prenom} ${agentSelectionne.nom}`;
 
     if (!data.ok) {
-      afficherResultat('ℹ️', nomAffiche, data.message, new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), false);
+      afficherResultat('ℹ️', nomAffiche, data.message, new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}), false, null);
     } else {
       const isEntree = data.type === 'entree';
       afficherResultat(
@@ -608,7 +672,8 @@ async function badger(type) {
           ? `Bonne journée, ${agentSelectionne.prenom || nomAffiche.split(' ')[0]} !`
           : `Bonne soirée, ${agentSelectionne.prenom || nomAffiche.split(' ')[0]} !`,
         data.heure,
-        data.retard
+        data.retard,
+        motifRetard || null
       );
     }
   } catch(e) {
@@ -617,13 +682,16 @@ async function badger(type) {
   }
 }
 
-function afficherResultat(icon, nom, message, heure, retard) {
+function afficherResultat(icon, nom, message, heure, retard, motif) {
   document.getElementById('res-icon').textContent  = icon;
   document.getElementById('res-nom').textContent   = nom;
   document.getElementById('res-heure').textContent = heure;
 
   let msg = message;
-  if (retard) msg += '<br><span class="retard-badge">⚠️ Arrivée tardive enregistrée</span>';
+  if (retard) {
+    msg += '<br><span class="retard-badge">⚠️ Arrivée tardive enregistrée</span>';
+    if (motif) msg += `<br><span style="font-size:0.78rem;opacity:0.65;display:block;margin-top:6px;">Motif : ${motif}</span>`;
+  }
   document.getElementById('res-message').innerHTML = msg;
 
   if (photoBase64) {

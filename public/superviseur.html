@@ -208,7 +208,7 @@
     <div class="kpi"><div class="kpi-label">Total agents</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub">Inscrits</div></div>
     <div class="kpi vert"><div class="kpi-label">Présents</div><div class="kpi-val" id="kpi-presents">—</div><div class="kpi-sub">Badgés aujourd'hui</div></div>
     <div class="kpi rouge"><div class="kpi-label">Absents</div><div class="kpi-val" id="kpi-absents">—</div><div class="kpi-sub">Non badgés</div></div>
-    <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 8h00</div></div>
+    <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 9h00</div></div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
@@ -373,7 +373,7 @@ async function chargerFlux() {
           <div class="flux-icon">${p.type === 'entree' ? '🟢' : '🔴'}</div>
           <div class="flux-info">
             <div class="flux-nom">${p.nom_complet || p.nom + ' ' + p.prenom}</div>
-            <div class="flux-detail">${p.poste} · ${p.service || ''} ${p.retard ? '· <span style="color:#e67e22;">⚠️ Retard</span>' : ''}</div>
+            <div class="flux-detail">${p.poste} · ${p.service || ''} ${p.retard ? `· <span style="color:#e67e22;">⚠️ Retard</span>${p.motifRetard ? ` — <em style="font-size:0.75rem;">${p.motifRetard}</em>` : ''}` : ''}</div>
           </div>
           <div class="flux-heure">${p.heure}</div>
         </div>`;
@@ -487,7 +487,7 @@ async function chargerHistorique() {
         <td style="font-size:0.78rem;">${p.date}</td>
         <td style="font-weight:700;color:var(--bleu);">${p.heure}</td>
         <td><span class="badge ${p.type}">${p.type === 'entree' ? '🟢 Arrivée' : '🔴 Départ'}</span></td>
-        <td>${p.retard ? '<span class="badge retard">⚠️ Retard</span>' : '<span style="color:#ccc;font-size:0.76rem;">—</span>'}</td>
+        <td>${p.retard ? `<span class="badge retard">⚠️ Retard</span>${p.motifRetard ? `<br><span style="font-size:0.72rem;color:#d68910;">${p.motifRetard}</span>` : ''}` : '<span style="color:#ccc;font-size:0.76rem;">—</span>'}</td>
       </tr>`;
     });
   } catch(e) {}

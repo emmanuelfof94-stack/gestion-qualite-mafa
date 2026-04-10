@@ -255,7 +255,7 @@
     <div class="kpi"><div class="kpi-label">Total agents</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub">Inscrits</div></div>
     <div class="kpi vert"><div class="kpi-label">Présents</div><div class="kpi-val" id="kpi-presents">—</div><div class="kpi-sub">Badgés aujourd'hui</div></div>
     <div class="kpi rouge"><div class="kpi-label">Absents</div><div class="kpi-val" id="kpi-absents">—</div><div class="kpi-sub">Non badgés</div></div>
-    <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 8h00</div></div>
+    <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 9h00</div></div>
   </div>
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -652,7 +652,7 @@ async function chargerFlux() {
       ${photoHtml}
       <div class="flux-info">
         <div class="flux-nom">${nomAffiche}</div>
-        <div class="flux-detail">${p.service||p.poste} ${p.retard?'• <span style="color:#e67e22">⚠️ Retard</span>':''}</div>
+        <div class="flux-detail">${p.service||p.poste} ${p.retard?`• <span style="color:#e67e22">⚠️ Retard</span>${p.motifRetard?` — <em style="font-size:0.75rem;">${p.motifRetard}</em>`:''}`:''}</div>
       </div>
       <div style="text-align:right;">
         <div class="flux-heure">${p.heure}</div>
@@ -733,7 +733,7 @@ async function chargerTodayTable() {
       <td><div class="agent-cell">${photoHtml}<div><div class="nom">${nomAffiche}</div><div class="poste">${p.service||''}</div></div></div></td>
       <td>${p.poste}</td>
       <td><span class="badge ${p.type}">${p.type==='entree'?'🟢 Entrée':'🔴 Sortie'}</span></td>
-      <td>${p.retard?'<span class="badge retard">⚠️ Retard</span>':'<span style="color:#ccc;font-size:0.78rem;">—</span>'}</td>
+      <td>${p.retard?`<span class="badge retard">⚠️ Retard</span>${p.motifRetard?`<br><span style="font-size:0.72rem;color:#d68910;display:block;margin-top:3px;">${p.motifRetard}</span>`:''}` :'<span style="color:#ccc;font-size:0.78rem;">—</span>'}</td>
       <td><button class="btn btn-danger btn-sm" onclick="supprimerPointage('${p.id}')">🗑️</button></td>
     </tr>`;
   });

@@ -262,7 +262,7 @@ app.get('/api/stats', (req, res) => {
   const retards  = duJour.filter(p => {
     if (p.type !== 'entree') return false;
     const [h, m] = p.heure.split(':').map(Number);
-    return h > 8 || (h === 8 && m > 0);
+    return h > 9 || (h === 9 && m > 0);
   }).map(p => p.agentId);
 
   res.json({
@@ -277,7 +277,7 @@ app.get('/api/stats', (req, res) => {
 
 // ── BADGEAGE (soumis depuis le téléphone de l'agent) ──
 app.post('/api/badger', (req, res) => {
-  const { agentId, photo } = req.body;
+  const { agentId, photo, motifRetard } = req.body;
   if (!agentId) return res.status(400).json({ erreur: 'ID agent manquant' });
 
   const agents = lireJSON(AGENTS_FILE);
@@ -298,7 +298,7 @@ app.post('/api/badger', (req, res) => {
 
   const type = aEntree ? 'sortie' : 'entree';
   const [h, m] = heure.split(':').map(Number);
-  const retard = type === 'entree' && (h > 8 || (h === 8 && m > 0));
+  const retard = type === 'entree' && (h > 9 || (h === 9 && m > 0));
 
   // ── Sauvegarder la photo ──
   const pointageId = Date.now().toString();
@@ -326,6 +326,7 @@ app.post('/api/badger', (req, res) => {
     heure,
     type,
     retard,
+    motifRetard: (retard && motifRetard) ? motifRetard.trim() : undefined,
     photo: photoFichier,
     timestamp: new Date().toISOString()
   };
@@ -524,7 +525,7 @@ appPublic.get('/api/superviseur/stats', (req, res) => {
   const pointages = lireJSON(DATA_FILE);
   const duJour = pointages.filter(p => p.date === today);
   const presents = new Set(duJour.filter(p => p.type === 'entree').map(p => p.agentId));
-  const retards = duJour.filter(p => { if (p.type !== 'entree') return false; const [h,m]=p.heure.split(':').map(Number); return h>8||(h===8&&m>0); }).length;
+  const retards = duJour.filter(p => { if (p.type !== 'entree') return false; const [h,m]=p.heure.split(':').map(Number); return h>9||(h===9&&m>0); }).length;
   res.json({ totalAgents: agents.length, presents: presents.size, absents: Math.max(0, agents.length - presents.size), retards });
 });
 appPublic.get('/api/superviseur/agents', (req, res) => {
@@ -563,7 +564,7 @@ appPublic.get('/api/agents', (_, res) => res.json(lireJSON(AGENTS_FILE)));
 
 // API badgeage via tunnel
 appPublic.post('/api/badger', (req, res) => {
-  const { agentId, photo } = req.body;
+  const { agentId, photo, motifRetard } = req.body;
   if (!agentId) return res.status(400).json({ erreur: 'ID agent manquant' });
   const agents = lireJSON(AGENTS_FILE);
   const agent = agents.find(a => a.id === agentId.toUpperCase());
@@ -578,7 +579,7 @@ appPublic.post('/api/badger', (req, res) => {
     return res.json({ ok: false, message: 'Vous avez déjà badgé entrée et sortie aujourd\'hui.' });
   const type = aEntree ? 'sortie' : 'entree';
   const [h, m] = heure.split(':').map(Number);
-  const retard = type === 'entree' && (h > 8 || (h === 8 && m > 0));
+  const retard = type === 'entree' && (h > 9 || (h === 9 && m > 0));
   const pointageId = Date.now().toString();
   let photoFichier = null;
   if (photo && photo.startsWith('data:image')) {
@@ -593,7 +594,9 @@ appPublic.post('/api/badger', (req, res) => {
     id: pointageId, agentId: agent.id, nom: agent.nom, prenom: agent.prenom,
     nom_complet: agent.nom_complet || `${agent.prenom} ${agent.nom}`,
     poste: agent.poste, service: agent.service || '',
-    date: today, heure, type, retard, photo: photoFichier,
+    date: today, heure, type, retard,
+    motifRetard: (retard && motifRetard) ? motifRetard.trim() : undefined,
+    photo: photoFichier,
     source: 'mobile-data', timestamp: new Date().toISOString()
   };
   pointages.push(pointage);
@@ -734,7 +737,7 @@ app.get('/api/superviseur/stats',           requireSuperviseur, (req, res) => {
   const pointages= lireJSON(DATA_FILE);
   const duJour   = pointages.filter(p => p.date === today);
   const presents = new Set(duJour.filter(p => p.type === 'entree').map(p => p.agentId));
-  const retards  = duJour.filter(p => { if (p.type !== 'entree') return false; const [h,m]=p.heure.split(':').map(Number); return h>8||(h===8&&m>0); }).length;
+  const retards  = duJour.filter(p => { if (p.type !== 'entree') return false; const [h,m]=p.heure.split(':').map(Number); return h>9||(h===9&&m>0); }).length;
   res.json({ totalAgents:agents.length, presents:presents.size, absents:Math.max(0,agents.length-presents.size), retards });
 });
 

@@ -258,6 +258,35 @@
     <div class="kpi orange"><div class="kpi-label">Retards</div><div class="kpi-val" id="kpi-retards">—</div><div class="kpi-sub">Après 9h00</div></div>
   </div>
 
+  <!-- ── Liens badgeage ── -->
+  <div class="card" style="margin-bottom:20px;">
+    <div class="card-header" style="margin-bottom:12px;">
+      <h2>Liens de badgeage</h2>
+      <span style="font-size:0.75rem;color:#aaa;">À partager avec les agents</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+      <!-- WiFi -->
+      <div style="background:#eaf4fb;border:1px solid #bee3f8;border-radius:10px;padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.1rem;">📶</span>
+          <span style="font-size:0.76rem;font-weight:700;color:#1A5676;text-transform:uppercase;letter-spacing:0.3px;">WiFi (réseau local)</span>
+        </div>
+        <code id="badge-lien-wifi" style="font-size:0.82rem;color:#2c7da0;word-break:break-all;display:block;margin-bottom:10px;">Chargement...</code>
+        <button class="btn btn-primary btn-sm" onclick="copierLienBadge('wifi')" style="width:100%;justify-content:center;">Copier</button>
+      </div>
+      <!-- Données mobiles -->
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:14px 16px;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+          <span style="font-size:1.1rem;">📱</span>
+          <span style="font-size:0.76rem;font-weight:700;color:#15803d;text-transform:uppercase;letter-spacing:0.3px;">Données mobiles</span>
+          <span id="badge-tunnel-statut" style="font-size:0.68rem;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:8px;margin-left:auto;">Connexion...</span>
+        </div>
+        <code id="badge-lien-mobile" style="font-size:0.82rem;color:#15803d;word-break:break-all;display:block;margin-bottom:10px;">En attente du tunnel...</code>
+        <button class="btn btn-sm" onclick="copierLienBadge('mobile')" style="width:100%;justify-content:center;background:#15803d;color:white;">Copier</button>
+      </div>
+    </div>
+  </div>
+
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
     <div class="card">
       <div class="card-header">
@@ -1189,29 +1218,51 @@ async function supprimerDemande(id) {
 async function chargerUrlsPartage() {
   try {
     const data = await fetch('/api/public-url').then(r => r.json());
-    if (data.urlLocale) document.getElementById('lien-wifi').textContent = data.urlLocale;
+    if (data.urlLocale) {
+      document.getElementById('lien-wifi').textContent     = data.urlLocale;
+      document.getElementById('badge-lien-wifi').textContent = data.urlLocale.replace('/demandes', '/badge');
+    }
     mettreAJourTunnel(data.urlPublique);
   } catch(e) {
-    document.getElementById('lien-wifi').textContent = window.location.origin + '/demandes';
+    const origin = window.location.origin;
+    document.getElementById('lien-wifi').textContent      = origin + '/demandes';
+    document.getElementById('badge-lien-wifi').textContent = origin + '/badge';
   }
 }
 
 function mettreAJourTunnel(urlPublique) {
-  const el = document.getElementById('lien-mobile');
-  const st = document.getElementById('tunnel-statut');
+  // ── Demandes ──
+  const elD = document.getElementById('lien-mobile');
+  const stD = document.getElementById('tunnel-statut');
+  // ── Badgeage ──
+  const elB = document.getElementById('badge-lien-mobile');
+  const stB = document.getElementById('badge-tunnel-statut');
+  const styleActif   = 'font-size:0.68rem;background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:8px;margin-left:auto;';
+  const styleInactif = 'font-size:0.68rem;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:8px;margin-left:auto;';
   if (urlPublique) {
-    el.textContent = urlPublique;
-    st.textContent = 'Actif';
-    st.style.cssText = 'font-size:0.68rem;background:#d1fae5;color:#065f46;padding:2px 7px;border-radius:8px;margin-left:auto;';
+    const base = urlPublique.replace(/\/(demandes|badge)\/?$/, '');
+    elD.textContent = base + '/demandes'; stD.textContent = 'Actif'; stD.style.cssText = styleActif;
+    elB.textContent = base + '/badge';    stB.textContent = 'Actif'; stB.style.cssText = styleActif;
   } else {
-    el.textContent = 'Connexion au tunnel en cours...';
-    st.textContent = 'Hors ligne';
-    st.style.cssText = 'font-size:0.68rem;background:#fef3c7;color:#92400e;padding:2px 7px;border-radius:8px;margin-left:auto;';
+    elD.textContent = 'Connexion au tunnel en cours...'; stD.textContent = 'Hors ligne'; stD.style.cssText = styleInactif;
+    elB.textContent = 'Connexion au tunnel en cours...'; stB.textContent = 'Hors ligne'; stB.style.cssText = styleInactif;
   }
 }
 
 function copierLien(type) {
   const id = type === 'mobile' ? 'lien-mobile' : 'lien-wifi';
+  const lien = document.getElementById(id).textContent.trim();
+  if (!lien || lien.includes('...') || lien.includes('Connexion')) return;
+  navigator.clipboard.writeText(lien).then(() => {
+    const btn = event.currentTarget;
+    const old = btn.textContent;
+    btn.textContent = 'Copié !';
+    setTimeout(() => btn.textContent = old, 2000);
+  });
+}
+
+function copierLienBadge(type) {
+  const id = type === 'mobile' ? 'badge-lien-mobile' : 'badge-lien-wifi';
   const lien = document.getElementById(id).textContent.trim();
   if (!lien || lien.includes('...') || lien.includes('Connexion')) return;
   navigator.clipboard.writeText(lien).then(() => {
